@@ -1,27 +1,135 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+/* Design System - Тёплая палитра для приложения питания */
+@theme {
+  /* Основные цвета */
+  --color-primary: #7c9885; /* sage green */
+  --color-primary-light: #a8c4b0;
+  --color-primary-dark: #5a7a63;
+
+  --color-secondary: #e8d5b7; /* warm beige */
+  --color-secondary-light: #f5ead8;
+  --color-secondary-dark: #d4b896;
+
+  --color-accent: #f39c6b; /* мягкий оранжевый */
+  --color-accent-light: #ffb88c;
+  --color-accent-dark: #d67a4a;
+
+  /* Персональные цвета (мягче) */
+  --color-roman: #6b9bd1; /* мягкий синий */
+  --color-roman-light: #a8c7e7;
+  --color-roman-bg: #eef6ff;
+
+  --color-liza: #e89fc4; /* мягкий розовый */
+  --color-liza-light: #f5c5dc;
+  --color-liza-bg: #fff0f7;
+
+  /* Приёмы пищи */
+  --color-breakfast: #ffd89b; /* тёплый жёлтый */
+  --color-breakfast-bg: #fff8e7;
+
+  --color-lunch: #a8d5a3; /* зелёный */
+  --color-lunch-bg: #f0f9ef;
+
+  --color-dinner: #c7b9de; /* лавандовый */
+  --color-dinner-bg: #f6f3fc;
+
+  --color-cheat: #d4a5d9; /* фиолетовый для читмила */
+
+  /* Нейтральные */
+  --color-bg: #fafaf7; /* тёплый белый */
+  --color-surface: #ffffff;
+  --color-text: #3d3d3d;
+  --color-text-light: #6b6b6b;
+  --color-text-muted: #9a9a9a;
+  --color-border: #e8e8e5;
+
+  /* Spacing (единая сетка 4px) */
+  --spacing-xs: 0.25rem; /* 4px */
+  --spacing-sm: 0.5rem; /* 8px */
+  --spacing-md: 1rem; /* 16px */
+  --spacing-lg: 1.5rem; /* 24px */
+  --spacing-xl: 2rem; /* 32px */
+  --spacing-2xl: 3rem; /* 48px */
+
+  /* Border radius */
+  --radius-sm: 0.5rem; /* 8px */
+  --radius-md: 1rem; /* 16px */
+  --radius-lg: 1.25rem; /* 20px */
+  --radius-xl: 1.5rem; /* 24px */
+
+  /* Shadows (мягкие) */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.03);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.03);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.05), 0 4px 6px -4px rgb(0 0 0 / 0.03);
+
+  /* Typography */
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-display: 'Nunito', var(--font-sans);
+}
 
 :root {
-  --background: #f3f4f6;
-  --foreground: #1f2937;
+  --background: var(--color-bg);
+  --foreground: var(--color-text);
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+@layer base {
+  body {
+    color: var(--foreground);
+    background: var(--background);
+    font-family: var(--font-sans);
+    font-feature-settings: "rlig" 1, "calt" 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    font-weight: 700;
+  }
 }
 
-.card { transition: transform 0.2s; }
+@layer components {
+  .card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .card:hover {
+    transform: translateY(-2px);
+  }
+}
 
 @media print {
-    .no-print { display: none; }
-    body { background-color: white; }
-    .shadow-lg, .shadow-md { box-shadow: none !important; }
-    .bg-white { border: 1px solid #ddd; }
-    .text-white { color: black !important; }
-    .bg-gray-800 { background-color: transparent !important; color: black !important; border: 1px solid #000; }
-    /* Force background graphics for colored headers */
-    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  .no-print {
+    display: none;
+  }
+
+  body {
+    background-color: white;
+  }
+
+  .shadow-lg,
+  .shadow-md {
+    box-shadow: none !important;
+  }
+
+  .bg-white {
+    border: 1px solid #ddd;
+  }
+
+  .text-white {
+    color: black !important;
+  }
+
+  .bg-gray-800 {
+    background-color: transparent !important;
+    color: black !important;
+    border: 1px solid #000;
+  }
+
+  /* Force background graphics for colored headers */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
 }

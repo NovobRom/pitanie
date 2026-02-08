@@ -1,55 +1,54 @@
+'use client';
+
 import React from 'react';
+import { Scale } from 'lucide-react';
+import { products, productsNote } from '@/data/products';
 
 export const CheatSheet = () => {
-    return (
-        <section className="bg-white rounded-2xl shadow-lg p-5 mb-8 border-l-8 border-green-500 text-sm">
-            <h2 className="text-xl font-bold text-gray-800 mb-3 flex items-center">
-                <i className="fas fa-scale-balanced mr-3 text-green-500"></i> Общая база на день (Сырой вес)
-            </h2>
-            <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
-                    <thead>
-                        <tr className="bg-gray-100 text-gray-600 uppercase text-xs">
-                            <th className="p-2 rounded-tl-lg">Продукт</th>
-                            <th className="p-2 bg-blue-50 text-blue-900 border-l border-blue-200">👨 Роман</th>
-                            <th className="p-2 bg-pink-50 text-pink-900 border-l border-pink-200 rounded-tr-lg">👩 Лиза</th>
-                        </tr>
-                    </thead>
-                    <tbody className="text-gray-700">
-                        <tr className="border-b">
-                            <td className="p-2 font-semibold">🥣 Крупа (гречка/рис) сухая</td>
-                            <td className="p-2 border-l border-blue-100">280 г</td>
-                            <td className="p-2 border-l border-pink-100">240 г</td>
-                        </tr>
-                        <tr className="border-b">
-                            <td className="p-2 font-semibold">🍝 Макароны (сухие)</td>
-                            <td className="p-2 border-l border-blue-100">280 г</td>
-                            <td className="p-2 border-l border-pink-100">240 г</td>
-                        </tr>
-                        <tr className="border-b bg-yellow-50">
-                            <td className="p-2 font-semibold text-yellow-800">🥔 Картофель (сырой)</td>
-                            <td className="p-2 border-l border-yellow-100 font-bold">1 кг</td>
-                            <td className="p-2 border-l border-yellow-100 font-bold">850 г</td>
-                        </tr>
-                        <tr className="border-b">
-                            <td className="p-2 font-semibold">🍗 Курица (сырая)</td>
-                            <td className="p-2 border-l border-blue-100">280 г</td>
-                            <td className="p-2 border-l border-pink-100">240 г</td>
-                        </tr>
-                        <tr className="border-b">
-                            <td className="p-2 font-semibold">🥛 Творог (Varškė)</td>
-                            <td className="p-2 border-l border-blue-100">1 пачка (180г)</td>
-                            <td className="p-2 border-l border-pink-100">1 пачка (180г)</td>
-                        </tr>
-                        <tr className="border-b">
-                            <td className="p-2 font-semibold text-yellow-800">🧈 Масло сливочное</td>
-                            <td className="p-2 border-l border-yellow-100 font-bold">40 г</td>
-                            <td className="p-2 border-l border-yellow-100 font-bold">30 г</td>
-                        </tr>
-                    </tbody>
-                </table>
+  return (
+    <section className="bg-gradient-to-br from-[var(--color-primary-light)] to-[var(--color-secondary)] rounded-2xl shadow-[var(--shadow-lg)] p-6 mb-10 border border-[var(--color-primary)]">
+      <h2 className="text-2xl font-bold text-[var(--color-primary-dark)] mb-5 flex items-center gap-3">
+        <Scale size={28} className="text-[var(--color-primary-dark)]" />
+        Общая база на день (Сырой вес)
+      </h2>
+
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+        {products.map((product, idx) => (
+          <div
+            key={idx}
+            className={`bg-white rounded-xl p-4 shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)] transition-all ${
+              product.highlighted ? 'ring-2 ring-[var(--color-accent)]' : ''
+            }`}
+          >
+            <div className="flex items-start gap-3">
+              <div className="text-3xl">{product.emoji}</div>
+              <div className="flex-1">
+                <h3
+                  className={`font-semibold text-sm mb-2 ${
+                    product.highlighted ? 'text-[var(--color-accent-dark)]' : 'text-[var(--color-text)]'
+                  }`}
+                >
+                  {product.name}
+                </h3>
+                <div className="space-y-1 text-xs">
+                  <div className="flex justify-between items-center">
+                    <span className="text-[var(--color-roman)] font-medium">👨 Роман:</span>
+                    <span className="font-bold text-[var(--color-roman)]">{product.roman}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-[var(--color-liza)] font-medium">👩 Лиза:</span>
+                    <span className="font-bold text-[var(--color-liza)]">{product.liza}</span>
+                  </div>
+                </div>
+              </div>
             </div>
-            <p className="mt-2 text-xs text-gray-500">* Овощи: Капуста + Огурцы + Уксус (Роману на обед Квашеная капуста).</p>
-        </section>
-    );
+          </div>
+        ))}
+      </div>
+
+      <p className="text-xs text-[var(--color-text-muted)] bg-white bg-opacity-60 p-3 rounded-lg">
+        {productsNote}
+      </p>
+    </section>
+  );
 };
