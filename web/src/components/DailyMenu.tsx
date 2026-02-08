@@ -48,8 +48,8 @@ export const DailyMenu = () => {
                                 <li>• <b>Гречка:</b> 1/3 часть</li>
                                 <li className="font-bold text-xs mt-1">Овощи:</li>
                                 <li>👨 <span className="text-blue-700 bg-blue-100 px-1 rounded">Квашеная капуста</span></li>
-                                <li>👩 <span class="text-pink-700">Огурец + Капуста</span></li>
-                                <li className="mt-1">• <b>Слив. масло:</b> <span className="text-blue-600">15г</span> / <span class="text-pink-600">10г</span></li>
+                                <li>👩 <span className="text-pink-700">Огурец + Капуста</span></li>
+                                <li className="mt-1">• <b>Слив. масло:</b> <span className="text-blue-600">15г</span> / <span className="text-pink-600">10г</span></li>
                             </ul>
                             <div className="text-xs border-t border-red-100 pt-2 space-y-1">
                                 <div className="flex justify-between text-blue-800 font-medium">
@@ -111,7 +111,7 @@ export const DailyMenu = () => {
                                 <li>• <b>Рис:</b> 1/3 часть</li>
                                 <li className="font-bold text-xs mt-1">Овощи:</li>
                                 <li>👨 <span className="text-blue-700 bg-blue-100 px-1 rounded">Квашеная капуста</span></li>
-                                <li>👩 <span class="text-pink-700">Огурец + Капуста</span></li>
+                                <li>👩 <span className="text-pink-700">Огурец + Капуста</span></li>
                                 <li className="mt-1">• <b>Масла:</b> Стандарт</li>
                             </ul>
                             <div className="text-xs border-t border-red-100 pt-2 space-y-1">
@@ -160,7 +160,7 @@ export const DailyMenu = () => {
                                 <li>• <b>Макароны:</b> 1/3 часть</li>
                                 <li className="font-bold text-xs mt-1">Овощи:</li>
                                 <li>👨 <span className="text-blue-700 bg-blue-100 px-1 rounded">Квашеная капуста</span></li>
-                                <li>👩 <span class="text-pink-700">Огурец + Капуста</span></li>
+                                <li>👩 <span className="text-pink-700">Огурец + Капуста</span></li>
                                 <li className="mt-1">• <b>Масла:</b> Стандарт</li>
                             </ul>
                             <div className="text-xs border-t border-red-100 pt-2 space-y-1">
@@ -213,7 +213,7 @@ export const DailyMenu = () => {
                                 <li>• <b>Картофель:</b> 1/3 часть</li>
                                 <li className="font-bold text-xs mt-1">Овощи:</li>
                                 <li>👨 <span className="text-blue-700 bg-blue-100 px-1 rounded">Квашеная капуста</span></li>
-                                <li>👩 <span class="text-pink-700">Огурец + Капуста</span></li>
+                                <li>👩 <span className="text-pink-700">Огурец + Капуста</span></li>
                                 <li className="mt-1">• <b>Масла:</b> Стандарт</li>
                             </ul>
                             <div className="text-xs border-t border-gray-100 pt-2 space-y-1">
@@ -267,7 +267,7 @@ export const DailyMenu = () => {
                                 <li>• <b>Гречка:</b> 1/3 часть</li>
                                 <li className="font-bold text-xs mt-1">Овощи:</li>
                                 <li>👨 <span className="text-blue-700 bg-blue-100 px-1 rounded">Квашеная капуста</span></li>
-                                <li>👩 <span class="text-pink-700">Огурец + Капуста</span></li>
+                                <li>👩 <span className="text-pink-700">Огурец + Капуста</span></li>
                                 <li className="mt-1">• <b>Масла:</b> Стандарт</li>
                             </ul>
                             <div className="text-xs border-t border-red-100 pt-2 space-y-1">
@@ -317,7 +317,7 @@ export const DailyMenu = () => {
                                 <li>• <b>Рис:</b> 1/3 часть</li>
                                 <li className="font-bold text-xs mt-1">Овощи:</li>
                                 <li>👨 <span className="text-blue-700 bg-blue-100 px-1 rounded">Квашеная капуста</span></li>
-                                <li>👩 <span class="text-pink-700">Огурец + Капуста</span></li>
+                                <li>👩 <span className="text-pink-700">Огурец + Капуста</span></li>
                                 <li className="mt-1">• <b>Масла:</b> Стандарт</li>
                             </ul>
                             <div className="text-xs border-t border-red-100 pt-2 space-y-1">
