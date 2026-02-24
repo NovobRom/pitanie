@@ -8,7 +8,7 @@ export interface ShoppingItem {
 export const shoppingList: ShoppingItem[] = [
   {
     name: 'Курица (Филе/Бедро б.к.)',
-    amount: '4 кг',
+    amount: '3 кг',
     category: 'meat',
   },
   {
@@ -23,51 +23,51 @@ export const shoppingList: ShoppingItem[] = [
   },
   {
     name: 'Сливочное масло 82%',
-    amount: '3 пачки',
+    amount: '2 пачки',
     category: 'meat',
     highlighted: true,
   },
   {
     name: 'Гречка',
-    amount: '2 кг',
+    amount: '2.4 кг',
     category: 'groceries',
   },
   {
     name: 'Рис',
-    amount: '1 кг',
+    amount: '1 пачка 500г',
     category: 'groceries',
   },
   {
     name: 'Макароны',
-    amount: '1 пачка (500г)',
+    amount: '1 пачка 500г',
     category: 'groceries',
   },
   {
-    name: 'Картофель',
-    amount: '2.5 кг',
+    name: 'Отруби пшеничные',
+    amount: '1 уп.',
     category: 'groceries',
   },
   {
-    name: 'Капуста',
+    name: 'Капуста свежая',
     amount: '2 кочана',
     category: 'groceries',
     highlighted: true,
   },
   {
     name: 'Огурцы',
-    amount: '1.5 кг',
+    amount: '1 кг',
     category: 'groceries',
     highlighted: true,
   },
   {
     name: 'Свекла (вареная)',
-    amount: '1 уп',
+    amount: '1 уп. (500 г)',
     category: 'groceries',
     highlighted: true,
   },
   {
     name: 'Квашеная капуста',
-    amount: '2-3 уп / 1 кг (Рома)',
+    amount: '1.2 кг (Роме)',
     category: 'groceries',
     highlighted: true,
   },

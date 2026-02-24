@@ -4,7 +4,7 @@ export const weekMenu: Day[] = [
   // Понедельник
   {
     dayName: 'Понедельник',
-    grain: 'Гречка',
+    grain: 'Гречка (общая)',
     grainType: 'grechka',
     meals: [
       {
@@ -12,45 +12,31 @@ export const weekMenu: Day[] = [
         icon: '🌅',
         items: [
           { name: 'Яйца', portion: '2 шт' },
-          { name: 'Слив. масло', portion: '10 г' },
           { name: 'Гречка', portion: '1/3 часть' },
+          { name: 'Слив. масло', portion: { roman: '0 г', liza: '10 г' } },
         ],
-        calories: { roman: '530 ккал', liza: '485 ккал' },
+        calories: { roman: '~470 ккал', liza: '~540 ккал' },
       },
       {
         type: 'lunch',
         icon: '☀️',
         items: [
-          {
-            name: 'Курица',
-            portion: { roman: '280г', liza: '240г' },
-          },
+          { name: 'Курица', portion: { roman: '250 г', liza: '240 г' } },
           { name: 'Гречка', portion: '1/3 часть' },
-          {
-            name: 'Овощи',
-            romanOnly: 'Квашеная капуста',
-            lizaOnly: 'Огурец + Капуста',
-          },
-          {
-            name: 'Слив. масло',
-            portion: { roman: '15г', liza: '10г' },
-          },
+          { name: 'Слив. масло', portion: '10 г' },
         ],
-        calories: { roman: '795 ккал', liza: '670 ккал' },
+        calories: { roman: '~700 ккал', liza: '~690 ккал' },
       },
       {
         type: 'dinner',
         icon: '🌙',
         items: [
           { name: 'Творог', portion: '180 г (1п)' },
+          { name: 'Отруби', portion: '1 ст.л.' },
           { name: 'Гречка', portion: '1/3 часть' },
-          { name: 'Свекла вареная', portion: '' },
-          {
-            name: 'Слив. масло',
-            portion: { roman: '15г', liza: '10г' },
-          },
+          { name: 'Слив. масло', portion: '10 г' },
         ],
-        calories: { roman: '~615 ккал', liza: '~535 ккал' },
+        calories: { roman: '~600 ккал', liza: '~600 ккал' },
       },
     ],
   },
@@ -58,43 +44,52 @@ export const weekMenu: Day[] = [
   // Вторник
   {
     dayName: 'Вторник',
-    grain: 'Рис',
-    grainType: 'rice',
+    grain: 'Гарниры раздельно',
+    grainType: 'mixed',
+    note: '⚠️ В эти дни гарниры готовятся в разных кастрюлях.',
     meals: [
       {
         type: 'breakfast',
         icon: '🌅',
         items: [
           { name: 'Яйца', portion: '2 шт' },
-          { name: 'Слив. масло', portion: '10 г' },
-          { name: 'Рис', portion: '1/3 часть' },
+          {
+            name: 'Гарнир',
+            romanOnly: 'Гречка: 1/3 часть',
+            lizaOnly: 'Рис: 1/3 часть',
+          },
+          { name: 'Слив. масло', portion: { roman: '0 г', liza: '10 г' } },
         ],
-        calories: { roman: '530 ккал', liza: '485 ккал' },
+        calories: { roman: '~470 ккал', liza: '~540 ккал' },
       },
       {
         type: 'lunch',
         icon: '☀️',
         items: [
-          { name: 'Курица', portion: 'Стандарт' },
-          { name: 'Рис', portion: '1/3 часть' },
+          { name: 'Курица', portion: { roman: '250 г', liza: '240 г' } },
           {
-            name: 'Овощи',
-            romanOnly: 'Квашеная капуста',
-            lizaOnly: 'Огурец + Капуста',
+            name: 'Гарнир',
+            romanOnly: 'Гречка: 1/3 часть',
+            lizaOnly: 'Рис: 1/3 часть',
           },
-          { name: 'Масла', portion: 'Стандарт' },
+          { name: 'Слив. масло', portion: '10 г' },
         ],
-        calories: { roman: '795 ккал', liza: '670 ккал' },
+        calories: { roman: '~700 ккал', liza: '~690 ккал' },
       },
       {
         type: 'dinner',
         icon: '🌙',
         items: [
           { name: 'Творог', portion: '180 г (1п)' },
-          { name: 'Рис', portion: '1/3 часть' },
-          { name: 'Слив. масло', portion: 'Стандарт' },
+          { name: 'Отруби', portion: '1 ст.л.' },
+          {
+            name: 'Гарнир',
+            romanOnly: 'Гречка: 1/3 часть',
+            lizaOnly: 'Рис: 1/3 часть',
+          },
+          { name: 'Слив. масло', portion: '10 г' },
         ],
-        calories: { roman: '585 ккал', liza: '505 ккал' },
+        calories: { roman: '~600 ккал', liza: '~600 ккал' },
       },
     ],
   },
@@ -102,7 +97,7 @@ export const weekMenu: Day[] = [
   // Среда
   {
     dayName: 'Среда',
-    grain: 'Макароны',
+    grain: 'Макароны (общие)',
     grainType: 'pasta',
     meals: [
       {
@@ -110,35 +105,31 @@ export const weekMenu: Day[] = [
         icon: '🌅',
         items: [
           { name: 'Яйца', portion: '2 шт' },
-          { name: 'Слив. масло', portion: '10 г' },
           { name: 'Макароны', portion: '1/3 часть' },
+          { name: 'Слив. масло', portion: { roman: '0 г', liza: '10 г' } },
         ],
-        calories: { roman: '530 ккал', liza: '485 ккал' },
+        calories: { roman: '~470 ккал', liza: '~540 ккал' },
       },
       {
         type: 'lunch',
         icon: '☀️',
         items: [
-          { name: 'Курица', portion: 'Стандарт' },
+          { name: 'Курица', portion: { roman: '250 г', liza: '240 г' } },
           { name: 'Макароны', portion: '1/3 часть' },
-          {
-            name: 'Овощи',
-            romanOnly: 'Квашеная капуста',
-            lizaOnly: 'Огурец + Капуста',
-          },
-          { name: 'Масла', portion: 'Стандарт' },
+          { name: 'Слив. масло', portion: '10 г' },
         ],
-        calories: { roman: '795 ккал', liza: '670 ккал' },
+        calories: { roman: '~700 ккал', liza: '~690 ккал' },
       },
       {
         type: 'dinner',
         icon: '🌙',
         items: [
           { name: 'Творог', portion: '180 г (1п)' },
+          { name: 'Отруби', portion: '1 ст.л.' },
           { name: 'Макароны', portion: '1/3 часть' },
-          { name: 'Слив. масло', portion: 'Стандарт' },
+          { name: 'Слив. масло', portion: '10 г' },
         ],
-        calories: { roman: '585 ккал', liza: '505 ккал' },
+        calories: { roman: '~600 ккал', liza: '~600 ккал' },
       },
     ],
   },
@@ -146,43 +137,52 @@ export const weekMenu: Day[] = [
   // Четверг
   {
     dayName: 'Четверг',
-    grain: 'Картофель',
-    grainType: 'potato',
+    grain: 'Гарниры раздельно',
+    grainType: 'mixed',
+    note: '⚠️ В эти дни гарниры готовятся в разных кастрюлях.',
     meals: [
       {
         type: 'breakfast',
         icon: '🌅',
         items: [
           { name: 'Яйца', portion: '2 шт' },
-          { name: 'Картофель', portion: '1/3 (≈330г / 280г)' },
-          { name: 'Слив. масло', portion: '10 г' },
+          {
+            name: 'Гарнир',
+            romanOnly: 'Гречка: 1/3 часть',
+            lizaOnly: 'Рис: 1/3 часть',
+          },
+          { name: 'Слив. масло', portion: { roman: '0 г', liza: '10 г' } },
         ],
-        calories: { roman: '~470 ккал', liza: '~430 ккал' },
+        calories: { roman: '~470 ккал', liza: '~540 ккал' },
       },
       {
         type: 'lunch',
         icon: '☀️',
         items: [
-          { name: 'Курица', portion: 'Стандарт' },
-          { name: 'Картофель', portion: '1/3 часть' },
+          { name: 'Курица', portion: { roman: '250 г', liza: '240 г' } },
           {
-            name: 'Овощи',
-            romanOnly: 'Квашеная капуста',
-            lizaOnly: 'Огурец + Капуста',
+            name: 'Гарнир',
+            romanOnly: 'Гречка: 1/3 часть',
+            lizaOnly: 'Рис: 1/3 часть',
           },
-          { name: 'Масла', portion: 'Стандарт' },
+          { name: 'Слив. масло', portion: '10 г' },
         ],
-        calories: { roman: '~730 ккал', liza: '~620 ккал' },
+        calories: { roman: '~700 ккал', liza: '~690 ккал' },
       },
       {
         type: 'dinner',
         icon: '🌙',
         items: [
-          { name: 'Творог', portion: '180 г' },
-          { name: 'Картофель', portion: '1/3 часть' },
-          { name: 'Слив. масло', portion: 'Стандарт' },
+          { name: 'Творог', portion: '180 г (1п)' },
+          { name: 'Отруби', portion: '1 ст.л.' },
+          {
+            name: 'Гарнир',
+            romanOnly: 'Гречка: 1/3 часть',
+            lizaOnly: 'Рис: 1/3 часть',
+          },
+          { name: 'Слив. масло', portion: '10 г' },
         ],
-        calories: { roman: '~530 ккал', liza: '~460 ккал' },
+        calories: { roman: '~600 ккал', liza: '~600 ккал' },
       },
     ],
   },
@@ -190,7 +190,7 @@ export const weekMenu: Day[] = [
   // Пятница
   {
     dayName: 'Пятница',
-    grain: 'Гречка',
+    grain: 'Гречка (общая)',
     grainType: 'grechka',
     meals: [
       {
@@ -198,36 +198,31 @@ export const weekMenu: Day[] = [
         icon: '🌅',
         items: [
           { name: 'Яйца', portion: '2 шт' },
-          { name: 'Слив. масло', portion: '10 г' },
           { name: 'Гречка', portion: '1/3 часть' },
-          { name: 'Свекла вареная', portion: '' },
+          { name: 'Слив. масло', portion: { roman: '0 г', liza: '10 г' } },
         ],
-        calories: { roman: '~560 ккал', liza: '~515 ккал' },
+        calories: { roman: '~470 ккал', liza: '~540 ккал' },
       },
       {
         type: 'lunch',
         icon: '☀️',
         items: [
-          { name: 'Курица', portion: 'Стандарт' },
+          { name: 'Курица', portion: { roman: '250 г', liza: '240 г' } },
           { name: 'Гречка', portion: '1/3 часть' },
-          {
-            name: 'Овощи',
-            romanOnly: 'Квашеная капуста',
-            lizaOnly: 'Огурец + Капуста',
-          },
-          { name: 'Масла', portion: 'Стандарт' },
+          { name: 'Слив. масло', portion: '10 г' },
         ],
-        calories: { roman: '795 ккал', liza: '670 ккал' },
+        calories: { roman: '~700 ккал', liza: '~690 ккал' },
       },
       {
         type: 'dinner',
         icon: '🌙',
         items: [
           { name: 'Творог', portion: '180 г (1п)' },
+          { name: 'Отруби', portion: '1 ст.л.' },
           { name: 'Гречка', portion: '1/3 часть' },
-          { name: 'Слив. масло', portion: 'Стандарт' },
+          { name: 'Слив. масло', portion: '10 г' },
         ],
-        calories: { roman: '585 ккал', liza: '505 ккал' },
+        calories: { roman: '~600 ккал', liza: '~600 ккал' },
       },
     ],
   },
@@ -235,43 +230,39 @@ export const weekMenu: Day[] = [
   // Суббота
   {
     dayName: 'Суббота',
-    grain: 'Рис',
-    grainType: 'rice',
+    grain: 'Гречка (общая)',
+    grainType: 'grechka',
     meals: [
       {
         type: 'breakfast',
         icon: '🌅',
         items: [
           { name: 'Яйца', portion: '2 шт' },
-          { name: 'Слив. масло', portion: '10 г' },
-          { name: 'Рис', portion: '1/3 часть' },
+          { name: 'Гречка', portion: '1/3 часть' },
+          { name: 'Слив. масло', portion: { roman: '0 г', liza: '10 г' } },
         ],
-        calories: { roman: '530 ккал', liza: '485 ккал' },
+        calories: { roman: '~470 ккал', liza: '~540 ккал' },
       },
       {
         type: 'lunch',
         icon: '☀️',
         items: [
-          { name: 'Курица', portion: 'Стандарт' },
-          { name: 'Рис', portion: '1/3 часть' },
-          {
-            name: 'Овощи',
-            romanOnly: 'Квашеная капуста',
-            lizaOnly: 'Огурец + Капуста',
-          },
-          { name: 'Масла', portion: 'Стандарт' },
+          { name: 'Курица', portion: { roman: '250 г', liza: '240 г' } },
+          { name: 'Гречка', portion: '1/3 часть' },
+          { name: 'Слив. масло', portion: '10 г' },
         ],
-        calories: { roman: '795 ккал', liza: '670 ккал' },
+        calories: { roman: '~700 ккал', liza: '~690 ккал' },
       },
       {
         type: 'dinner',
         icon: '🌙',
         items: [
           { name: 'Творог', portion: '180 г (1п)' },
-          { name: 'Рис', portion: '1/3 часть' },
-          { name: 'Слив. масло', portion: 'Стандарт' },
+          { name: 'Отруби', portion: '1 ст.л.' },
+          { name: 'Гречка', portion: '1/3 часть' },
+          { name: 'Слив. масло', portion: '10 г' },
         ],
-        calories: { roman: '585 ккал', liza: '505 ккал' },
+        calories: { roman: '~600 ккал', liza: '~600 ккал' },
       },
     ],
   },
@@ -282,6 +273,31 @@ export const weekMenu: Day[] = [
     grain: 'Читмил',
     grainType: 'grechka',
     isCheatDay: true,
-    meals: [],
+    meals: [
+      {
+        type: 'breakfast',
+        icon: '🌅',
+        items: [
+          { name: 'Яйца', portion: '2 шт' },
+          { name: 'Творог', portion: '90 г (0.5п)' },
+        ],
+        calories: { roman: '~250 ккал', liza: '~250 ккал' },
+      },
+      {
+        type: 'lunch',
+        icon: '☀️',
+        items: [{ name: 'Любой прием пищи', portion: 'Пицца / Суши / Бургер' }],
+        calories: { roman: '—', liza: '—' },
+      },
+      {
+        type: 'dinner',
+        icon: '🌙',
+        items: [
+          { name: 'Творог', portion: '180 г (1п)' },
+          { name: 'Отруби', portion: '1 ст.л.' },
+        ],
+        calories: { roman: '~250 ккал', liza: '~250 ккал' },
+      },
+    ],
   },
 ];

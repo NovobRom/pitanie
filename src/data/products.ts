@@ -3,27 +3,14 @@ import { Product } from './types';
 export const products: Product[] = [
   {
     emoji: '🥣',
-    name: 'Крупа (гречка/рис) сухая',
+    name: 'Крупа / Макароны (сухие)',
     roman: '280 г',
     liza: '240 г',
-  },
-  {
-    emoji: '🍝',
-    name: 'Макароны (сухие)',
-    roman: '280 г',
-    liza: '240 г',
-  },
-  {
-    emoji: '🥔',
-    name: 'Картофель (сырой)',
-    roman: '1 кг',
-    liza: '850 г',
-    highlighted: true,
   },
   {
     emoji: '🍗',
     name: 'Курица (сырая)',
-    roman: '280 г',
+    roman: '250 г',
     liza: '240 г',
   },
   {
@@ -35,9 +22,15 @@ export const products: Product[] = [
   {
     emoji: '🧈',
     name: 'Масло сливочное',
-    roman: '40 г',
+    roman: '20 г',
     liza: '30 г',
     highlighted: true,
+  },
+  {
+    emoji: '🌾',
+    name: 'Пшеничные отруби',
+    roman: '1 ст.л. (10г)',
+    liza: '1 ст.л. (10г)',
   },
 ];
 

@@ -23,9 +23,10 @@ export interface Meal {
 export interface Day {
   dayName: string;
   grain: string;
-  grainType: 'grechka' | 'rice' | 'pasta' | 'potato';
+  grainType: 'grechka' | 'rice' | 'pasta' | 'potato' | 'mixed';
   meals: Meal[];
   isCheatDay?: boolean;
+  note?: string;
 }
 
 export interface DailyGoals {

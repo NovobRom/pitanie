@@ -8,7 +8,7 @@ export const Header = () => {
   return (
     <header className="text-center mb-10">
       <h1 className="text-4xl md:text-5xl font-bold text-[var(--color-text)] mb-6 tracking-tight">
-        🍎 План Питания
+        🍎 План Питания v4
       </h1>
 
       {/* Goals Cards */}
