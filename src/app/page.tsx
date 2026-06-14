@@ -121,11 +121,14 @@ export default function Home() {
     protein: number,
     fat: number,
     carbs: number,
-    grams: number
+    grams: number,
+    fiber?: number
   ) => {
+    const item: any = { name, grams, kcal, protein, fat, carbs };
+    if (fiber != null) item.fiber = fiber;
     const updatedMeals = {
       ...meals,
-      [mealType]: [...(meals[mealType] || []), { name, grams, kcal, protein, fat, carbs }],
+      [mealType]: [...(meals[mealType] || []), item],
     };
     setMeals(updatedMeals);
     saveDiary(updatedMeals, goals);

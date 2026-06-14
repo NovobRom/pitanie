@@ -139,6 +139,23 @@ const ru: Dict = {
   'build.per100': 'на 100г',
   'lang.label': 'Язык',
 
+  // micronutrients
+  'micro.fiber': 'Клетчатка',
+  'micro.fiber.short': 'Кл',
+
+  // recipes
+  'recipe.title': 'Мои рецепты',
+  'recipe.new': 'Новый рецепт',
+  'recipe.name': 'Название рецепта',
+  'recipe.serving': 'Размер порции (г)',
+  'recipe.addIngredient': 'Добавить ингредиент',
+  'recipe.ingredient': 'Ингредиент',
+  'recipe.save': 'Сохранить рецепт',
+  'recipe.empty': 'Рецептов пока нет',
+  'recipe.delete': 'Удалить',
+  'recipe.per100': 'на 100г',
+  'recipe.noIngredients': 'Добавьте ингредиенты',
+
   // recent foods
   'recent.title': 'Недавние',
   'recent.empty': 'Начните добавлять продукты',
@@ -283,6 +300,23 @@ const en: Dict = {
   'build.per100': 'per 100g',
   'lang.label': 'Language',
 
+  // micronutrients
+  'micro.fiber': 'Fiber',
+  'micro.fiber.short': 'Fi',
+
+  // recipes
+  'recipe.title': 'My Recipes',
+  'recipe.new': 'New Recipe',
+  'recipe.name': 'Recipe name',
+  'recipe.serving': 'Serving size (g)',
+  'recipe.addIngredient': 'Add ingredient',
+  'recipe.ingredient': 'Ingredient',
+  'recipe.save': 'Save recipe',
+  'recipe.empty': 'No recipes yet',
+  'recipe.delete': 'Delete',
+  'recipe.per100': 'per 100g',
+  'recipe.noIngredients': 'Add ingredients first',
+
   // recent foods
   'recent.title': 'Recent',
   'recent.empty': 'Start adding foods to see recent',
@@ -426,6 +460,23 @@ const uk: Dict = {
   'build.find': 'Знайти',
   'build.per100': 'на 100г',
   'lang.label': 'Мова',
+
+  // micronutrients
+  'micro.fiber': 'Клітковина',
+  'micro.fiber.short': 'Кл',
+
+  // recipes
+  'recipe.title': 'Мої рецепти',
+  'recipe.new': 'Новий рецепт',
+  'recipe.name': 'Назва рецепту',
+  'recipe.serving': 'Розмір порції (г)',
+  'recipe.addIngredient': 'Додати інгредієнт',
+  'recipe.ingredient': 'Інгредієнт',
+  'recipe.save': 'Зберегти рецепт',
+  'recipe.empty': 'Рецептів поки немає',
+  'recipe.delete': 'Вилучити',
+  'recipe.per100': 'на 100г',
+  'recipe.noIngredients': 'Спочатку додайте інгредієнти',
 
   // recent foods
   'recent.title': 'Нещодавні',

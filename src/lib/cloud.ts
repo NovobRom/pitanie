@@ -42,6 +42,55 @@ export async function listMyPlans(): Promise<SavedPlan[]> {
   return (data ?? []) as SavedPlan[];
 }
 
+// ── Recipes ────────────────────────────────────────────────────────────────────
+
+export interface RecipeItem {
+  name: string;
+  grams: number;
+  kcal: number;
+  protein: number;
+  fat: number;
+  carbs: number;
+  fiber?: number;
+}
+
+export interface Recipe {
+  id: string;
+  name: string;
+  serving_g: number;
+  items: RecipeItem[];
+  kcal: number;    // per 100g
+  protein: number;
+  fat: number;
+  carbs: number;
+  fiber: number;
+}
+
+export async function getRecipes(): Promise<Recipe[]> {
+  const { data } = await supabase
+    .from('recipes')
+    .select('id, name, serving_g, items, kcal, protein, fat, carbs, fiber')
+    .order('created_at', { ascending: false });
+  return (data ?? []) as Recipe[];
+}
+
+export async function saveRecipe(recipe: Omit<Recipe, 'id'>): Promise<Recipe | null> {
+  const userId = (await supabase.auth.getUser()).data.user?.id;
+  if (!userId) return null;
+  const { data, error } = await supabase
+    .from('recipes')
+    .insert({ user_id: userId, ...recipe })
+    .select()
+    .single();
+  if (error) return null;
+  return data as Recipe;
+}
+
+export async function deleteRecipe(id: string): Promise<boolean> {
+  const { error } = await supabase.from('recipes').delete().eq('id', id);
+  return !error;
+}
+
 // ── Recent Foods ───────────────────────────────────────────────────────────────
 
 export interface RecentFood {
