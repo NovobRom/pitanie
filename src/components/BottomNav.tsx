@@ -31,7 +31,7 @@ export function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
             <button
               key={id}
               onClick={() => onTabChange(id)}
-              className="flex flex-col items-center gap-0.5 px-8 py-2.5 cursor-pointer transition-all"
+              className="flex flex-col items-center gap-0.5 px-5 py-2.5 flex-1 cursor-pointer transition-all"
               aria-current={isActive ? 'page' : undefined}
             >
               <Icon
