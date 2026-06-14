@@ -1,94 +1,108 @@
 'use client';
 
-import React from 'react';
-import { Printer } from 'lucide-react';
-import Link from 'next/link';
-import { goals } from '@/data/goals';
+import React, { useState, useRef, useEffect } from 'react';
+import { Printer, LogOut, Settings, User as UserIcon, ChevronDown, Flame } from 'lucide-react';
+import { useI18n } from '@/lib/i18n';
+import { LanguageToggle } from '@/components/LanguageToggle';
+import { supabase } from '@/lib/supabaseClient';
 
-export const Header = () => {
+interface HeaderProps {
+  user: any;
+  onOpenProfile: () => void;
+}
+
+export function Header({ user, onOpenProfile }: HeaderProps) {
+  const { t } = useI18n();
+  const [open, setOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  const handleSignOut = () => {
+    supabase.auth.signOut();
+  };
+
+  const username = user?.email?.split('@')[0] ?? 'User';
+
   return (
-    <header className="text-center mb-10">
-      <h1 className="text-4xl md:text-5xl font-bold text-[var(--color-text)] mb-6 tracking-tight">
-        🍎 План Питания v4
-      </h1>
-
-      <div className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto mb-8">
-        <div className="group relative bg-gradient-to-br from-[var(--color-roman-bg)] to-white border-2 border-[var(--color-roman)] border-opacity-30 rounded-2xl p-6 shadow-md hover:shadow-lg transition-all duration-300">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-14 h-14 rounded-full bg-[var(--color-roman)] text-white flex items-center justify-center text-2xl font-bold shadow-md">
-              Р
-            </div>
-            <div className="text-left">
-              <h2 className="font-bold text-[var(--color-roman)] text-xl">Роман</h2>
-              <p className="text-xs text-[var(--color-text-muted)]">Твоя норма</p>
-            </div>
-          </div>
-          <div className="text-4xl font-extrabold text-[var(--color-roman)] mb-2">
-            {goals.roman.calories}
-            <span className="text-lg font-normal ml-1 text-[var(--color-text-light)]">ккал</span>
-          </div>
-          <div className="flex justify-around text-xs font-mono bg-white bg-opacity-60 rounded-lg p-2 mt-3">
-            <div className="text-center">
-              <div className="font-bold text-[var(--color-roman)]">{goals.roman.protein}г</div>
-              <div className="text-[var(--color-text-muted)]">Белки</div>
-            </div>
-            <div className="text-center">
-              <div className="font-bold text-[var(--color-roman)]">{goals.roman.fat}г</div>
-              <div className="text-[var(--color-text-muted)]">Жиры</div>
-            </div>
-            <div className="text-center">
-              <div className="font-bold text-[var(--color-roman)]">{goals.roman.carbs}г</div>
-              <div className="text-[var(--color-text-muted)]">Углеводы</div>
-            </div>
-          </div>
+    <header className="flex items-center justify-between pb-6 mb-6 border-b border-gray-100/80 no-print">
+      {/* Logo */}
+      <div className="flex items-center gap-2">
+        <div className="w-9 h-9 rounded-xl bg-[var(--color-primary)] text-white flex items-center justify-center shadow-md">
+          <Flame size={20} />
         </div>
-
-        <div className="group relative bg-gradient-to-br from-[var(--color-liza-bg)] to-white border-2 border-[var(--color-liza)] border-opacity-30 rounded-2xl p-6 shadow-md hover:shadow-lg transition-all duration-300">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-14 h-14 rounded-full bg-[var(--color-liza)] text-white flex items-center justify-center text-2xl font-bold shadow-md">
-              Л
-            </div>
-            <div className="text-left">
-              <h2 className="font-bold text-[var(--color-liza)] text-xl">Лиза</h2>
-              <p className="text-xs text-[var(--color-text-muted)]">Твоя норма</p>
-            </div>
-          </div>
-          <div className="text-4xl font-extrabold text-[var(--color-liza)] mb-2">
-            {goals.liza.calories}
-            <span className="text-lg font-normal ml-1 text-[var(--color-text-light)]">ккал</span>
-          </div>
-          <div className="flex justify-around text-xs font-mono bg-white bg-opacity-60 rounded-lg p-2 mt-3">
-            <div className="text-center">
-              <div className="font-bold text-[var(--color-liza)]">{goals.liza.protein}г</div>
-              <div className="text-[var(--color-text-muted)]">Белки</div>
-            </div>
-            <div className="text-center">
-              <div className="font-bold text-[var(--color-liza)]">{goals.liza.fat}г</div>
-              <div className="text-[var(--color-text-muted)]">Жиры</div>
-            </div>
-            <div className="text-center">
-              <div className="font-bold text-[var(--color-liza)]">{goals.liza.carbs}г</div>
-              <div className="text-[var(--color-text-muted)]">Углеводы</div>
-            </div>
-          </div>
-        </div>
+        <h1 className="text-xl font-bold tracking-tight text-[var(--color-text)]">
+          {t('auth.welcome').replace('v4', '')}
+        </h1>
       </div>
 
-      <div className="no-print flex items-center gap-3 justify-center flex-wrap">
+      {/* Right Controls */}
+      <div className="flex items-center gap-3">
+        {/* Language selector */}
+        <LanguageToggle />
+
+        {/* Print button */}
         <button
           onClick={() => window.print()}
-          className="bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white px-6 py-3 rounded-xl transition-all flex items-center gap-2 font-semibold"
+          className="p-2.5 rounded-xl border border-gray-200 hover:bg-gray-50 text-[var(--color-text-light)] transition-all flex items-center justify-center"
+          title="Print"
         >
-          <Printer size={18} />
-          Распечатать план
+          <Printer size={15} />
         </button>
-        <Link
-          href="/builder"
-          className="bg-[var(--color-roman)] hover:opacity-90 text-white px-6 py-3 rounded-xl transition-all flex items-center gap-2 font-semibold"
-        >
-          🍽️ Конструктор питания
-        </Link>
+
+        {/* User profile dropdown */}
+        {user && (
+          <div ref={dropdownRef} className="relative">
+            <button
+              onClick={() => setOpen((prev) => !prev)}
+              className="flex items-center gap-1.5 px-3 py-2 border border-gray-200 rounded-xl bg-white hover:bg-gray-50 text-xs font-semibold text-[var(--color-text-light)] transition-all shadow-sm"
+            >
+              <UserIcon size={14} className="text-[var(--color-primary)]" />
+              <span className="max-w-[100px] truncate">{username}</span>
+              <ChevronDown size={12} className={`transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
+            </button>
+
+            {open && (
+              <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-2xl shadow-[var(--shadow-lg)] border border-gray-100/80 z-40 overflow-hidden py-1">
+                {/* User email display */}
+                <div className="px-4 py-3 border-b border-gray-50">
+                  <p className="text-[10px] text-[var(--color-text-muted)] uppercase tracking-wider">{t('auth.signedAs')}</p>
+                  <p className="text-xs font-bold text-[var(--color-text)] truncate">{user.email}</p>
+                </div>
+
+                {/* Edit profile settings */}
+                <button
+                  onClick={() => {
+                    onOpenProfile();
+                    setOpen(false);
+                  }}
+                  className="w-full flex items-center gap-2 px-4 py-2.5 text-xs text-[var(--color-text-light)] hover:bg-gray-50 transition-colors"
+                >
+                  <Settings size={14} className="text-[var(--color-text-muted)]" />
+                  {t('diary.editProfile')}
+                </button>
+
+                {/* Logout */}
+                <button
+                  onClick={handleSignOut}
+                  className="w-full flex items-center gap-2 px-4 py-2.5 text-xs text-red-500 hover:bg-red-50/50 border-t border-gray-50 transition-colors"
+                >
+                  <LogOut size={14} />
+                  {t('auth.signOut')}
+                </button>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </header>
   );
-};
+}

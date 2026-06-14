@@ -7,7 +7,7 @@ import { useI18n, Lang } from '@/lib/i18n';
 export const LanguageToggle = () => {
   const { lang, setLang, t } = useI18n();
 
-  const langs: Lang[] = ['ru', 'en'];
+  const langs: Lang[] = ['ru', 'en', 'uk'];
 
   return (
     <div

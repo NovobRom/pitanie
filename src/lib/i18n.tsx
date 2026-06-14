@@ -2,11 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
-export type Lang = 'ru' | 'en';
-
-// ─── Dictionaries ─────────────────────────────────────────────────────────────
-// Only the "product" features (calculator + menu builder) are translated.
-// The personal weekly-plan demo content stays in Russian for now.
+export type Lang = 'ru' | 'en' | 'uk';
 
 type Dict = Record<string, string>;
 
@@ -49,39 +45,6 @@ const ru: Dict = {
   'calc.kcal': 'ккал',
   'calc.g': 'г',
 
-  // builder
-  'build.title': 'Конструктор меню',
-  'build.add': 'Добавить продукт в рацион',
-  'build.search.placeholder': 'Поиск: гречка, курица, творог, buckwheat...',
-  'build.find': 'Найти',
-  'build.searching': 'Ищем в базе Open Food Facts...',
-  'build.notFound': 'Ничего не найдено. Попробуйте запрос на английском.',
-  'build.ration': 'Мой рацион',
-  'build.totals': 'Итого за день',
-  'build.fillForCompare': 'Рассчитайте норму выше для сравнения с целью',
-  'build.remaining': 'Осталось добрать: {n} ккал',
-  'build.done': 'Норма выполнена!',
-  'build.over': 'Превышение на: {n} ккал',
-  'build.empty': 'Найдите продукты и добавьте их — калории посчитаются автоматически',
-  'build.per100': 'на 100 г',
-  'build.protShort': 'Б',
-  'build.fatShort': 'Ж',
-  'build.carbShort': 'У',
-
-  // generator
-  'gen.title': 'Авто-подбор меню',
-  'gen.subtitle': 'Подберём продукты под вашу цель по КБЖУ',
-  'gen.needGoal': 'Сначала рассчитайте норму в калькуляторе выше',
-  'gen.generate': 'Подобрать меню',
-  'gen.regenerate': 'Другой вариант',
-  'gen.vegetarian': 'Вегетарианское',
-  'gen.toBuilder': 'Перенести в конструктор',
-  'gen.meal.breakfast': 'Завтрак',
-  'gen.meal.lunch': 'Обед',
-  'gen.meal.dinner': 'Ужин',
-  'gen.match': 'Совпадение с целью',
-  'gen.hint': 'Можно перенести в конструктор и отредактировать граммы вручную',
-
   // share / persistence
   'share.copy': 'Поделиться планом',
   'share.copied': 'Ссылка скопирована!',
@@ -99,15 +62,42 @@ const ru: Dict = {
   'auth.noPlans': 'Сохранённых планов пока нет',
   'auth.open': 'Открыть',
   'auth.delete': 'Удалить',
-  'auth.planTitle': 'Plan {date}',
+  'auth.planTitle': 'План {date}',
   'auth.signedAs': 'Вы вошли как',
   'auth.loginPrompt': 'Войдите, чтобы сохранять планы и синхронизировать между устройствами',
+  'auth.welcome': 'Добро пожаловать в Питание v4',
+  'auth.marketing1': '📊 Интерактивный дашборд калорий и БЖУ в стиле Apple Health',
+  'auth.marketing2': '🍎 Дневник питания с поиском по базе Open Food Facts',
+  'auth.marketing3': '☁️ Синхронизация данных в реальном времени и возможность делиться ссылкой',
+
+  // diary
+  'diary.remaining': 'Осталось',
+  'diary.over': 'Перебор',
+  'diary.add': 'Добавить',
+  'diary.breakfast': 'Завтрак',
+  'diary.lunch': 'Обед',
+  'diary.dinner': 'Ужин',
+  'diary.snacks': 'Перекусы',
+  'diary.title': 'Дневник питания',
+  'diary.editProfile': 'Настройки профиля',
+  'diary.empty': 'Нет добавленных продуктов',
+  'diary.searchTitle': 'Добавление продукта',
+  'diary.searchPlaceholder': 'Название: курица, творог, гречка...',
+  'diary.searchState': 'Ищем в базе Open Food Facts...',
+  'diary.searchNoResults': 'Ничего не найдено. Попробуйте на английском.',
+  'diary.portion': 'Порция',
+  'diary.priorityHigh': 'Высокий',
+  'diary.priorityMedium': 'Средний',
+  'diary.priorityLow': 'Низкий',
+  'diary.foodCatalog': 'База продуктов',
+  'diary.addFoodAction': '+ В день',
 
   // common
   'lang.label': 'Язык',
 };
 
 const en: Dict = {
+  // calculator
   'calc.title': 'Calorie Calculator',
   'calc.subtitle': 'Calculate your daily macro targets',
   'calc.weight': 'Weight (kg)',
@@ -145,37 +135,7 @@ const en: Dict = {
   'calc.kcal': 'kcal',
   'calc.g': 'g',
 
-  'build.title': 'Menu Builder',
-  'build.add': 'Add a product to your ration',
-  'build.search.placeholder': 'Search: rice, chicken, oats, banana...',
-  'build.find': 'Search',
-  'build.searching': 'Searching Open Food Facts...',
-  'build.notFound': 'Nothing found. Try a different spelling.',
-  'build.ration': 'My ration',
-  'build.totals': 'Daily total',
-  'build.fillForCompare': 'Calculate your target above to compare',
-  'build.remaining': 'Remaining: {n} kcal',
-  'build.done': 'Target reached!',
-  'build.over': 'Over by: {n} kcal',
-  'build.empty': 'Find products and add them — calories are counted automatically',
-  'build.per100': 'per 100 g',
-  'build.protShort': 'P',
-  'build.fatShort': 'F',
-  'build.carbShort': 'C',
-
-  'gen.title': 'Auto Meal Plan',
-  'gen.subtitle': "We'll pick foods to match your macro target",
-  'gen.needGoal': 'First calculate your target in the calculator above',
-  'gen.generate': 'Generate plan',
-  'gen.regenerate': 'Another option',
-  'gen.vegetarian': 'Vegetarian',
-  'gen.toBuilder': 'Send to builder',
-  'gen.meal.breakfast': 'Breakfast',
-  'gen.meal.lunch': 'Lunch',
-  'gen.meal.dinner': 'Dinner',
-  'gen.match': 'Match to target',
-  'gen.hint': 'Send it to the builder to fine-tune grams by hand',
-
+  // share / persistence
   'share.copy': 'Share plan',
   'share.copied': 'Link copied!',
   'share.reset': 'Reset',
@@ -195,13 +155,128 @@ const en: Dict = {
   'auth.planTitle': 'Plan {date}',
   'auth.signedAs': 'Signed in as',
   'auth.loginPrompt': 'Sign in to save plans and sync across devices',
+  'auth.welcome': 'Welcome to Pitanie v4',
+  'auth.marketing1': '📊 Interactive calorie & macro dashboard in Apple Health style',
+  'auth.marketing2': '🍎 Food diary with search powered by Open Food Facts',
+  'auth.marketing3': '☁️ Real-time cloud sync and one-click link sharing',
 
+  // diary
+  'diary.remaining': 'Remaining',
+  'diary.over': 'Over',
+  'diary.add': 'Add',
+  'diary.breakfast': 'Breakfast',
+  'diary.lunch': 'Lunch',
+  'diary.dinner': 'Dinner',
+  'diary.snacks': 'Snacks',
+  'diary.title': 'Food Diary',
+  'diary.editProfile': 'Profile Settings',
+  'diary.empty': 'No added foods',
+  'diary.searchTitle': 'Add Food Product',
+  'diary.searchPlaceholder': 'Name: chicken, cheese, buckwheat...',
+  'diary.searchState': 'Searching Open Food Facts...',
+  'diary.searchNoResults': 'Nothing found. Try a different spelling.',
+  'diary.portion': 'Portion',
+  'diary.priorityHigh': 'High',
+  'diary.priorityMedium': 'Medium',
+  'diary.priorityLow': 'Low',
+  'diary.foodCatalog': 'Food Catalog',
+  'diary.addFoodAction': '+ To Day',
+
+  // common
   'lang.label': 'Language',
 };
 
-const dictionaries: Record<Lang, Dict> = { ru, en };
+const uk: Dict = {
+  // calculator
+  'calc.title': 'Калькулятор калорій',
+  'calc.subtitle': 'Розрахуйте свою норму КБЖВ',
+  'calc.weight': 'Вага (кг)',
+  'calc.height': 'Зріст (см)',
+  'calc.age': 'Вік',
+  'calc.sex': 'Стать',
+  'calc.sex.male': 'Чоловіча',
+  'calc.sex.female': 'Жіноча',
+  'calc.bodyfat': '% жиру (необов\'язково)',
+  'calc.bodyfat.hint': 'Вказали — використовуємо точну формулу Katch-McArdle',
+  'calc.activity': 'Активність',
+  'calc.activity.sedentary': 'Сидяча (офіс, без спорту)',
+  'calc.activity.light': 'Легка (тренування 1–3 р/тижд)',
+  'calc.activity.moderate': 'Помірна (3–5 р/тижд)',
+  'calc.activity.active': 'Висока (6–7 р/тижд)',
+  'calc.activity.very_active': 'Дуже висока (фіз. праця + спорт)',
+  'calc.goal': 'Ціль',
+  'calc.goal.lose': 'Схуднення (−20%)',
+  'calc.goal.maintain': 'Підтримання',
+  'calc.goal.gain': 'Набір маси (+15%)',
+  'calc.protein.label': 'Білок',
+  'calc.protein.hint': 'Рекомендується 1.6–2.2 г/кг',
+  'calc.fat.label': 'Жири',
+  'calc.fat.hint': 'від калорійності',
+  'calc.calc': 'Розрахувати норму',
+  'calc.fillData': 'Заповніть вагу, зріст та вік',
+  'calc.bmr': 'BMR (обмін у спокої)',
+  'calc.tdee': 'TDEE (з активністю)',
+  'calc.formula': 'Формула',
+  'calc.target': 'Ваша ціль на день',
+  'calc.calories': 'Калорії',
+  'calc.protein': 'Білки',
+  'calc.fat': 'Жири',
+  'calc.carbs': 'Вуглеводи',
+  'calc.kcal': 'ккал',
+  'calc.g': 'г',
 
-// ─── Context ──────────────────────────────────────────────────────────────────
+  // share / persistence
+  'share.copy': 'Поділитися планом',
+  'share.copied': 'Посилання скопійовано!',
+  'share.reset': 'Скинути',
+  'share.saved': 'План зберігається в цьому браузері',
+
+  // auth
+  'auth.signIn': 'Увійти',
+  'auth.signOut': 'Вийти',
+  'auth.email': 'Email',
+  'auth.send': 'Надіслати посилання',
+  'auth.sending': 'Надсилання…',
+  'auth.sent': 'Перевірте пошту — посилання для входу надіслано!',
+  'auth.myPlans': 'Мої плани',
+  'auth.noPlans': 'Збережених планів поки немає',
+  'auth.open': 'Відкрити',
+  'auth.delete': 'Вилучити',
+  'auth.planTitle': 'План {date}',
+  'auth.signedAs': 'Ви увійшли як',
+  'auth.loginPrompt': 'Увійдіть, щоб зберігати плани та синхронізувати між пристроями',
+  'auth.welcome': 'Ласкаво просимо в Харчування v4',
+  'auth.marketing1': '📊 Інтерактивний дашборд калорій та БЖВ у стилі Apple Health',
+  'auth.marketing2': '🍎 Щоденник харчування з пошуком по базі Open Food Facts',
+  'auth.marketing3': '☁️ Синхронізація даних у реальному часі та можливість поділитися посиланням',
+
+  // diary
+  'diary.remaining': 'Залишилося',
+  'diary.over': 'Перебір',
+  'diary.add': 'Додати',
+  'diary.breakfast': 'Сніданок',
+  'diary.lunch': 'Обід',
+  'diary.dinner': 'Вечеря',
+  'diary.snacks': 'Перекуси',
+  'diary.title': 'Щоденник харчування',
+  'diary.editProfile': 'Налаштування профілю',
+  'diary.empty': 'Немає доданих продуктів',
+  'diary.searchTitle': 'Додавання продукту',
+  'diary.searchPlaceholder': 'Назва: курка, сир, гречка...',
+  'diary.searchState': 'Шукаємо в базі Open Food Facts...',
+  'diary.searchNoResults': 'Нічого не знайдено. Спробуйте англійською.',
+  'diary.portion': 'Порція',
+  'diary.priorityHigh': 'Високий',
+  'diary.priorityMedium': 'Середній',
+  'diary.priorityLow': 'Низький',
+  'diary.foodCatalog': 'База продуктів',
+  'diary.addFoodAction': '+ У день',
+
+  // common
+  'lang.label': 'Мова',
+};
+
+const dictionaries: Record<Lang, Dict> = { ru, en, uk };
 
 interface I18nValue {
   lang: Lang;
@@ -218,9 +293,7 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const saved = localStorage.getItem(STORAGE_KEY) as Lang | null;
-    if (saved === 'ru' || saved === 'en') {
-      // Sync persisted choice after mount; effect avoids SSR hydration mismatch.
-      // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (saved === 'ru' || saved === 'en' || saved === 'uk') {
       setLangState(saved);
     }
   }, []);
@@ -232,7 +305,7 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
   };
 
   const t = (key: string, vars?: Record<string, string | number>) => {
-    let str = dictionaries[lang][key] ?? dictionaries.ru[key] ?? key;
+    let str = dictionaries[lang]?.[key] ?? dictionaries.ru[key] ?? key;
     if (vars) {
       for (const [k, v] of Object.entries(vars)) {
         str = str.replace(`{${k}}`, String(v));
