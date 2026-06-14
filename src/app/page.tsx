@@ -3,7 +3,7 @@ import { Header } from '@/components/Header';
 import { CheatSheet } from '@/components/CheatSheet';
 import { DailyMenu } from '@/components/DailyMenu';
 import { ShoppingList } from '@/components/ShoppingList';
-import { ProductSearch } from '@/components/ProductSearch';
+import { MenuBuilder } from '@/components/MenuBuilder';
 
 export default function Home() {
   return (
@@ -11,7 +11,7 @@ export default function Home() {
       <div className="max-w-6xl mx-auto">
         <Header />
         <CheatSheet />
-        <ProductSearch />
+        <MenuBuilder />
         <DailyMenu />
         <ShoppingList />
         <footer className="text-center mt-16 text-[var(--color-text-muted)] text-xs mb-10">
