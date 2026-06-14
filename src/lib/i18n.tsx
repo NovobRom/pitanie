@@ -88,6 +88,21 @@ const ru: Dict = {
   'share.reset': 'Сбросить',
   'share.saved': 'План сохраняется в этом браузере',
 
+  // auth
+  'auth.signIn': 'Войти',
+  'auth.signOut': 'Выйти',
+  'auth.email': 'Email',
+  'auth.send': 'Отправить ссылку',
+  'auth.sending': 'Отправка…',
+  'auth.sent': 'Проверьте почту — ссылка для входа отправлена!',
+  'auth.myPlans': 'Мои планы',
+  'auth.noPlans': 'Сохранённых планов пока нет',
+  'auth.open': 'Открыть',
+  'auth.delete': 'Удалить',
+  'auth.planTitle': 'Plan {date}',
+  'auth.signedAs': 'Вы вошли как',
+  'auth.loginPrompt': 'Войдите, чтобы сохранять планы и синхронизировать между устройствами',
+
   // common
   'lang.label': 'Язык',
 };
@@ -165,6 +180,21 @@ const en: Dict = {
   'share.copied': 'Link copied!',
   'share.reset': 'Reset',
   'share.saved': 'Your plan is saved in this browser',
+
+  // auth
+  'auth.signIn': 'Sign in',
+  'auth.signOut': 'Sign out',
+  'auth.email': 'Email',
+  'auth.send': 'Send magic link',
+  'auth.sending': 'Sending…',
+  'auth.sent': 'Check your inbox — a sign-in link is on its way!',
+  'auth.myPlans': 'My plans',
+  'auth.noPlans': 'No saved plans yet',
+  'auth.open': 'Open',
+  'auth.delete': 'Delete',
+  'auth.planTitle': 'Plan {date}',
+  'auth.signedAs': 'Signed in as',
+  'auth.loginPrompt': 'Sign in to save plans and sync across devices',
 
   'lang.label': 'Language',
 };
