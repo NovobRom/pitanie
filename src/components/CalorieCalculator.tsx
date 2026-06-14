@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Calculator, Activity as ActivityIcon, Info } from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
 import {
@@ -13,41 +13,52 @@ import {
 } from '@/lib/nutrition';
 
 interface Props {
-  onResult: (result: CalcResult | null) => void;
+  initialParams?: Partial<CalcParams>;
+  onChange: (params: CalcParams, result: CalcResult | null) => void;
 }
+
+const DEFAULT_PARAMS: CalcParams = {
+  weight: '',
+  height: '',
+  age: '',
+  sex: 'male',
+  bodyFat: '',
+  activity: 'light',
+  goal: 'maintain',
+  proteinPerKg: 2.0,
+  fatPct: 25,
+};
 
 const ACTIVITIES: Activity[] = ['sedentary', 'light', 'moderate', 'active', 'very_active'];
 const GOALS: Goal[] = ['lose', 'maintain', 'gain'];
 
-export const CalorieCalculator = ({ onResult }: Props) => {
+export const CalorieCalculator = ({ initialParams, onChange }: Props) => {
   const { t } = useI18n();
 
-  const [params, setParams] = useState<CalcParams>({
-    weight: '',
-    height: '',
-    age: '',
-    sex: 'male',
-    bodyFat: '',
-    activity: 'light',
-    goal: 'maintain',
-    proteinPerKg: 2.0,
-    fatPct: 25,
-  });
+  const [params, setParams] = useState<CalcParams>({ ...DEFAULT_PARAMS, ...initialParams });
+  const [result, setResult] = useState<CalcResult | null>(() =>
+    initialParams?.weight ? calcGoals({ ...DEFAULT_PARAMS, ...initialParams }) : null,
+  );
 
-  const [result, setResult] = useState<CalcResult | null>(null);
+  // Sync hydrated initial state to the parent once on mount.
+  useEffect(() => {
+    onChange(params, result);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Recompute and bubble up. Used both by the button and live slider/select changes.
   const recompute = (next: CalcParams) => {
     const r = calcGoals(next);
     setResult(r);
-    onResult(r);
+    onChange(next, r);
   };
 
   const update = (patch: Partial<CalcParams>) => {
     const next = { ...params, ...patch };
     setParams(next);
-    // Live-update only once an initial result exists (avoids premature errors).
+    // Live-update once a result exists; otherwise still report params upward.
     if (result) recompute(next);
+    else onChange(next, null);
   };
 
   return (

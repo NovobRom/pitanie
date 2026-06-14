@@ -82,6 +82,12 @@ const ru: Dict = {
   'gen.match': 'Совпадение с целью',
   'gen.hint': 'Можно перенести в конструктор и отредактировать граммы вручную',
 
+  // share / persistence
+  'share.copy': 'Поделиться планом',
+  'share.copied': 'Ссылка скопирована!',
+  'share.reset': 'Сбросить',
+  'share.saved': 'План сохраняется в этом браузере',
+
   // common
   'lang.label': 'Язык',
 };
@@ -154,6 +160,11 @@ const en: Dict = {
   'gen.meal.dinner': 'Dinner',
   'gen.match': 'Match to target',
   'gen.hint': 'Send it to the builder to fine-tune grams by hand',
+
+  'share.copy': 'Share plan',
+  'share.copied': 'Link copied!',
+  'share.reset': 'Reset',
+  'share.saved': 'Your plan is saved in this browser',
 
   'lang.label': 'Language',
 };
