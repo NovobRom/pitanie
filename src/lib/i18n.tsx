@@ -71,10 +71,13 @@ const ru: Dict = {
   'auth.planTitle': 'План {date}',
   'auth.signedAs': 'Вы вошли как',
   'auth.loginPrompt': 'Войдите, чтобы сохранять планы и синхронизировать между устройствами',
-  'auth.welcome': 'Добро пожаловать в Питание v4',
-  'auth.marketing1': '📊 Интерактивный дашборд калорий и БЖУ в стиле Apple Health',
-  'auth.marketing2': '🍎 Дневник питания с поиском по базе Open Food Facts',
-  'auth.marketing3': '☁️ Синхронизация данных в реальном времени и возможность делиться ссылкой',
+  'auth.welcome': 'Добро пожаловать',
+  'auth.feature1Title': 'Интерактивный дашборд',
+  'auth.feature1Desc': 'Калории и БЖУ с кольцами прогресса и остатком на день',
+  'auth.feature2Title': 'Дневник питания',
+  'auth.feature2Desc': 'Поиск по базе Open Food Facts и быстрое добавление продуктов',
+  'auth.feature3Title': 'Синхронизация и доступ',
+  'auth.feature3Desc': 'Данные в реальном времени между устройствами и ссылка для доступа',
 
   // diary
   'diary.remaining': 'Осталось',
@@ -99,6 +102,7 @@ const ru: Dict = {
   'diary.addFoodAction': '+ В день',
 
   // common
+  'app.name': 'Питание',
   'lang.label': 'Язык',
 };
 
@@ -167,10 +171,13 @@ const en: Dict = {
   'auth.planTitle': 'Plan {date}',
   'auth.signedAs': 'Signed in as',
   'auth.loginPrompt': 'Sign in to save plans and sync across devices',
-  'auth.welcome': 'Welcome to Pitanie v4',
-  'auth.marketing1': '📊 Interactive calorie & macro dashboard in Apple Health style',
-  'auth.marketing2': '🍎 Food diary with search powered by Open Food Facts',
-  'auth.marketing3': '☁️ Real-time cloud sync and one-click link sharing',
+  'auth.welcome': 'Welcome',
+  'auth.feature1Title': 'Interactive dashboard',
+  'auth.feature1Desc': 'Calories & macros with progress rings and remaining for the day',
+  'auth.feature2Title': 'Food diary',
+  'auth.feature2Desc': 'Search the Open Food Facts database and log foods in seconds',
+  'auth.feature3Title': 'Sync & access',
+  'auth.feature3Desc': 'Real-time data across devices and a shareable link',
 
   // diary
   'diary.remaining': 'Remaining',
@@ -195,6 +202,7 @@ const en: Dict = {
   'diary.addFoodAction': '+ To Day',
 
   // common
+  'app.name': 'Pitanie',
   'lang.label': 'Language',
 };
 
@@ -263,10 +271,13 @@ const uk: Dict = {
   'auth.planTitle': 'План {date}',
   'auth.signedAs': 'Ви увійшли як',
   'auth.loginPrompt': 'Увійдіть, щоб зберігати плани та синхронізувати між пристроями',
-  'auth.welcome': 'Ласкаво просимо в Харчування v4',
-  'auth.marketing1': '📊 Інтерактивний дашборд калорій та БЖВ у стилі Apple Health',
-  'auth.marketing2': '🍎 Щоденник харчування з пошуком по базі Open Food Facts',
-  'auth.marketing3': '☁️ Синхронізація даних у реальному часі та можливість поділитися посиланням',
+  'auth.welcome': 'Ласкаво просимо',
+  'auth.feature1Title': 'Інтерактивний дашборд',
+  'auth.feature1Desc': 'Калорії та БЖВ з кільцями прогресу та залишком на день',
+  'auth.feature2Title': 'Щоденник харчування',
+  'auth.feature2Desc': 'Пошук по базі Open Food Facts та швидке додавання продуктів',
+  'auth.feature3Title': 'Синхронізація та доступ',
+  'auth.feature3Desc': 'Дані в реальному часі між пристроями та посилання для доступу',
 
   // diary
   'diary.remaining': 'Залишилося',
@@ -291,6 +302,7 @@ const uk: Dict = {
   'diary.addFoodAction': '+ У день',
 
   // common
+  'app.name': 'Харчування',
   'lang.label': 'Мова',
 };
 

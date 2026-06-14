@@ -40,7 +40,7 @@ export function Header({ user, onOpenProfile }: HeaderProps) {
           <Flame size={20} />
         </div>
         <h1 className="text-xl font-bold tracking-tight text-[var(--color-text)]">
-          {t('auth.welcome').replace('v4', '')}
+          {t('app.name')}
         </h1>
       </div>
 

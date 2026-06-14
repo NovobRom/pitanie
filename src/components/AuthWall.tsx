@@ -74,11 +74,10 @@ export function AuthWall() {
           <div className="w-11 h-11 rounded-2xl bg-[var(--color-primary)] text-white flex items-center justify-center shadow-lg shadow-[var(--color-primary)]/20">
             <Flame className="w-5 h-5 animate-pulse" />
           </div>
-          <div>
+          <div className="min-w-0">
             <h1 className="text-xl font-extrabold text-[var(--color-primary-dark)] tracking-tight">
-              {t('auth.welcome').replace('v4', '')}
+              {t('app.name')}
             </h1>
-            <p className="text-[10px] font-bold text-[var(--color-text-muted)] uppercase tracking-wider">v4.0 Apple Health Edition</p>
           </div>
         </div>
 
@@ -90,12 +89,12 @@ export function AuthWall() {
             <div className="w-10 h-10 rounded-2xl bg-orange-50 text-[var(--color-accent)] flex items-center justify-center shrink-0">
               <Sparkles size={18} />
             </div>
-            <div className="space-y-1">
+            <div className="space-y-1 min-w-0">
               <h3 className="font-bold text-sm text-[var(--color-text)]">
-                {t('auth.marketing1').split(':')[0]}
+                {t('auth.feature1Title')}
               </h3>
               <p className="text-xs text-[var(--color-text-light)] leading-relaxed">
-                {t('auth.marketing1').split(':')[1] || t('auth.marketing1')}
+                {t('auth.feature1Desc')}
               </p>
             </div>
           </div>
@@ -105,12 +104,12 @@ export function AuthWall() {
             <div className="w-10 h-10 rounded-2xl bg-[#fff0f7] text-[var(--color-liza)] flex items-center justify-center shrink-0">
               <Flame size={18} />
             </div>
-            <div className="space-y-1">
+            <div className="space-y-1 min-w-0">
               <h3 className="font-bold text-sm text-[var(--color-text)]">
-                {t('auth.marketing2').split(' с ')[0] || t('auth.marketing2')}
+                {t('auth.feature2Title')}
               </h3>
               <p className="text-xs text-[var(--color-text-light)] leading-relaxed">
-                {t('auth.marketing2').split(' с ')[1] ? 'С ' + t('auth.marketing2').split(' с ')[1] : t('auth.marketing2')}
+                {t('auth.feature2Desc')}
               </p>
             </div>
           </div>
@@ -120,12 +119,12 @@ export function AuthWall() {
             <div className="w-10 h-10 rounded-2xl bg-blue-50 text-[var(--color-roman)] flex items-center justify-center shrink-0">
               <ShieldCheck size={18} />
             </div>
-            <div className="space-y-1">
+            <div className="space-y-1 min-w-0">
               <h3 className="font-bold text-sm text-[var(--color-text)]">
-                {t('auth.marketing3').split(' и ')[0] || t('auth.marketing3')}
+                {t('auth.feature3Title')}
               </h3>
               <p className="text-xs text-[var(--color-text-light)] leading-relaxed">
-                {t('auth.marketing3').split(' и ')[1] ? 'И ' + t('auth.marketing3').split(' и ')[1] : t('auth.marketing3')}
+                {t('auth.feature3Desc')}
               </p>
             </div>
           </div>

@@ -149,7 +149,7 @@ export function MealDiary({ currentDate, onDateChange, meals, onAddFood, onRemov
   return (
     <div className="max-w-3xl mx-auto space-y-6">
       
-      {/* ─── Apple Health Weekly Calendar Strip ─── */}
+      {/* ─── Weekly Calendar Strip ─── */}
       <div className="bg-white rounded-3xl p-4 shadow-[var(--shadow-sm)] border border-gray-100/50 flex items-center justify-between">
         <button
           onClick={() => shiftWeek('prev')}

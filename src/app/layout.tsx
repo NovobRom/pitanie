@@ -17,10 +17,9 @@ const nunito = Nunito({
 });
 
 export const metadata: Metadata = {
-  title: "План Питания — Роман и Лиза",
-  description: "Персональный план питания на неделю с расчётом калорий и КБЖУ",
-  authors: [{ name: "Roman" }],
-  keywords: ["питание", "калории", "КБЖУ", "меню"],
+  title: "Питание — трекер калорий и КБЖУ",
+  description: "Считайте калории и БЖУ, ведите дневник питания и следите за нормой на день",
+  keywords: ["питание", "калории", "КБЖУ", "дневник питания", "трекер калорий"],
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
@@ -28,8 +27,8 @@ export const metadata: Metadata = {
     title: "Питание",
   },
   openGraph: {
-    title: "План Питания",
-    description: "Персональный план питания на неделю",
+    title: "Питание — трекер калорий и КБЖУ",
+    description: "Считайте калории и БЖУ, ведите дневник питания и следите за нормой на день",
     type: "website",
   },
 };
