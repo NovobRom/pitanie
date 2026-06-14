@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { Wand2, RefreshCw, Leaf, ArrowDownToLine, Sunrise, Sun, Moon } from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
 import { Macros, FoodProduct } from '@/lib/nutrition';
-import { foodName } from '@/lib/foodCatalog';
+import { foodName, formatAmount } from '@/lib/foodCatalog';
 import { generatePlan, GeneratedPlan, MealType } from '@/lib/mealGenerator';
 import { MacroBar } from '@/components/MacroBar';
 import { BuilderSeedItem } from '@/components/MenuBuilder';
@@ -116,10 +116,10 @@ export const MealPlanGenerator = ({ goals, onSendToBuilder }: Props) => {
 
                     <ul className="space-y-1.5 mb-3">
                       {meal.items.map((it, i) => (
-                        <li key={i} className="flex justify-between text-xs">
+                        <li key={i} className="flex justify-between text-xs gap-2">
                           <span className="text-[var(--color-text)]">{foodName(it.food, lang)}</span>
-                          <span className="font-semibold text-[var(--color-text-light)] whitespace-nowrap ml-2">
-                            {it.grams} {t('calc.g')}
+                          <span className="font-semibold text-[var(--color-text-light)] whitespace-nowrap">
+                            {formatAmount(it.food, it.grams, lang)}
                           </span>
                         </li>
                       ))}

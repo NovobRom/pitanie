@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Search, Loader2, X, Plus, ChefHat } from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
 import { Macros, FoodProduct, macrosForGrams } from '@/lib/nutrition';
@@ -20,13 +20,14 @@ export interface BuilderSeedItem {
 interface Props {
   goals: Macros | null;
   initialItems?: BuilderSeedItem[];
+  onItemsChange?: (items: BuilderSeedItem[]) => void;
 }
 
 const DEFAULT_GOALS: Macros = { calories: 2000, protein: 150, fat: 55, carbs: 200 };
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
-export const MenuBuilder = ({ goals, initialItems }: Props) => {
+export const MenuBuilder = ({ goals, initialItems, onItemsChange }: Props) => {
   const { t } = useI18n();
 
   const [query, setQuery] = useState('');
@@ -38,6 +39,12 @@ export const MenuBuilder = ({ goals, initialItems }: Props) => {
     (initialItems ?? []).map((it, i) => ({ id: i, product: it.product, grams: it.grams })),
   );
   const [nextId, setNextId] = useState(initialItems?.length ?? 0);
+
+  // Report ration changes upward for persistence / sharing.
+  useEffect(() => {
+    onItemsChange?.(items.map((it) => ({ product: it.product, grams: it.grams })));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [items]);
 
   const search = async () => {
     if (!query.trim()) return;
