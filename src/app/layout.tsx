@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Nunito } from "next/font/google";
 import "./globals.css";
 import { I18nProvider } from "@/lib/i18n";
+import { ServiceWorkerRegister } from "@/components/ServiceWorkerRegister";
 
 const inter = Inter({
   variable: "--font-sans",
@@ -51,6 +52,7 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${nunito.variable} antialiased`}
       >
+        <ServiceWorkerRegister />
         <I18nProvider>{children}</I18nProvider>
       </body>
     </html>

@@ -1,15 +1,16 @@
 'use client';
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { X, Search, Loader2, ScanLine, Clock } from 'lucide-react';
+import { X, Search, Loader2, ScanLine, Clock, ChefHat, Trash2 } from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
-import { getRecentFoods, RecentFood } from '@/lib/cloud';
+import { getRecentFoods, RecentFood, getRecipes, Recipe, deleteRecipe } from '@/lib/cloud';
 import { BarcodeScanner } from './BarcodeScanner';
+import { RecipeBuilderModal } from './RecipeBuilderModal';
 
 interface FoodSearchModalProps {
   mealType: string;
   onClose: () => void;
-  onAdd: (name: string, kcal: number, protein: number, fat: number, carbs: number, grams: number) => void;
+  onAdd: (name: string, kcal: number, protein: number, fat: number, carbs: number, grams: number, fiber?: number) => void;
 }
 
 interface Nutrition {
@@ -17,6 +18,7 @@ interface Nutrition {
   protein: number;
   fat: number;
   carbs: number;
+  fiber?: number;
 }
 
 interface SearchResult {
@@ -37,7 +39,14 @@ export function FoodSearchModal({ mealType, onClose, onAdd }: FoodSearchModalPro
   const [recentLoading, setRecentLoading] = useState(true);
   const [showScanner, setShowScanner] = useState(false);
   const [barcodeLoading, setBarcodeLoading] = useState(false);
+  const [recipes, setRecipes] = useState<Recipe[]>([]);
+  const [showRecipeBuilder, setShowRecipeBuilder] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const loadRecipes = useCallback(async () => {
+    const r = await getRecipes();
+    setRecipes(r);
+  }, []);
 
   useEffect(() => {
     inputRef.current?.focus();
@@ -45,7 +54,8 @@ export function FoodSearchModal({ mealType, onClose, onAdd }: FoodSearchModalPro
       setRecentFoods(foods);
       setRecentLoading(false);
     });
-  }, []);
+    loadRecipes();
+  }, [loadRecipes]);
 
   const searchFoods = useCallback(async (q: string) => {
     if (!q.trim()) return;
@@ -72,6 +82,7 @@ export function FoodSearchModal({ mealType, onClose, onAdd }: FoodSearchModalPro
               protein: n['proteins_100g'] ?? 0,
               fat: n['fat_100g'] ?? 0,
               carbs: n['carbohydrates_100g'] ?? 0,
+              fiber: n['fiber_100g'] ?? undefined,
             },
           };
         })
@@ -122,9 +133,19 @@ export function FoodSearchModal({ mealType, onClose, onAdd }: FoodSearchModalPro
     onClose();
   };
 
+  const handleAddRecipe = (recipe: Recipe, grams: number) => {
+    onAdd(recipe.name, recipe.kcal, recipe.protein, recipe.fat, recipe.carbs, grams, recipe.fiber || undefined);
+    onClose();
+  };
+
+  const handleDeleteRecipe = async (id: string) => {
+    await deleteRecipe(id);
+    loadRecipes();
+  };
+
   const handleAddSearchResult = (product: SearchResult) => {
     const grams = gramInputs[product.uid] ?? 100;
-    onAdd(product.name, product.nutrition.kcal, product.nutrition.protein, product.nutrition.fat, product.nutrition.carbs, grams);
+    onAdd(product.name, product.nutrition.kcal, product.nutrition.protein, product.nutrition.fat, product.nutrition.carbs, grams, product.nutrition.fiber);
     onClose();
   };
 
@@ -142,6 +163,10 @@ export function FoodSearchModal({ mealType, onClose, onAdd }: FoodSearchModalPro
 
   if (showScanner) {
     return <BarcodeScanner onDetected={handleBarcodeDetected} onClose={() => setShowScanner(false)} />;
+  }
+
+  if (showRecipeBuilder) {
+    return <RecipeBuilderModal onClose={() => setShowRecipeBuilder(false)} onSaved={loadRecipes} />;
   }
 
   return (
@@ -212,6 +237,55 @@ export function FoodSearchModal({ mealType, onClose, onAdd }: FoodSearchModalPro
             <div className="text-center py-12 space-y-2">
               <Loader2 size={24} className="animate-spin mx-auto text-[var(--color-primary)]" />
               <p className="text-xs text-[var(--color-text-muted)]">{t('diary.searchState')}</p>
+            </div>
+          )}
+
+          {/* Recipes (shown before first search) */}
+          {showRecent && !barcodeLoading && (
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-1.5">
+                  <ChefHat size={13} className="text-[var(--color-text-muted)]" />
+                  <p className="text-[10px] font-bold text-[var(--color-text-muted)] uppercase tracking-wider">{t('recipe.title')}</p>
+                </div>
+                <button
+                  onClick={() => setShowRecipeBuilder(true)}
+                  className="text-[10px] font-bold text-[var(--color-primary)] hover:text-[var(--color-primary-dark)] flex items-center gap-1"
+                >
+                  + {t('recipe.new')}
+                </button>
+              </div>
+              {recipes.length === 0 ? (
+                <p className="text-xs text-[var(--color-text-muted)] text-center py-2">{t('recipe.empty')}</p>
+              ) : (
+                <div className="space-y-2 mb-4">
+                  {recipes.map((recipe) => {
+                    const scaledKcal = Math.round((recipe.kcal * recipe.serving_g) / 100);
+                    return (
+                      <div key={recipe.id} className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-[var(--color-primary)]/5 border border-[var(--color-primary)]/15">
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-semibold text-[var(--color-text)] truncate">{recipe.name}</p>
+                          <p className="text-[10px] text-[var(--color-text-muted)] font-mono mt-0.5">
+                            {recipe.serving_g}г · {scaledKcal} {t('calc.kcal')} · {t('build.protShort')} {Math.round(recipe.protein * recipe.serving_g / 100)}г
+                          </p>
+                        </div>
+                        <button
+                          onClick={() => handleAddRecipe(recipe, recipe.serving_g)}
+                          className="shrink-0 bg-[var(--color-primary)]/15 hover:bg-[var(--color-primary)]/25 text-[var(--color-primary-dark)] text-[11px] font-bold px-3 py-1.5 rounded-xl transition-all"
+                        >
+                          {t('diary.addFoodAction')}
+                        </button>
+                        <button
+                          onClick={() => handleDeleteRecipe(recipe.id)}
+                          className="shrink-0 text-[var(--color-text-muted)] hover:text-red-400 p-1 transition-colors"
+                        >
+                          <Trash2 size={13} />
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           )}
 

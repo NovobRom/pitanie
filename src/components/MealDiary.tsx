@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Plus, Trash2, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Plus, Trash2, ChevronLeft, ChevronRight, Copy } from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
 import { FoodSearchModal } from '@/components/FoodSearchModal';
 
@@ -12,6 +12,7 @@ interface RationItem {
   protein: number;
   fat: number;
   carbs: number;
+  fiber?: number; // per 100g, optional
 }
 
 interface MealDiaryProps {
@@ -23,13 +24,15 @@ interface MealDiaryProps {
     dinner: RationItem[];
     snacks: RationItem[];
   };
-  onAddFood: (mealType: string, name: string, kcal: number, protein: number, fat: number, carbs: number, grams: number) => void;
+  onAddFood: (mealType: string, name: string, kcal: number, protein: number, fat: number, carbs: number, grams: number, fiber?: number) => void;
   onRemoveFood: (mealType: string, index: number) => void;
+  onCopyYesterday: () => Promise<boolean>;
 }
 
-export function MealDiary({ currentDate, onDateChange, meals, onAddFood, onRemoveFood }: MealDiaryProps) {
+export function MealDiary({ currentDate, onDateChange, meals, onAddFood, onRemoveFood, onCopyYesterday }: MealDiaryProps) {
   const { t, lang } = useI18n();
   const [activeSearchMeal, setActiveSearchMeal] = useState<string | null>(null);
+  const [copyMsg, setCopyMsg] = useState<string | null>(null);
 
   // Generate week days (Mon-Sun) containing the currentDate
   const getWeekDays = (dateStr: string) => {
@@ -76,15 +79,16 @@ export function MealDiary({ currentDate, onDateChange, meals, onAddFood, onRemov
   const calculateMealTotals = (items: RationItem[]) => {
     return items.reduce(
       (acc, item) => {
-        const factor = item.grams / 100;
+        const f = item.grams / 100;
         return {
-          kcal: acc.kcal + item.kcal * factor,
-          protein: acc.protein + item.protein * factor,
-          fat: acc.fat + item.fat * factor,
-          carbs: acc.carbs + item.carbs * factor,
+          kcal: acc.kcal + item.kcal * f,
+          protein: acc.protein + item.protein * f,
+          fat: acc.fat + item.fat * f,
+          carbs: acc.carbs + item.carbs * f,
+          fiber: acc.fiber + (item.fiber ?? 0) * f,
         };
       },
-      { kcal: 0, protein: 0, fat: 0, carbs: 0 }
+      { kcal: 0, protein: 0, fat: 0, carbs: 0, fiber: 0 }
     );
   };
 
@@ -99,7 +103,7 @@ export function MealDiary({ currentDate, onDateChange, meals, onAddFood, onRemov
           <div>
             <h4 className="font-bold text-[var(--color-text)] text-sm">{title}</h4>
             <p className="text-[10px] font-mono text-[var(--color-text-muted)]">
-              {Math.round(totals.kcal)} {t('calc.kcal')} · {t('build.protShort')}{Math.round(totals.protein)}г · {t('build.fatShort')}{Math.round(totals.fat)}г · {t('build.carbShort')}{Math.round(totals.carbs)}г
+              {Math.round(totals.kcal)} {t('calc.kcal')} · {t('build.protShort')}{Math.round(totals.protein)}г · {t('build.fatShort')}{Math.round(totals.fat)}г · {t('build.carbShort')}{Math.round(totals.carbs)}г{totals.fiber > 0.1 ? ` · ${t('micro.fiber.short')}${Math.round(totals.fiber * 10) / 10}г` : ''}
             </p>
           </div>
           <button
@@ -192,6 +196,22 @@ export function MealDiary({ currentDate, onDateChange, meals, onAddFood, onRemov
         </button>
       </div>
 
+      {/* ─── Copy Yesterday ─── */}
+      <div className="flex justify-end">
+        <button
+          onClick={async () => {
+            const ok = await onCopyYesterday();
+            const msg = ok ? t('diary.copyYesterday') : t('diary.copyYesterdayEmpty');
+            setCopyMsg(msg);
+            setTimeout(() => setCopyMsg(null), 2500);
+          }}
+          className="flex items-center gap-1.5 text-[11px] font-semibold text-[var(--color-text-light)] hover:text-[var(--color-primary)] bg-white border border-gray-200 hover:border-[var(--color-primary)]/40 px-3 py-1.5 rounded-xl transition-all shadow-sm"
+        >
+          <Copy size={12} />
+          {copyMsg ?? t('diary.copyYesterday')}
+        </button>
+      </div>
+
       {/* ─── Diary Sections ─── */}
       <div className="grid gap-4 md:grid-cols-2">
         {renderMealSection('breakfast', t('diary.breakfast'))}
@@ -205,8 +225,8 @@ export function MealDiary({ currentDate, onDateChange, meals, onAddFood, onRemov
         <FoodSearchModal
           mealType={activeSearchMeal}
           onClose={() => setActiveSearchMeal(null)}
-          onAdd={(name, kcal, protein, fat, carbs, grams) =>
-            onAddFood(activeSearchMeal, name, kcal, protein, fat, carbs, grams)
+          onAdd={(name, kcal, protein, fat, carbs, grams, fiber) =>
+            onAddFood(activeSearchMeal, name, kcal, protein, fat, carbs, grams, fiber)
           }
         />
       )}

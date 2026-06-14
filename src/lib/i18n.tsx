@@ -101,6 +101,22 @@ const ru: Dict = {
   'diary.foodCatalog': 'База продуктов',
   'diary.addFoodAction': '+ В день',
 
+  // adaptive TDEE
+  'tdee.title': 'Адаптивный TDEE',
+  'tdee.estimated': 'Расчётный расход',
+  'tdee.onTrack': 'Норма соответствует данным ✓',
+  'tdee.reduce': 'Рекомендуем снизить до',
+  'tdee.increase': 'Рекомендуем повысить до',
+  'tdee.dataNeeded': 'Добавьте 2+ недели веса и дневника',
+  'tdee.kcalday': 'ккал/день',
+
+  // copy yesterday
+  'diary.copyYesterday': 'Скопировать вчера',
+  'diary.copyYesterdayEmpty': 'Вчера не было записей',
+
+  // weight trend
+  'weight.trend': 'Тренд веса',
+
   // weight tracking
   'weight.title': 'Вес',
   'weight.today': 'Мой вес сегодня',
@@ -122,6 +138,23 @@ const ru: Dict = {
   'build.find': 'Найти',
   'build.per100': 'на 100г',
   'lang.label': 'Язык',
+
+  // micronutrients
+  'micro.fiber': 'Клетчатка',
+  'micro.fiber.short': 'Кл',
+
+  // recipes
+  'recipe.title': 'Мои рецепты',
+  'recipe.new': 'Новый рецепт',
+  'recipe.name': 'Название рецепта',
+  'recipe.serving': 'Размер порции (г)',
+  'recipe.addIngredient': 'Добавить ингредиент',
+  'recipe.ingredient': 'Ингредиент',
+  'recipe.save': 'Сохранить рецепт',
+  'recipe.empty': 'Рецептов пока нет',
+  'recipe.delete': 'Удалить',
+  'recipe.per100': 'на 100г',
+  'recipe.noIngredients': 'Добавьте ингредиенты',
 
   // recent foods
   'recent.title': 'Недавние',
@@ -229,6 +262,22 @@ const en: Dict = {
   'diary.foodCatalog': 'Food Catalog',
   'diary.addFoodAction': '+ To Day',
 
+  // adaptive TDEE
+  'tdee.title': 'Adaptive TDEE',
+  'tdee.estimated': 'Estimated expenditure',
+  'tdee.onTrack': 'Target matches your data ✓',
+  'tdee.reduce': 'Consider reducing to',
+  'tdee.increase': 'Consider increasing to',
+  'tdee.dataNeeded': 'Log 2+ weeks of weight & diary',
+  'tdee.kcalday': 'kcal/day',
+
+  // copy yesterday
+  'diary.copyYesterday': 'Copy yesterday',
+  'diary.copyYesterdayEmpty': 'No entries yesterday',
+
+  // weight trend
+  'weight.trend': 'Weight trend',
+
   // weight tracking
   'weight.title': 'Weight',
   'weight.today': 'My weight today',
@@ -250,6 +299,23 @@ const en: Dict = {
   'build.find': 'Search',
   'build.per100': 'per 100g',
   'lang.label': 'Language',
+
+  // micronutrients
+  'micro.fiber': 'Fiber',
+  'micro.fiber.short': 'Fi',
+
+  // recipes
+  'recipe.title': 'My Recipes',
+  'recipe.new': 'New Recipe',
+  'recipe.name': 'Recipe name',
+  'recipe.serving': 'Serving size (g)',
+  'recipe.addIngredient': 'Add ingredient',
+  'recipe.ingredient': 'Ingredient',
+  'recipe.save': 'Save recipe',
+  'recipe.empty': 'No recipes yet',
+  'recipe.delete': 'Delete',
+  'recipe.per100': 'per 100g',
+  'recipe.noIngredients': 'Add ingredients first',
 
   // recent foods
   'recent.title': 'Recent',
@@ -357,6 +423,22 @@ const uk: Dict = {
   'diary.foodCatalog': 'База продуктов',
   'diary.addFoodAction': '+ У день',
 
+  // adaptive TDEE
+  'tdee.title': 'Адаптивний TDEE',
+  'tdee.estimated': 'Розрахунковий розхід',
+  'tdee.onTrack': 'Норма відповідає даним ✓',
+  'tdee.reduce': 'Рекомендуємо знизити до',
+  'tdee.increase': 'Рекомендуємо підвищити до',
+  'tdee.dataNeeded': 'Додайте 2+ тижні ваги та щоденника',
+  'tdee.kcalday': 'ккал/день',
+
+  // copy yesterday
+  'diary.copyYesterday': 'Скопіювати вчора',
+  'diary.copyYesterdayEmpty': 'Вчора не було записів',
+
+  // weight trend
+  'weight.trend': 'Тренд ваги',
+
   // weight tracking
   'weight.title': 'Вага',
   'weight.today': 'Моя вага сьогодні',
@@ -378,6 +460,23 @@ const uk: Dict = {
   'build.find': 'Знайти',
   'build.per100': 'на 100г',
   'lang.label': 'Мова',
+
+  // micronutrients
+  'micro.fiber': 'Клітковина',
+  'micro.fiber.short': 'Кл',
+
+  // recipes
+  'recipe.title': 'Мої рецепти',
+  'recipe.new': 'Новий рецепт',
+  'recipe.name': 'Назва рецепту',
+  'recipe.serving': 'Розмір порції (г)',
+  'recipe.addIngredient': 'Додати інгредієнт',
+  'recipe.ingredient': 'Інгредієнт',
+  'recipe.save': 'Зберегти рецепт',
+  'recipe.empty': 'Рецептів поки немає',
+  'recipe.delete': 'Вилучити',
+  'recipe.per100': 'на 100г',
+  'recipe.noIngredients': 'Спочатку додайте інгредієнти',
 
   // recent foods
   'recent.title': 'Нещодавні',

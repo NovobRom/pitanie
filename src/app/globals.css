@@ -1,45 +1,37 @@
 @import "tailwindcss";
 @source "../**/*.{html,js,ts,jsx,tsx}";
 
-
-/* Design System - Тёплая палитра для приложения питания */
+/* ── Design System ──────────────────────────────────────────────────────────── */
 @theme {
-  /* Основные цвета */
-  --color-primary: #7c9885; /* sage green */
+  --color-primary: #7c9885;
   --color-primary-light: #a8c4b0;
   --color-primary-dark: #5a7a63;
 
-  --color-secondary: #e8d5b7; /* warm beige */
+  --color-secondary: #e8d5b7;
   --color-secondary-light: #f5ead8;
   --color-secondary-dark: #d4b896;
 
-  --color-accent: #f39c6b; /* мягкий оранжевый */
+  --color-accent: #f39c6b;
   --color-accent-light: #ffb88c;
   --color-accent-dark: #d67a4a;
 
-  /* Персональные цвета (мягче) */
-  --color-roman: #6b9bd1; /* мягкий синий */
+  --color-roman: #6b9bd1;
   --color-roman-light: #a8c7e7;
   --color-roman-bg: #eef6ff;
 
-  --color-liza: #e89fc4; /* мягкий розовый */
+  --color-liza: #e89fc4;
   --color-liza-light: #f5c5dc;
   --color-liza-bg: #fff0f7;
 
-  /* Приёмы пищи */
-  --color-breakfast: #ffd89b; /* тёплый жёлтый */
+  --color-breakfast: #ffd89b;
   --color-breakfast-bg: #fff8e7;
-
-  --color-lunch: #a8d5a3; /* зелёный */
+  --color-lunch: #a8d5a3;
   --color-lunch-bg: #f0f9ef;
-
-  --color-dinner: #c7b9de; /* лавандовый */
+  --color-dinner: #c7b9de;
   --color-dinner-bg: #f6f3fc;
+  --color-cheat: #d4a5d9;
 
-  --color-cheat: #d4a5d9; /* фиолетовый для читмила */
-
-  /* Нейтральные */
-  --color-bg: #fafaf7; /* тёплый белый */
+  --color-bg: #fafaf7;
   --color-surface: #ffffff;
   --color-text: #3d3d3d;
   --color-text-light: #6b6b6b;
@@ -47,19 +39,15 @@
   --color-border: #e8e8e5;
 
   /*
-   * NB: не определяем здесь --spacing-* и --radius-* с именованными ключами
+   * NB: не определяем --spacing-* и --radius-* с именованными ключами
    * (md/lg/xl/2xl) — в Tailwind v4 эти namespace зарезервированы под шкалу
-   * размеров. Кастомные --spacing-md и т.п. перехватывали max-w-md/lg/2xl
-   * и схлопывали контейнеры до 16–48px. Базовый шаг spacing берётся из
-   * дефолтного --spacing (0.25rem), именованные размеры — из --container-*.
+   * размеров. Кастомные перехватывали max-w-md/lg/2xl и схлопывали контейнеры.
    */
 
-  /* Shadows (мягкие) */
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.03);
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.03);
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.05), 0 4px 6px -4px rgb(0 0 0 / 0.03);
 
-  /* Typography */
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
   --font-display: 'Nunito', var(--font-sans);
 }
@@ -69,7 +57,59 @@
   --foreground: var(--color-text);
 }
 
+/* ── Dark Mode (auto by system) ─────────────────────────────────────────────── */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #1c1c1e;
+    --color-surface: #2c2c2e;
+    --color-text: #f2f2f7;
+    --color-text-light: #aeaeb2;
+    --color-text-muted: #636366;
+    --color-border: #38383a;
+    --color-primary: #8aab93;
+    --color-primary-light: #7c9885;
+    --color-primary-dark: #a3c4ab;
+    --color-roman-bg: #1a2a3a;
+    --color-liza-bg: #2a1a26;
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.4);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.35), 0 2px 4px -2px rgb(0 0 0 / 0.25);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.35), 0 4px 6px -4px rgb(0 0 0 / 0.25);
+    --background: var(--color-bg);
+    --foreground: var(--color-text);
+  }
 
+  .bg-white { background-color: var(--color-surface) !important; }
+  .bg-gray-50, .bg-gray-50\/50 { background-color: #1c1c1e !important; }
+  .bg-gray-100\/80, .bg-gray-100 { background-color: #3a3a3c !important; }
+
+  .border-gray-100, .border-gray-100\/50, .border-gray-100\/60,
+  .border-gray-200, .border-black\/5 { border-color: var(--color-border) !important; }
+
+  input:not([type='checkbox']), select, textarea {
+    background-color: #3a3a3c !important;
+    color: var(--color-text) !important;
+    border-color: var(--color-border) !important;
+  }
+  input::placeholder { color: var(--color-text-muted) !important; }
+
+  .text-gray-400 { color: var(--color-text-muted) !important; }
+  .text-gray-500 { color: var(--color-text-light) !important; }
+
+  .bg-orange-50 { background-color: #2d1a0e !important; }
+  .bg-blue-50   { background-color: #0e1a2d !important; }
+  .bg-pink-50   { background-color: #2d0e1a !important; }
+  .bg-green-50  { background-color: #0e2d1a !important; }
+  .bg-red-50    { background-color: #2d0e0e !important; }
+  .bg-yellow-50,
+  .bg-amber-50  { background-color: #2d260e !important; }
+  .bg-purple-50 { background-color: #1a0e2d !important; }
+  .bg-gray-800  { background-color: #1c1c1e !important; }
+
+  /* Backdrop of modals */
+  .backdrop-blur-sm { backdrop-filter: blur(8px) brightness(0.7); }
+}
+
+/* ── Base ───────────────────────────────────────────────────────────────────── */
 @layer base {
   body {
     color: var(--foreground);
@@ -90,43 +130,16 @@
   .card {
     transition: transform 0.2s ease, box-shadow 0.2s ease;
   }
-
   .card:hover {
     transform: translateY(-2px);
   }
 }
 
 @media print {
-  .no-print {
-    display: none;
-  }
-
-  body {
-    background-color: white;
-  }
-
-  .shadow-lg,
-  .shadow-md {
-    box-shadow: none !important;
-  }
-
-  .bg-white {
-    border: 1px solid #ddd;
-  }
-
-  .text-white {
-    color: black !important;
-  }
-
-  .bg-gray-800 {
-    background-color: transparent !important;
-    color: black !important;
-    border: 1px solid #000;
-  }
-
-  /* Force background graphics for colored headers */
-  * {
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
+  .no-print { display: none; }
+  body { background-color: white; }
+  .shadow-lg, .shadow-md { box-shadow: none !important; }
+  .bg-white { border: 1px solid #ddd; }
+  .text-white { color: black !important; }
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
 }

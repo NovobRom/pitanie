@@ -121,11 +121,14 @@ export default function Home() {
     protein: number,
     fat: number,
     carbs: number,
-    grams: number
+    grams: number,
+    fiber?: number
   ) => {
+    const item: any = { name, grams, kcal, protein, fat, carbs };
+    if (fiber != null) item.fiber = fiber;
     const updatedMeals = {
       ...meals,
-      [mealType]: [...(meals[mealType] || []), { name, grams, kcal, protein, fat, carbs }],
+      [mealType]: [...(meals[mealType] || []), item],
     };
     setMeals(updatedMeals);
     saveDiary(updatedMeals, goals);
@@ -142,8 +145,24 @@ export default function Home() {
 
   const handleProfileSave = (newGoals: Macros) => {
     setGoals(newGoals);
-    saveDiary(meals, newGoals);
     setActiveTab('today');
+  };
+
+  const handleCopyYesterday = async (): Promise<boolean> => {
+    if (!user || !currentDate) return false;
+    const prev = new Date(currentDate);
+    prev.setDate(prev.getDate() - 1);
+    const yStr = `${prev.getFullYear()}-${String(prev.getMonth() + 1).padStart(2, '0')}-${String(prev.getDate()).padStart(2, '0')}`;
+    try {
+      const { data } = await supabase.from('plans').select('data').eq('owner_id', user.id).eq('title', yStr).maybeSingle();
+      if (!data?.data?.meals) return false;
+      const copied = data.data.meals;
+      setMeals(copied);
+      await saveDiary(copied, goals);
+      return true;
+    } catch {
+      return false;
+    }
   };
 
   const calculateConsumed = () => {
@@ -190,6 +209,7 @@ export default function Home() {
             meals={meals}
             onAddFood={handleAddFood}
             onRemoveFood={handleRemoveFood}
+            onCopyYesterday={handleCopyYesterday}
           />
         )}
 
