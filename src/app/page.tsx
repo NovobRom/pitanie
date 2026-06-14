@@ -186,7 +186,7 @@ export default function Home() {
     <main className="p-4 md:p-6 text-[var(--color-text)] min-h-screen max-w-4xl mx-auto">
       <Header user={user} onOpenProfile={() => setShowProfileModal(true)} />
       
-      <Dashboard goals={goals} consumed={calculateConsumed()} />
+      <Dashboard goals={goals} consumed={calculateConsumed()} onOpenProfile={() => setShowProfileModal(true)} />
       
       <MealDiary
         currentDate={currentDate}

@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { Settings } from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
 import { Macros } from '@/lib/nutrition';
 
@@ -12,9 +13,10 @@ interface DashboardProps {
     fat: number;
     carbs: number;
   };
+  onOpenProfile: () => void;
 }
 
-export function Dashboard({ goals, consumed }: DashboardProps) {
+export function Dashboard({ goals, consumed, onOpenProfile }: DashboardProps) {
   const { t } = useI18n();
 
   const goalCalories = goals.calories || 2000;
@@ -33,6 +35,21 @@ export function Dashboard({ goals, consumed }: DashboardProps) {
 
   return (
     <div className="bg-white rounded-3xl p-6 shadow-[var(--shadow-md)] border border-gray-100/50 max-w-3xl mx-auto mb-8">
+      {/* Dashboard Card Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6 pb-4 border-b border-gray-100/60">
+        <h2 className="text-xs font-bold text-[var(--color-text-light)] uppercase tracking-wider">
+          {t('calc.target')}
+        </h2>
+        <button
+          type="button"
+          onClick={onOpenProfile}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 text-xs font-bold text-[var(--color-primary-dark)] transition-all cursor-pointer shadow-sm hover:shadow"
+        >
+          <Settings size={14} className="text-[var(--color-primary)]" />
+          {t('calc.title')}
+        </button>
+      </div>
+
       <div className="flex flex-col md:flex-row items-center justify-around gap-8">
         
         {/* Left: Circular Calorie SVG Chart */}
