@@ -12,8 +12,8 @@ export const shoppingList: ShoppingItem[] = [
     category: 'meat',
   },
   {
-    name: 'Творог (Varškė)',
-    amount: '14 пачек',
+    name: 'Творог (Varškė) — Лизе',
+    amount: '7 пачек',
     category: 'meat',
   },
   {
@@ -23,13 +23,19 @@ export const shoppingList: ShoppingItem[] = [
   },
   {
     name: 'Сливочное масло 82%',
-    amount: '2 пачки',
+    amount: '1 пачка',
+    category: 'meat',
+    highlighted: true,
+  },
+  {
+    name: 'Молоко 1.5% безлактозное — Роме',
+    amount: '3.5 л',
     category: 'meat',
     highlighted: true,
   },
   {
     name: 'Гречка',
-    amount: '2.4 кг',
+    amount: '1.5 кг',
     category: 'groceries',
   },
   {
@@ -43,7 +49,7 @@ export const shoppingList: ShoppingItem[] = [
     category: 'groceries',
   },
   {
-    name: 'Отруби пшеничные',
+    name: 'Отруби пшеничные — Лизе',
     amount: '1 уп.',
     category: 'groceries',
   },
