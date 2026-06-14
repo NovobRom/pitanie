@@ -101,6 +101,16 @@ const ru: Dict = {
   'diary.foodCatalog': 'База продуктов',
   'diary.addFoodAction': '+ В день',
 
+  // weight tracking
+  'weight.title': 'Вес',
+  'weight.today': 'Мой вес сегодня',
+  'weight.save': 'Сохранить',
+  'weight.history': 'История веса',
+  'weight.change7d': 'Изменение за 7 дней',
+  'weight.kg': 'кг',
+  'weight.noHistory': 'Нет записей',
+  'weight.saved': 'Сохранено',
+
   // common
   'app.name': 'Dose',
   'nav.today': 'Сегодня',
@@ -207,6 +217,16 @@ const en: Dict = {
   'diary.foodCatalog': 'Food Catalog',
   'diary.addFoodAction': '+ To Day',
 
+  // weight tracking
+  'weight.title': 'Weight',
+  'weight.today': 'My weight today',
+  'weight.save': 'Save',
+  'weight.history': 'Weight history',
+  'weight.change7d': '7-day change',
+  'weight.kg': 'kg',
+  'weight.noHistory': 'No entries yet',
+  'weight.saved': 'Saved',
+
   // common
   'app.name': 'Dose',
   'nav.today': 'Today',
@@ -312,6 +332,16 @@ const uk: Dict = {
   'diary.priorityLow': 'Низький',
   'diary.foodCatalog': 'База продуктов',
   'diary.addFoodAction': '+ У день',
+
+  // weight tracking
+  'weight.title': 'Вага',
+  'weight.today': 'Моя вага сьогодні',
+  'weight.save': 'Зберегти',
+  'weight.history': 'Історія ваги',
+  'weight.change7d': 'Зміна за 7 днів',
+  'weight.kg': 'кг',
+  'weight.noHistory': 'Немає записів',
+  'weight.saved': 'Збережено',
 
   // common
   'app.name': 'Dose',

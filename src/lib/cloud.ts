@@ -4,6 +4,7 @@
 
 import { supabase } from './supabaseClient';
 import { ShareState } from './shareState';
+import { Macros } from './nutrition';
 
 export const cloudEnabled = true;
 
@@ -39,4 +40,59 @@ export async function listMyPlans(): Promise<SavedPlan[]> {
     .order('created_at', { ascending: false });
   if (error) return [];
   return (data ?? []) as SavedPlan[];
+}
+
+// ── Profile ────────────────────────────────────────────────────────────────────
+
+export interface UserProfile {
+  sex: 'male' | 'female';
+  age: number;
+  height: number;
+  activity: string;
+  goal: string;
+  protein_ratio: number;
+  fat_ratio: number;
+  goals: Macros | null;
+  locale: string;
+}
+
+export async function getProfile(userId: string): Promise<UserProfile | null> {
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('sex, age, height, activity, goal, protein_ratio, fat_ratio, goals, locale')
+    .eq('id', userId)
+    .maybeSingle();
+  if (error || !data) return null;
+  return data as UserProfile;
+}
+
+export async function saveProfile(profile: Partial<UserProfile> & { goals: Macros }): Promise<boolean> {
+  const { error } = await supabase
+    .from('profiles')
+    .upsert({ id: (await supabase.auth.getUser()).data.user?.id, ...profile }, { onConflict: 'id' });
+  return !error;
+}
+
+// ── Weights ────────────────────────────────────────────────────────────────────
+
+export interface WeightEntry {
+  date: string;
+  weight_kg: number;
+}
+
+export async function logWeight(date: string, kg: number): Promise<boolean> {
+  const { error } = await supabase
+    .from('weights')
+    .upsert({ user_id: (await supabase.auth.getUser()).data.user?.id, date, weight_kg: kg }, { onConflict: 'user_id,date' });
+  return !error;
+}
+
+export async function getWeights(limit = 30): Promise<WeightEntry[]> {
+  const { data, error } = await supabase
+    .from('weights')
+    .select('date, weight_kg')
+    .order('date', { ascending: false })
+    .limit(limit);
+  if (error) return [];
+  return (data ?? []) as WeightEntry[];
 }

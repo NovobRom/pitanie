@@ -8,8 +8,10 @@ import { AuthWall } from '@/components/AuthWall';
 import { Dashboard } from '@/components/Dashboard';
 import { MealDiary } from '@/components/MealDiary';
 import { ProfileModal } from '@/components/ProfileModal';
+import { WeightWidget } from '@/components/WeightWidget';
 import { BottomNav, Tab } from '@/components/BottomNav';
 import { Macros } from '@/lib/nutrition';
+import { getProfile } from '@/lib/cloud';
 
 const DEFAULT_GOALS: Macros = {
   calories: 2000,
@@ -43,20 +45,23 @@ export default function Home() {
 
   // ── Auth state ──
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        const userGoals = session.user.user_metadata?.goals;
-        setGoals(userGoals || DEFAULT_GOALS);
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      const u = session?.user ?? null;
+      setUser(u);
+      if (u) {
+        // Try profiles table first, fallback to user_metadata
+        const profile = await getProfile(u.id);
+        setGoals(profile?.goals || u.user_metadata?.goals || DEFAULT_GOALS);
       }
       setLoadingSession(false);
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        const userGoals = session.user.user_metadata?.goals;
-        setGoals(userGoals || DEFAULT_GOALS);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      const u = session?.user ?? null;
+      setUser(u);
+      if (u) {
+        const profile = await getProfile(u.id);
+        setGoals(profile?.goals || u.user_metadata?.goals || DEFAULT_GOALS);
       } else {
         setGoals(DEFAULT_GOALS);
         setMeals(EMPTY_MEALS);
@@ -189,12 +194,15 @@ export default function Home() {
         )}
 
         {activeTab === 'profile' && (
-          <ProfileModal
-            user={user}
-            onClose={() => setActiveTab('today')}
-            onSave={handleProfileSave}
-            inline
-          />
+          <>
+            <WeightWidget user={user} />
+            <ProfileModal
+              user={user}
+              onClose={() => setActiveTab('today')}
+              onSave={handleProfileSave}
+              inline
+            />
+          </>
         )}
       </main>
 
