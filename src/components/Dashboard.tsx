@@ -36,25 +36,25 @@ export function Dashboard({ goals, consumed, onOpenProfile }: DashboardProps) {
   return (
     <div className="bg-white rounded-3xl p-6 shadow-[var(--shadow-md)] border border-gray-100/50 max-w-3xl mx-auto mb-8">
       {/* Dashboard Card Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6 pb-4 border-b border-gray-100/60">
-        <h2 className="text-xs font-bold text-[var(--color-text-light)] uppercase tracking-wider">
+      <div className="flex items-center justify-between gap-3 mb-6 pb-4 border-b border-gray-100/60">
+        <h2 className="text-xs font-bold text-[var(--color-text-light)] uppercase tracking-wider min-w-0">
           {t('calc.target')}
         </h2>
         <button
           type="button"
           onClick={onOpenProfile}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 text-xs font-bold text-[var(--color-primary-dark)] transition-all cursor-pointer shadow-sm hover:shadow"
+          className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 text-xs font-bold text-[var(--color-primary-dark)] transition-all cursor-pointer shadow-sm hover:shadow whitespace-nowrap"
         >
           <Settings size={14} className="text-[var(--color-primary)]" />
           {t('calc.title')}
         </button>
       </div>
 
-      <div className="flex flex-col md:flex-row items-center justify-around gap-8">
+      <div className="flex flex-col gap-6 md:flex-row md:gap-8">
         
         {/* Left: Circular Calorie SVG Chart */}
-        <div className="relative w-44 h-44 flex items-center justify-center">
-          <svg className="w-full h-full transform -rotate-90">
+        <div className="relative w-44 h-44 flex items-center justify-center mx-auto md:mx-0 shrink-0">
+          <svg className="w-full h-full transform -rotate-90" viewBox="0 0 176 176">
             {/* Background Circle */}
             <circle
               cx="88"
@@ -98,7 +98,7 @@ export function Dashboard({ goals, consumed, onOpenProfile }: DashboardProps) {
         </div>
 
         {/* Right: Macro Progress Bars */}
-        <div className="flex-1 w-full space-y-4">
+        <div className="w-full min-w-0 space-y-4 md:flex-1">
           {/* Protein */}
           <MacroBar
             label={t('calc.protein')}
@@ -151,9 +151,9 @@ function MacroBar({ label, current, goal, color, bgColor, unit }: MacroBarProps)
 
   return (
     <div>
-      <div className="flex justify-between text-xs font-semibold mb-1">
-        <span className="text-[var(--color-text)]">{label}</span>
-        <span className="text-[var(--color-text-light)] font-mono">
+      <div className="flex items-center justify-between gap-2 text-xs font-semibold mb-1">
+        <span className="text-[var(--color-text)] min-w-0 truncate">{label}</span>
+        <span className="text-[var(--color-text-light)] font-mono shrink-0 whitespace-nowrap">
           {roundedCurrent}{unit} / {roundedGoal}{unit}
           {isOver && <span className="text-red-500 ml-1">⚠️</span>}
         </span>
