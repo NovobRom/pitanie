@@ -8,6 +8,7 @@ import { AuthWall } from '@/components/AuthWall';
 import { Dashboard } from '@/components/Dashboard';
 import { MealDiary } from '@/components/MealDiary';
 import { ProfileModal } from '@/components/ProfileModal';
+import { BottomNav, Tab } from '@/components/BottomNav';
 import { Macros } from '@/lib/nutrition';
 
 const DEFAULT_GOALS: Macros = {
@@ -30,9 +31,8 @@ export default function Home() {
   const [currentDate, setCurrentDate] = useState<string>('');
   const [goals, setGoals] = useState<Macros>(DEFAULT_GOALS);
   const [meals, setMeals] = useState<any>(EMPTY_MEALS);
-  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [activeTab, setActiveTab] = useState<Tab>('today');
 
-  // Set today's date on mount
   useEffect(() => {
     const today = new Date();
     const y = today.getFullYear();
@@ -41,7 +41,7 @@ export default function Home() {
     setCurrentDate(`${y}-${m}-${d}`);
   }, []);
 
-  // ── Auth state subscription ──
+  // ── Auth state ──
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
@@ -52,9 +52,7 @@ export default function Home() {
       setLoadingSession(false);
     });
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
       if (session?.user) {
         const userGoals = session.user.user_metadata?.goals;
@@ -69,13 +67,13 @@ export default function Home() {
     return () => subscription.unsubscribe();
   }, []);
 
-  // ── Load diary data when date or user changes ──
+  // ── Load diary ──
   useEffect(() => {
     if (!user || !currentDate) return;
 
     const loadDiary = async () => {
       try {
-        const { data, error } = await supabase
+        const { data } = await supabase
           .from('plans')
           .select('data')
           .eq('owner_id', user.id)
@@ -84,9 +82,7 @@ export default function Home() {
 
         if (data?.data) {
           setMeals(data.data.meals || EMPTY_MEALS);
-          if (data.data.goals) {
-            setGoals(data.data.goals);
-          }
+          if (data.data.goals) setGoals(data.data.goals);
         } else {
           setMeals(EMPTY_MEALS);
           const userGoals = user.user_metadata?.goals;
@@ -100,23 +96,14 @@ export default function Home() {
     loadDiary();
   }, [user, currentDate]);
 
-  // ── Save/Upsert diary data ──
+  // ── Save diary ──
   const saveDiary = async (updatedMeals: any, targetGoals: Macros) => {
     if (!user || !currentDate) return;
-
     try {
-      const payload = {
-        owner_id: user.id,
-        title: currentDate,
-        data: {
-          meals: updatedMeals,
-          goals: targetGoals,
-        },
-      };
-
-      await supabase
-        .from('plans')
-        .upsert(payload, { onConflict: 'owner_id,title' });
+      await supabase.from('plans').upsert(
+        { owner_id: user.id, title: currentDate, data: { meals: updatedMeals, goals: targetGoals } },
+        { onConflict: 'owner_id,title' }
+      );
     } catch (err) {
       console.error('Failed to save diary:', err);
     }
@@ -131,20 +118,18 @@ export default function Home() {
     carbs: number,
     grams: number
   ) => {
-    const newFood = { name, grams, kcal, protein, fat, carbs };
     const updatedMeals = {
       ...meals,
-      [mealType]: [...(meals[mealType] || []), newFood],
+      [mealType]: [...(meals[mealType] || []), { name, grams, kcal, protein, fat, carbs }],
     };
     setMeals(updatedMeals);
     saveDiary(updatedMeals, goals);
   };
 
   const handleRemoveFood = (mealType: string, index: number) => {
-    const updatedMealList = (meals[mealType] || []).filter((_: any, i: number) => i !== index);
     const updatedMeals = {
       ...meals,
-      [mealType]: updatedMealList,
+      [mealType]: (meals[mealType] || []).filter((_: any, i: number) => i !== index),
     };
     setMeals(updatedMeals);
     saveDiary(updatedMeals, goals);
@@ -153,9 +138,9 @@ export default function Home() {
   const handleProfileSave = (newGoals: Macros) => {
     setGoals(newGoals);
     saveDiary(meals, newGoals);
+    setActiveTab('today');
   };
 
-  // Calculate total consumed macro nutrients for the Dashboard
   const calculateConsumed = () => {
     const total = { kcal: 0, protein: 0, fat: 0, carbs: 0 };
     Object.values(meals).forEach((list: any) => {
@@ -173,36 +158,47 @@ export default function Home() {
   if (loadingSession) {
     return (
       <div className="min-h-screen bg-[var(--color-bg)] flex items-center justify-center">
-        <div className="w-8 h-8 rounded-full border-4 border-[var(--color-primary)] border-t-transparent animate-spin"></div>
+        <div className="w-8 h-8 rounded-full border-4 border-[var(--color-primary)] border-t-transparent animate-spin" />
       </div>
     );
   }
 
-  if (!user) {
-    return <AuthWall />;
-  }
+  if (!user) return <AuthWall />;
 
   return (
-    <main className="p-4 md:p-6 text-[var(--color-text)] min-h-screen max-w-4xl mx-auto">
-      <Header user={user} onOpenProfile={() => setShowProfileModal(true)} />
-      
-      <Dashboard goals={goals} consumed={calculateConsumed()} onOpenProfile={() => setShowProfileModal(true)} />
-      
-      <MealDiary
-        currentDate={currentDate}
-        onDateChange={setCurrentDate}
-        meals={meals}
-        onAddFood={handleAddFood}
-        onRemoveFood={handleRemoveFood}
-      />
+    <div className="min-h-screen bg-[var(--color-bg)]">
+      <main className="p-4 md:p-6 text-[var(--color-text)] max-w-2xl mx-auto pb-28">
+        <Header user={user} onOpenProfile={() => setActiveTab('profile')} />
 
-      {showProfileModal && (
-        <ProfileModal
-          user={user}
-          onClose={() => setShowProfileModal(false)}
-          onSave={handleProfileSave}
-        />
-      )}
-    </main>
+        {activeTab === 'today' && (
+          <Dashboard
+            goals={goals}
+            consumed={calculateConsumed()}
+            onOpenProfile={() => setActiveTab('profile')}
+          />
+        )}
+
+        {activeTab === 'diary' && (
+          <MealDiary
+            currentDate={currentDate}
+            onDateChange={setCurrentDate}
+            meals={meals}
+            onAddFood={handleAddFood}
+            onRemoveFood={handleRemoveFood}
+          />
+        )}
+
+        {activeTab === 'profile' && (
+          <ProfileModal
+            user={user}
+            onClose={() => setActiveTab('today')}
+            onSave={handleProfileSave}
+            inline
+          />
+        )}
+      </main>
+
+      <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
+    </div>
   );
 }

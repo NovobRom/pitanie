@@ -102,7 +102,13 @@ const ru: Dict = {
   'diary.addFoodAction': '+ В день',
 
   // common
-  'app.name': 'Питание',
+  'app.name': 'Dose',
+  'nav.today': 'Сегодня',
+  'nav.diary': 'Дневник',
+  'nav.profile': 'Профиль',
+  'build.protShort': 'Б',
+  'build.fatShort': 'Ж',
+  'build.carbShort': 'У',
   'lang.label': 'Язык',
 };
 
@@ -202,7 +208,13 @@ const en: Dict = {
   'diary.addFoodAction': '+ To Day',
 
   // common
-  'app.name': 'Pitanie',
+  'app.name': 'Dose',
+  'nav.today': 'Today',
+  'nav.diary': 'Diary',
+  'nav.profile': 'Profile',
+  'build.protShort': 'P',
+  'build.fatShort': 'F',
+  'build.carbShort': 'C',
   'lang.label': 'Language',
 };
 
@@ -302,7 +314,13 @@ const uk: Dict = {
   'diary.addFoodAction': '+ У день',
 
   // common
-  'app.name': 'Харчування',
+  'app.name': 'Dose',
+  'nav.today': 'Сьогодні',
+  'nav.diary': 'Щоденник',
+  'nav.profile': 'Профіль',
+  'build.protShort': 'Б',
+  'build.fatShort': 'Ж',
+  'build.carbShort': 'В',
   'lang.label': 'Мова',
 };
 

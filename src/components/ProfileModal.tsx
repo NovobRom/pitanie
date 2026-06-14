@@ -10,9 +10,10 @@ interface ProfileModalProps {
   user: any;
   onClose: () => void;
   onSave: (goals: Macros) => void;
+  inline?: boolean;
 }
 
-export function ProfileModal({ user, onClose, onSave }: ProfileModalProps) {
+export function ProfileModal({ user, onClose, onSave, inline = false }: ProfileModalProps) {
   const { t } = useI18n();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -96,15 +97,14 @@ export function ProfileModal({ user, onClose, onSave }: ProfileModalProps) {
     }
   };
 
-  return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
-      onClick={(e) => e.target === e.currentTarget && onClose()}
+  const formContent = (
+    <form
+      onSubmit={handleSave}
+      className={inline
+        ? 'bg-white rounded-3xl shadow-[var(--shadow-md)] w-full border border-gray-100 overflow-hidden'
+        : 'relative bg-white rounded-3xl shadow-[var(--shadow-lg)] w-full max-w-md flex flex-col max-h-[90vh] border border-gray-100 overflow-hidden'
+      }
     >
-      <form
-        onSubmit={handleSave}
-        className="relative bg-white rounded-3xl shadow-[var(--shadow-lg)] w-full max-w-md flex flex-col max-h-[90vh] border border-gray-100 overflow-hidden"
-      >
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 shrink-0">
           <div className="flex items-center gap-2">
@@ -283,7 +283,19 @@ export function ProfileModal({ user, onClose, onSave }: ProfileModalProps) {
             {t('calc.calc')}
           </button>
         </div>
-      </form>
+    </form>
+  );
+
+  if (inline) {
+    return formContent;
+  }
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+    >
+      {formContent}
     </div>
   );
 }

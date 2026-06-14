@@ -17,18 +17,18 @@ const nunito = Nunito({
 });
 
 export const metadata: Metadata = {
-  title: "Питание — трекер калорий и КБЖУ",
-  description: "Считайте калории и БЖУ, ведите дневник питания и следите за нормой на день",
-  keywords: ["питание", "калории", "КБЖУ", "дневник питания", "трекер калорий"],
+  title: "Dose — Calorie & Macro Tracker",
+  description: "Track calories, protein, fat and carbs in seconds. Clean, fast, minimal.",
+  keywords: ["calorie tracker", "macro tracker", "food diary", "nutrition", "dose"],
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Питание",
+    title: "Dose",
   },
   openGraph: {
-    title: "Питание — трекер калорий и КБЖУ",
-    description: "Считайте калории и БЖУ, ведите дневник питания и следите за нормой на день",
+    title: "Dose — Calorie & Macro Tracker",
+    description: "Track calories, protein, fat and carbs in seconds. Clean, fast, minimal.",
     type: "website",
   },
 };

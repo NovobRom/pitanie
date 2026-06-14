@@ -1,7 +1,7 @@
 {
-  "name": "Питание — трекер калорий и КБЖУ",
-  "short_name": "Питание",
-  "description": "Считайте калории и БЖУ, ведите дневник питания и следите за нормой на день",
+  "name": "Dose — Calorie & Macro Tracker",
+  "short_name": "Dose",
+  "description": "Track calories, protein, fat and carbs in seconds. Clean, fast, minimal.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#fafaf7",

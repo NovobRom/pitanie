@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Printer, LogOut, Settings, User as UserIcon, ChevronDown, Flame } from 'lucide-react';
+import { LogOut, Settings, User as UserIcon, ChevronDown, Flame } from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
 import { LanguageToggle } from '@/components/LanguageToggle';
 import { supabase } from '@/lib/supabaseClient';
@@ -26,76 +26,57 @@ export function Header({ user, onOpenProfile }: HeaderProps) {
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
-  const handleSignOut = () => {
-    supabase.auth.signOut();
-  };
+  const handleSignOut = () => supabase.auth.signOut();
 
   const username = user?.email?.split('@')[0] ?? 'User';
 
   return (
-    <header className="flex items-center justify-between pb-6 mb-6 border-b border-gray-100/80 no-print">
+    <header className="flex items-center justify-between pb-5 mb-5 border-b border-gray-100/80 no-print">
       {/* Logo */}
       <div className="flex items-center gap-2">
-        <div className="w-9 h-9 rounded-xl bg-[var(--color-primary)] text-white flex items-center justify-center shadow-md">
-          <Flame size={20} />
+        <div className="w-8 h-8 rounded-xl bg-[var(--color-primary)] text-white flex items-center justify-center shadow-sm">
+          <Flame size={16} strokeWidth={2.5} />
         </div>
-        <h1 className="text-xl font-bold tracking-tight text-[var(--color-text)]">
+        <span className="text-lg font-extrabold tracking-tight text-[var(--color-text)]">
           {t('app.name')}
-        </h1>
+        </span>
       </div>
 
       {/* Right Controls */}
-      <div className="flex items-center gap-3">
-        {/* Language selector */}
+      <div className="flex items-center gap-2">
         <LanguageToggle />
 
-        {/* Print button */}
-        <button
-          onClick={() => window.print()}
-          className="p-2.5 rounded-xl border border-gray-200 hover:bg-gray-50 text-[var(--color-text-light)] transition-all flex items-center justify-center"
-          title="Print"
-        >
-          <Printer size={15} />
-        </button>
-
-        {/* User profile dropdown */}
         {user && (
           <div ref={dropdownRef} className="relative">
             <button
               onClick={() => setOpen((prev) => !prev)}
-              className="flex items-center gap-1.5 px-3 py-2 border border-gray-200 rounded-xl bg-white hover:bg-gray-50 text-xs font-semibold text-[var(--color-text-light)] transition-all shadow-sm"
+              className="flex items-center gap-1.5 px-3 py-1.5 border border-gray-200 rounded-xl bg-white hover:bg-gray-50 text-xs font-semibold text-[var(--color-text-light)] transition-all shadow-sm"
             >
-              <UserIcon size={14} className="text-[var(--color-primary)]" />
-              <span className="max-w-[100px] truncate">{username}</span>
-              <ChevronDown size={12} className={`transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
+              <UserIcon size={13} className="text-[var(--color-primary)]" />
+              <span className="max-w-[80px] truncate hidden sm:inline">{username}</span>
+              <ChevronDown size={11} className={`transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
             </button>
 
             {open && (
-              <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-2xl shadow-[var(--shadow-lg)] border border-gray-100/80 z-40 overflow-hidden py-1">
-                {/* User email display */}
+              <div className="absolute right-0 top-full mt-2 w-52 bg-white rounded-2xl shadow-[var(--shadow-lg)] border border-gray-100/80 z-40 overflow-hidden py-1">
                 <div className="px-4 py-3 border-b border-gray-50">
                   <p className="text-[10px] text-[var(--color-text-muted)] uppercase tracking-wider">{t('auth.signedAs')}</p>
                   <p className="text-xs font-bold text-[var(--color-text)] truncate">{user.email}</p>
                 </div>
 
-                {/* Edit profile settings */}
                 <button
-                  onClick={() => {
-                    onOpenProfile();
-                    setOpen(false);
-                  }}
+                  onClick={() => { onOpenProfile(); setOpen(false); }}
                   className="w-full flex items-center gap-2 px-4 py-2.5 text-xs text-[var(--color-text-light)] hover:bg-gray-50 transition-colors"
                 >
-                  <Settings size={14} className="text-[var(--color-text-muted)]" />
+                  <Settings size={13} className="text-[var(--color-text-muted)]" />
                   {t('diary.editProfile')}
                 </button>
 
-                {/* Logout */}
                 <button
                   onClick={handleSignOut}
                   className="w-full flex items-center gap-2 px-4 py-2.5 text-xs text-red-500 hover:bg-red-50/50 border-t border-gray-50 transition-colors"
                 >
-                  <LogOut size={14} />
+                  <LogOut size={13} />
                   {t('auth.signOut')}
                 </button>
               </div>
