@@ -46,19 +46,13 @@
   --color-text-muted: #9a9a9a;
   --color-border: #e8e8e5;
 
-  /* Spacing (единая сетка 4px) */
-  --spacing-xs: 0.25rem; /* 4px */
-  --spacing-sm: 0.5rem; /* 8px */
-  --spacing-md: 1rem; /* 16px */
-  --spacing-lg: 1.5rem; /* 24px */
-  --spacing-xl: 2rem; /* 32px */
-  --spacing-2xl: 3rem; /* 48px */
-
-  /* Border radius */
-  --radius-sm: 0.5rem; /* 8px */
-  --radius-md: 1rem; /* 16px */
-  --radius-lg: 1.25rem; /* 20px */
-  --radius-xl: 1.5rem; /* 24px */
+  /*
+   * NB: не определяем здесь --spacing-* и --radius-* с именованными ключами
+   * (md/lg/xl/2xl) — в Tailwind v4 эти namespace зарезервированы под шкалу
+   * размеров. Кастомные --spacing-md и т.п. перехватывали max-w-md/lg/2xl
+   * и схлопывали контейнеры до 16–48px. Базовый шаг spacing берётся из
+   * дефолтного --spacing (0.25rem), именованные размеры — из --container-*.
+   */
 
   /* Shadows (мягкие) */
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.03);
