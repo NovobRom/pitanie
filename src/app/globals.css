@@ -1,4 +1,6 @@
 @import "tailwindcss";
+@source "../**/*.{ts,tsx}";
+
 
 /* Design System - Тёплая палитра для приложения питания */
 @theme {
