@@ -79,10 +79,16 @@ export function Dashboard({ goals, consumed, onOpenProfile }: DashboardProps) {
           {/* Circular Calorie Chart */}
           <div className="relative w-44 h-44 flex items-center justify-center mx-auto md:mx-0 shrink-0">
             <svg className="w-full h-full transform -rotate-90" viewBox="0 0 176 176">
-              <circle cx="88" cy="88" r={radius} stroke="#f3f4f6" strokeWidth={strokeWidth} fill="transparent" />
+              <defs>
+                <linearGradient id="kcalRing" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stopColor="var(--color-primary)" />
+                  <stop offset="100%" stopColor="var(--color-carbs)" />
+                </linearGradient>
+              </defs>
+              <circle cx="88" cy="88" r={radius} stroke="var(--color-surface-2)" strokeWidth={strokeWidth} fill="transparent" />
               <circle
                 cx="88" cy="88" r={radius}
-                stroke={isOver ? '#fca5a5' : 'var(--color-primary)'}
+                stroke={isOver ? '#f87171' : 'url(#kcalRing)'}
                 strokeWidth={strokeWidth}
                 fill="transparent"
                 strokeDasharray={circumference}
@@ -92,11 +98,11 @@ export function Dashboard({ goals, consumed, onOpenProfile }: DashboardProps) {
               />
             </svg>
             <div className="absolute flex flex-col items-center text-center">
-              <span className="text-3xl font-extrabold text-[var(--color-text)]">{roundVal(currentCalories)}</span>
-              <span className="text-[10px] text-[var(--color-text-muted)] uppercase tracking-wider mb-1">
+              <span className="text-4xl font-extrabold text-[var(--color-text)] tracking-tight">{roundVal(currentCalories)}</span>
+              <span className="text-[10px] text-[var(--color-text-muted)] uppercase tracking-wider mb-1.5">
                 / {roundVal(goalCalories)} {t('calc.kcal')}
               </span>
-              <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${isOver ? 'bg-red-50 text-red-500' : 'bg-green-50 text-green-600'}`}>
+              <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${isOver ? 'bg-red-50 text-red-500' : 'bg-[var(--color-carbs-bg)] text-[var(--color-carbs)]'}`}>
                 {isOver ? t('diary.over') : t('diary.remaining')}: {roundVal(Math.abs(remainingCalories))}
               </span>
             </div>
@@ -104,9 +110,9 @@ export function Dashboard({ goals, consumed, onOpenProfile }: DashboardProps) {
 
           {/* Macro Progress Bars */}
           <div className="w-full min-w-0 space-y-4 md:flex-1">
-            <MacroBar label={t('calc.protein')} current={consumed.protein} goal={goals.protein} color="var(--color-roman)" bgColor="var(--color-roman-bg)" unit={t('calc.g')} />
-            <MacroBar label={t('calc.fat')} current={consumed.fat} goal={goals.fat} color="var(--color-liza)" bgColor="var(--color-liza-bg)" unit={t('calc.g')} />
-            <MacroBar label={t('calc.carbs')} current={consumed.carbs} goal={goals.carbs} color="var(--color-primary-light)" bgColor="#f0fdf4" unit={t('calc.g')} />
+            <MacroBar label={t('calc.protein')} current={consumed.protein} goal={goals.protein} color="var(--color-protein)" bgColor="var(--color-protein-bg)" unit={t('calc.g')} />
+            <MacroBar label={t('calc.fat')} current={consumed.fat} goal={goals.fat} color="var(--color-fat)" bgColor="var(--color-fat-bg)" unit={t('calc.g')} />
+            <MacroBar label={t('calc.carbs')} current={consumed.carbs} goal={goals.carbs} color="var(--color-carbs)" bgColor="var(--color-carbs-bg)" unit={t('calc.g')} />
           </div>
         </div>
       </div>

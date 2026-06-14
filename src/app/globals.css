@@ -1,42 +1,52 @@
 @import "tailwindcss";
 @source "../**/*.{html,js,ts,jsx,tsx}";
 
-/* ── Design System ──────────────────────────────────────────────────────────── */
+/* ── Fresh Modern Design System ─────────────────────────────────────────────── */
 @theme {
-  --color-primary: #7c9885;
-  --color-primary-light: #a8c4b0;
-  --color-primary-dark: #5a7a63;
+  /* Primary — indigo */
+  --color-primary: #4f46e5;
+  --color-primary-light: #6366f1;
+  --color-primary-dark: #4338ca;
 
-  --color-secondary: #e8d5b7;
-  --color-secondary-light: #f5ead8;
-  --color-secondary-dark: #d4b896;
+  /* Macro accents (vivid) */
+  --color-protein: #6366f1; /* indigo */
+  --color-protein-bg: #eef0fe;
+  --color-fat: #f59e0b; /* amber */
+  --color-fat-bg: #fef6e7;
+  --color-carbs: #10b981; /* emerald */
+  --color-carbs-bg: #e7f8f1;
 
-  --color-accent: #f39c6b;
-  --color-accent-light: #ffb88c;
-  --color-accent-dark: #d67a4a;
+  /* Secondary / accent (kept for legacy usages) */
+  --color-secondary: #10b981;
+  --color-accent: #f59e0b;
+  --color-accent-light: #fbbf24;
+  --color-accent-dark: #d97706;
 
-  --color-roman: #6b9bd1;
-  --color-roman-light: #a8c7e7;
-  --color-roman-bg: #eef6ff;
+  /* Per-person (legacy — mapped to macro hues) */
+  --color-roman: #6366f1;
+  --color-roman-light: #a5b4fc;
+  --color-roman-bg: #eef0fe;
+  --color-liza: #f59e0b;
+  --color-liza-light: #fcd34d;
+  --color-liza-bg: #fef6e7;
 
-  --color-liza: #e89fc4;
-  --color-liza-light: #f5c5dc;
-  --color-liza-bg: #fff0f7;
+  /* Meal hues */
+  --color-breakfast: #fbbf24;
+  --color-breakfast-bg: #fef6e7;
+  --color-lunch: #10b981;
+  --color-lunch-bg: #e7f8f1;
+  --color-dinner: #8b5cf6;
+  --color-dinner-bg: #f1ecfe;
+  --color-cheat: #ec4899;
 
-  --color-breakfast: #ffd89b;
-  --color-breakfast-bg: #fff8e7;
-  --color-lunch: #a8d5a3;
-  --color-lunch-bg: #f0f9ef;
-  --color-dinner: #c7b9de;
-  --color-dinner-bg: #f6f3fc;
-  --color-cheat: #d4a5d9;
-
-  --color-bg: #fafaf7;
+  /* Neutrals — light */
+  --color-bg: #f6f7fb;
   --color-surface: #ffffff;
-  --color-text: #3d3d3d;
-  --color-text-light: #6b6b6b;
-  --color-text-muted: #9a9a9a;
-  --color-border: #e8e8e5;
+  --color-surface-2: #f1f3f9;
+  --color-text: #1a1d29;
+  --color-text-light: #5b6172;
+  --color-text-muted: #9aa0b0;
+  --color-border: #e8eaf1;
 
   /*
    * NB: не определяем --spacing-* и --radius-* с именованными ключами
@@ -44,9 +54,11 @@
    * размеров. Кастомные перехватывали max-w-md/lg/2xl и схлопывали контейнеры.
    */
 
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.03);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.03);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.05), 0 4px 6px -4px rgb(0 0 0 / 0.03);
+  /* Shadows — crisp soft */
+  --shadow-sm: 0 1px 3px 0 rgb(26 29 41 / 0.06), 0 1px 2px -1px rgb(26 29 41 / 0.04);
+  --shadow-md: 0 4px 12px -2px rgb(26 29 41 / 0.08), 0 2px 6px -2px rgb(26 29 41 / 0.05);
+  --shadow-lg: 0 12px 28px -6px rgb(26 29 41 / 0.12), 0 6px 12px -6px rgb(26 29 41 / 0.06);
+  --shadow-glow: 0 6px 20px -4px rgb(79 70 229 / 0.35);
 
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
   --font-display: 'Nunito', var(--font-sans);
@@ -57,36 +69,52 @@
   --foreground: var(--color-text);
 }
 
-/* ── Dark Mode (auto by system) ─────────────────────────────────────────────── */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-bg: #1c1c1e;
-    --color-surface: #2c2c2e;
-    --color-text: #f2f2f7;
-    --color-text-light: #aeaeb2;
-    --color-text-muted: #636366;
-    --color-border: #38383a;
-    --color-primary: #8aab93;
-    --color-primary-light: #7c9885;
-    --color-primary-dark: #a3c4ab;
-    --color-roman-bg: #1a2a3a;
-    --color-liza-bg: #2a1a26;
-    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.4);
-    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.35), 0 2px 4px -2px rgb(0 0 0 / 0.25);
-    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.35), 0 4px 6px -4px rgb(0 0 0 / 0.25);
-    --background: var(--color-bg);
-    --foreground: var(--color-text);
-  }
+/* ── Dark theme (manual, via data-theme) ────────────────────────────────────── */
+[data-theme="dark"] {
+  --color-primary: #7c82f0;
+  --color-primary-light: #9499f4;
+  --color-primary-dark: #6366f1;
 
+  --color-protein: #818cf8;
+  --color-protein-bg: #1e213a;
+  --color-fat: #fbbf24;
+  --color-fat-bg: #2d260e;
+  --color-carbs: #34d399;
+  --color-carbs-bg: #0e2d1f;
+
+  --color-roman: #818cf8;
+  --color-roman-bg: #1e213a;
+  --color-liza: #fbbf24;
+  --color-liza-bg: #2d260e;
+
+  --color-bg: #0f1117;
+  --color-surface: #181b24;
+  --color-surface-2: #1f2430;
+  --color-text: #f2f3f7;
+  --color-text-light: #aeb3c2;
+  --color-text-muted: #6b7180;
+  --color-border: #2a2f3c;
+
+  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.4);
+  --shadow-md: 0 4px 12px -2px rgb(0 0 0 / 0.45), 0 2px 6px -2px rgb(0 0 0 / 0.3);
+  --shadow-lg: 0 12px 28px -6px rgb(0 0 0 / 0.5), 0 6px 12px -6px rgb(0 0 0 / 0.3);
+  --shadow-glow: 0 6px 20px -4px rgb(124 130 240 / 0.4);
+
+  --background: var(--color-bg);
+  --foreground: var(--color-text);
+}
+
+/* Dark utility safety-net — for components with hardcoded Tailwind colors */
+[data-theme="dark"] {
   .bg-white { background-color: var(--color-surface) !important; }
-  .bg-gray-50, .bg-gray-50\/50 { background-color: #1c1c1e !important; }
-  .bg-gray-100\/80, .bg-gray-100 { background-color: #3a3a3c !important; }
+  .bg-gray-50, .bg-gray-50\/50, .bg-gray-50\/30 { background-color: var(--color-bg) !important; }
+  .bg-gray-100\/80, .bg-gray-100, .bg-gray-100\/60, .bg-gray-100\/30 { background-color: var(--color-surface-2) !important; }
 
-  .border-gray-100, .border-gray-100\/50, .border-gray-100\/60,
-  .border-gray-200, .border-black\/5 { border-color: var(--color-border) !important; }
+  .border-gray-100, .border-gray-100\/50, .border-gray-100\/60, .border-gray-100\/80,
+  .border-gray-200, .border-gray-50, .border-black\/5 { border-color: var(--color-border) !important; }
 
   input:not([type='checkbox']), select, textarea {
-    background-color: #3a3a3c !important;
+    background-color: var(--color-surface-2) !important;
     color: var(--color-text) !important;
     border-color: var(--color-border) !important;
   }
@@ -96,16 +124,14 @@
   .text-gray-500 { color: var(--color-text-light) !important; }
 
   .bg-orange-50 { background-color: #2d1a0e !important; }
-  .bg-blue-50   { background-color: #0e1a2d !important; }
+  .bg-blue-50   { background-color: #1e213a !important; }
   .bg-pink-50   { background-color: #2d0e1a !important; }
-  .bg-green-50  { background-color: #0e2d1a !important; }
-  .bg-red-50    { background-color: #2d0e0e !important; }
-  .bg-yellow-50,
-  .bg-amber-50  { background-color: #2d260e !important; }
+  .bg-green-50  { background-color: #0e2d1f !important; }
+  .bg-red-50, .bg-red-50\/50 { background-color: #2d0e0e !important; }
+  .bg-yellow-50, .bg-amber-50 { background-color: #2d260e !important; }
   .bg-purple-50 { background-color: #1a0e2d !important; }
-  .bg-gray-800  { background-color: #1c1c1e !important; }
+  .bg-gray-800  { background-color: var(--color-surface) !important; }
 
-  /* Backdrop of modals */
   .backdrop-blur-sm { backdrop-filter: blur(8px) brightness(0.7); }
 }
 
@@ -118,11 +144,13 @@
     font-feature-settings: "rlig" 1, "calt" 1;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    transition: background-color 0.25s ease, color 0.25s ease;
   }
 
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-display);
     font-weight: 700;
+    letter-spacing: -0.01em;
   }
 }
 

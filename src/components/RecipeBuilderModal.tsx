@@ -212,10 +212,10 @@ export function RecipeBuilderModal({ onClose, onSaved }: RecipeBuilderModalProps
             <div className="bg-[var(--color-primary)]/5 rounded-2xl p-4 space-y-1">
               <p className="text-[10px] font-bold text-[var(--color-primary-dark)] uppercase tracking-wider">{t('recipe.per100')}</p>
               <div className="flex flex-wrap gap-2 font-mono text-xs">
-                <span className="bg-orange-50 text-orange-700 px-2 py-0.5 rounded-md">{r(per100.kcal)} ккал</span>
-                <span className="bg-blue-50 text-blue-700 px-2 py-0.5 rounded-md">Б {r(per100.protein)}г</span>
-                <span className="bg-pink-50 text-pink-700 px-2 py-0.5 rounded-md">Ж {r(per100.fat)}г</span>
-                <span className="bg-green-50 text-green-700 px-2 py-0.5 rounded-md">У {r(per100.carbs)}г</span>
+                <span className="px-2 py-0.5 rounded-md font-semibold" style={{ backgroundColor: 'var(--color-fat-bg)', color: 'var(--color-fat)' }}>{r(per100.kcal)} ккал</span>
+                <span className="px-2 py-0.5 rounded-md font-semibold" style={{ backgroundColor: 'var(--color-protein-bg)', color: 'var(--color-protein)' }}>Б {r(per100.protein)}г</span>
+                <span className="px-2 py-0.5 rounded-md font-semibold" style={{ backgroundColor: 'var(--color-fat-bg)', color: 'var(--color-fat)' }}>Ж {r(per100.fat)}г</span>
+                <span className="px-2 py-0.5 rounded-md font-semibold" style={{ backgroundColor: 'var(--color-carbs-bg)', color: 'var(--color-carbs)' }}>У {r(per100.carbs)}г</span>
               </div>
               <p className="text-[10px] text-[var(--color-text-muted)]">Всего: {totals.totalGrams}г</p>
             </div>

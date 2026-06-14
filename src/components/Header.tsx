@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { LogOut, Settings, User as UserIcon, ChevronDown, Flame } from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
 import { LanguageToggle } from '@/components/LanguageToggle';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import { supabase } from '@/lib/supabaseClient';
 
 interface HeaderProps {
@@ -31,10 +32,10 @@ export function Header({ user, onOpenProfile }: HeaderProps) {
   const username = user?.email?.split('@')[0] ?? 'User';
 
   return (
-    <header className="flex items-center justify-between pb-5 mb-5 border-b border-gray-100/80 no-print">
+    <header className="flex items-center justify-between pb-5 mb-5 border-b border-[var(--color-border)] no-print">
       {/* Logo */}
       <div className="flex items-center gap-2">
-        <div className="w-8 h-8 rounded-xl bg-[var(--color-primary)] text-white flex items-center justify-center shadow-sm">
+        <div className="w-8 h-8 rounded-xl bg-[var(--color-primary)] text-white flex items-center justify-center shadow-[var(--shadow-glow)]">
           <Flame size={16} strokeWidth={2.5} />
         </div>
         <span className="text-lg font-extrabold tracking-tight text-[var(--color-text)]">
@@ -44,13 +45,14 @@ export function Header({ user, onOpenProfile }: HeaderProps) {
 
       {/* Right Controls */}
       <div className="flex items-center gap-2">
+        <ThemeToggle />
         <LanguageToggle />
 
         {user && (
           <div ref={dropdownRef} className="relative">
             <button
               onClick={() => setOpen((prev) => !prev)}
-              className="flex items-center gap-1.5 px-3 py-1.5 border border-gray-200 rounded-xl bg-white hover:bg-gray-50 text-xs font-semibold text-[var(--color-text-light)] transition-all shadow-sm"
+              className="flex items-center gap-1.5 px-3 py-1.5 border border-[var(--color-border)] rounded-xl bg-[var(--color-surface)] hover:bg-[var(--color-surface-2)] text-xs font-semibold text-[var(--color-text-light)] transition-all shadow-sm"
             >
               <UserIcon size={13} className="text-[var(--color-primary)]" />
               <span className="max-w-[80px] truncate hidden sm:inline">{username}</span>

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Nunito } from "next/font/google";
 import "./globals.css";
 import { I18nProvider } from "@/lib/i18n";
+import { ThemeProvider } from "@/lib/theme";
 import { ServiceWorkerRegister } from "@/components/ServiceWorkerRegister";
 
 const inter = Inter({
@@ -39,8 +40,20 @@ export const viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
-  themeColor: "#7c9885",
+  themeColor: "#4f46e5",
 };
+
+// Applies the saved theme before first paint to avoid a flash of the wrong theme.
+const noFlashThemeScript = `
+(function() {
+  try {
+    var t = localStorage.getItem('pitanie.theme');
+    document.documentElement.setAttribute('data-theme', t === 'dark' ? 'dark' : 'light');
+  } catch (e) {
+    document.documentElement.setAttribute('data-theme', 'light');
+  }
+})();
+`;
 
 export default function RootLayout({
   children,
@@ -48,12 +61,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ru">
+    <html lang="ru" data-theme="light">
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: noFlashThemeScript }} />
+      </head>
       <body
         className={`${inter.variable} ${nunito.variable} antialiased`}
       >
         <ServiceWorkerRegister />
-        <I18nProvider>{children}</I18nProvider>
+        <ThemeProvider>
+          <I18nProvider>{children}</I18nProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
