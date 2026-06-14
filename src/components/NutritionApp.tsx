@@ -1,13 +1,14 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Share2, Check, RotateCcw } from 'lucide-react';
+import { Share2, Check, RotateCcw, Loader2 } from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
 import { CalorieCalculator } from '@/components/CalorieCalculator';
 import { MealPlanGenerator } from '@/components/MealPlanGenerator';
 import { MenuBuilder, BuilderSeedItem } from '@/components/MenuBuilder';
 import { Macros, CalcParams, CalcResult } from '@/lib/nutrition';
-import { encodeState, decodeState } from '@/lib/shareState';
+import { encodeState, decodeState, ShareState } from '@/lib/shareState';
+import { createSharedPlan, getSharedPlan } from '@/lib/cloud';
 
 const STORAGE_KEY = 'pitanie.state';
 
@@ -29,23 +30,24 @@ export const NutritionApp = () => {
 
   const [copied, setCopied] = useState(false);
 
-  // ── Hydrate on mount: shared URL hash wins, otherwise localStorage ──────────
+  // ── Hydrate on mount: cloud link › shared URL hash › localStorage ───────────
   useEffect(() => {
-    let loaded = null;
-    const match = window.location.hash.match(/plan=([^&]+)/);
-    if (match) loaded = decodeState(decodeURIComponent(match[1]));
-    if (!loaded) {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) loaded = decodeState(saved);
-    }
-    // One-time hydration from external storage; intentional mount-time sync.
-    /* eslint-disable react-hooks/set-state-in-effect */
-    if (loaded) {
-      setInitialParams(loaded.params);
-      setInitialItems(loaded.items);
-    }
-    setBooted(true);
-    /* eslint-enable react-hooks/set-state-in-effect */
+    (async () => {
+      let loaded: ShareState | null = null;
+      const cloudMatch = window.location.hash.match(/cloud=([^&]+)/);
+      const planMatch = window.location.hash.match(/plan=([^&]+)/);
+      if (cloudMatch) loaded = await getSharedPlan(decodeURIComponent(cloudMatch[1]));
+      if (!loaded && planMatch) loaded = decodeState(decodeURIComponent(planMatch[1]));
+      if (!loaded) {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) loaded = decodeState(saved);
+      }
+      if (loaded) {
+        setInitialParams(loaded.params);
+        setInitialItems(loaded.items);
+      }
+      setBooted(true);
+    })();
   }, []);
 
   // ── Persist on change ───────────────────────────────────────────────────────
@@ -67,15 +69,25 @@ export const NutritionApp = () => {
     });
   };
 
+  const [sharing, setSharing] = useState(false);
+
   const share = async () => {
-    const enc = encodeState({ v: 1, params, items });
-    const url = `${window.location.origin}${window.location.pathname}#plan=${enc}`;
+    const state: ShareState = { v: 1, params, items };
+    const base = `${window.location.origin}${window.location.pathname}`;
+
+    setSharing(true);
+    // Prefer a short cloud link; fall back to encoding the plan in the URL.
+    const id = await createSharedPlan('', state);
+    setSharing(false);
+
+    const hash = id ? `#cloud=${id}` : `#plan=${encodeState(state)}`;
+    const url = `${base}${hash}`;
     try {
       await navigator.clipboard.writeText(url);
     } catch {
       // Clipboard may be unavailable; the hash below still makes the URL shareable.
     }
-    window.history.replaceState(null, '', `#plan=${enc}`);
+    window.history.replaceState(null, '', hash);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -106,9 +118,16 @@ export const NutritionApp = () => {
         </button>
         <button
           onClick={share}
-          className="flex items-center gap-1.5 bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white text-xs font-semibold px-4 py-2 rounded-lg transition-all shadow-[var(--shadow-sm)]"
+          disabled={sharing}
+          className="flex items-center gap-1.5 bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] disabled:opacity-60 text-white text-xs font-semibold px-4 py-2 rounded-lg transition-all shadow-[var(--shadow-sm)]"
         >
-          {copied ? <Check size={14} /> : <Share2 size={14} />}
+          {sharing ? (
+            <Loader2 size={14} className="animate-spin" />
+          ) : copied ? (
+            <Check size={14} />
+          ) : (
+            <Share2 size={14} />
+          )}
           {copied ? t('share.copied') : t('share.copy')}
         </button>
       </div>
