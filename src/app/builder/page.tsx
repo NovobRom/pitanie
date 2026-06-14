@@ -154,7 +154,7 @@ function NutritionBadges({ n, grams }: { n: Nutrition; grams?: number }) {
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
-export default function ConstructorPage() {
+export default function BuilderPage() {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);

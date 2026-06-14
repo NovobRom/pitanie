@@ -83,7 +83,7 @@ export const Header = () => {
           Распечатать план
         </button>
         <Link
-          href="/constructor"
+          href="/builder"
           className="bg-[var(--color-roman)] hover:opacity-90 text-white px-6 py-3 rounded-xl transition-all flex items-center gap-2 font-semibold"
         >
           🍽️ Конструктор питания
