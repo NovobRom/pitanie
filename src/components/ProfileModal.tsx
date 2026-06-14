@@ -5,6 +5,7 @@ import { X, Loader2, Settings } from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
 import { supabase } from '@/lib/supabaseClient';
 import { Macros } from '@/lib/nutrition';
+import { getProfile, saveProfile, logWeight } from '@/lib/cloud';
 
 interface ProfileModalProps {
   user: any;
@@ -18,7 +19,7 @@ export function ProfileModal({ user, onClose, onSave, inline = false }: ProfileM
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Initial values from user metadata or defaults
+  // Defaults from user_metadata for first-time users
   const meta = user?.user_metadata || {};
   const [sex, setSex] = useState<'male' | 'female'>(meta.sex || 'male');
   const [weight, setWeight] = useState<number>(meta.weight || 70);
@@ -26,8 +27,23 @@ export function ProfileModal({ user, onClose, onSave, inline = false }: ProfileM
   const [age, setAge] = useState<number>(meta.age || 30);
   const [activity, setActivity] = useState<string>(meta.activity || 'light');
   const [goal, setGoal] = useState<string>(meta.goal || 'maintain');
-  const [proteinRatio, setProteinRatio] = useState<number>(meta.proteinRatio || 2.0); // g/kg
-  const [fatRatio, setFatRatio] = useState<number>(meta.fatRatio || 0.25); // % of calories
+  const [proteinRatio, setProteinRatio] = useState<number>(meta.proteinRatio || 2.0);
+  const [fatRatio, setFatRatio] = useState<number>(meta.fatRatio || 0.25);
+
+  // Load from profiles table, override metadata defaults if found
+  useEffect(() => {
+    if (!user?.id) return;
+    getProfile(user.id).then((profile) => {
+      if (!profile) return;
+      if (profile.sex) setSex(profile.sex);
+      if (profile.age) setAge(profile.age);
+      if (profile.height) setHeight(profile.height);
+      if (profile.activity) setActivity(profile.activity);
+      if (profile.goal) setGoal(profile.goal);
+      if (profile.protein_ratio) setProteinRatio(Number(profile.protein_ratio));
+      if (profile.fat_ratio) setFatRatio(Number(profile.fat_ratio));
+    });
+  }, [user?.id]);
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,7 +53,6 @@ export function ProfileModal({ user, onClose, onSave, inline = false }: ProfileM
     // Mifflin-St Jeor BMR
     const bmr = 10 * weight + 6.25 * height - 5 * age + (sex === 'male' ? 5 : -161);
 
-    // TDEE Activity Factor
     const activityFactors: Record<string, number> = {
       sedentary: 1.2,
       light: 1.375,
@@ -47,15 +62,13 @@ export function ProfileModal({ user, onClose, onSave, inline = false }: ProfileM
     };
     const tdee = bmr * (activityFactors[activity] || 1.2);
 
-    // Goal Calorie Target Adjustment
     const goalFactors: Record<string, number> = {
-      lose: 0.8,     // -20% deficit
-      maintain: 1.0,  // maintenance
-      gain: 1.15,    // +15% surplus
+      lose: 0.8,
+      maintain: 1.0,
+      gain: 1.15,
     };
     const targetCalories = Math.max(1200, tdee * (goalFactors[goal] || 1.0));
 
-    // Macro Calculation
     const targetProtein = weight * proteinRatio;
     const targetFat = (targetCalories * fatRatio) / 9;
     const targetCarbs = Math.max(0, (targetCalories - targetProtein * 4 - targetFat * 9) / 4);
@@ -67,29 +80,32 @@ export function ProfileModal({ user, onClose, onSave, inline = false }: ProfileM
       carbs: Math.round(targetCarbs),
     };
 
-    const updatedMetadata = {
-      sex,
-      weight,
-      height,
-      age,
-      activity,
-      goal,
-      proteinRatio,
-      fatRatio,
-      goals: calculatedGoals,
-    };
-
     try {
-      const { error: err } = await supabase.auth.updateUser({
-        data: updatedMetadata,
+      // Save to profiles table (primary storage)
+      const ok = await saveProfile({
+        sex,
+        age,
+        height,
+        activity,
+        goal,
+        protein_ratio: proteinRatio,
+        fat_ratio: fatRatio,
+        goals: calculatedGoals,
       });
 
-      if (err) {
-        setError(err.message);
-      } else {
-        onSave(calculatedGoals);
-        onClose();
-      }
+      if (!ok) throw new Error('Failed to save profile');
+
+      // Also log weight as today's entry so macro calculator stays in sync
+      const today = new Date().toISOString().slice(0, 10);
+      await logWeight(today, weight);
+
+      // Keep user_metadata in sync for backward compat
+      await supabase.auth.updateUser({
+        data: { sex, weight, height, age, activity, goal, proteinRatio, fatRatio, goals: calculatedGoals },
+      });
+
+      onSave(calculatedGoals);
+      onClose();
     } catch (err: any) {
       setError(err?.message || 'Failed to save settings');
     } finally {
