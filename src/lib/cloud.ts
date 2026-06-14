@@ -149,3 +149,34 @@ export async function getWeights(limit = 30): Promise<WeightEntry[]> {
   if (error) return [];
   return (data ?? []) as WeightEntry[];
 }
+
+// ── Diary calorie sums ─────────────────────────────────────────────────────────
+
+export interface DiaryCalSum { date: string; kcal: number }
+
+export async function getDiarySums(days = 60): Promise<DiaryCalSum[]> {
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - days);
+  const cutoffStr = cutoff.toISOString().slice(0, 10);
+
+  const { data } = await supabase
+    .from('plans')
+    .select('title, data')
+    .gte('title', cutoffStr)
+    .order('title', { ascending: false });
+
+  if (!data) return [];
+
+  return data
+    .map((plan) => {
+      const meals = plan.data?.meals || {};
+      let kcal = 0;
+      for (const items of Object.values(meals)) {
+        for (const item of items as any[]) {
+          if (item?.kcal && item?.grams) kcal += (item.kcal * item.grams) / 100;
+        }
+      }
+      return { date: plan.title as string, kcal: Math.round(kcal) };
+    })
+    .filter((s) => s.date && s.kcal > 0);
+}

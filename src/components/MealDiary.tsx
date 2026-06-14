@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Plus, Trash2, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Plus, Trash2, ChevronLeft, ChevronRight, Copy } from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
 import { FoodSearchModal } from '@/components/FoodSearchModal';
 
@@ -25,11 +25,13 @@ interface MealDiaryProps {
   };
   onAddFood: (mealType: string, name: string, kcal: number, protein: number, fat: number, carbs: number, grams: number) => void;
   onRemoveFood: (mealType: string, index: number) => void;
+  onCopyYesterday: () => Promise<boolean>;
 }
 
-export function MealDiary({ currentDate, onDateChange, meals, onAddFood, onRemoveFood }: MealDiaryProps) {
+export function MealDiary({ currentDate, onDateChange, meals, onAddFood, onRemoveFood, onCopyYesterday }: MealDiaryProps) {
   const { t, lang } = useI18n();
   const [activeSearchMeal, setActiveSearchMeal] = useState<string | null>(null);
+  const [copyMsg, setCopyMsg] = useState<string | null>(null);
 
   // Generate week days (Mon-Sun) containing the currentDate
   const getWeekDays = (dateStr: string) => {
@@ -189,6 +191,22 @@ export function MealDiary({ currentDate, onDateChange, meals, onAddFood, onRemov
           className="text-[var(--color-text-muted)] hover:text-[var(--color-text)] p-1.5 rounded-full hover:bg-gray-50"
         >
           <ChevronRight size={18} />
+        </button>
+      </div>
+
+      {/* ─── Copy Yesterday ─── */}
+      <div className="flex justify-end">
+        <button
+          onClick={async () => {
+            const ok = await onCopyYesterday();
+            const msg = ok ? t('diary.copyYesterday') : t('diary.copyYesterdayEmpty');
+            setCopyMsg(msg);
+            setTimeout(() => setCopyMsg(null), 2500);
+          }}
+          className="flex items-center gap-1.5 text-[11px] font-semibold text-[var(--color-text-light)] hover:text-[var(--color-primary)] bg-white border border-gray-200 hover:border-[var(--color-primary)]/40 px-3 py-1.5 rounded-xl transition-all shadow-sm"
+        >
+          <Copy size={12} />
+          {copyMsg ?? t('diary.copyYesterday')}
         </button>
       </div>
 

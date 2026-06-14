@@ -101,6 +101,22 @@ const ru: Dict = {
   'diary.foodCatalog': 'База продуктов',
   'diary.addFoodAction': '+ В день',
 
+  // adaptive TDEE
+  'tdee.title': 'Адаптивный TDEE',
+  'tdee.estimated': 'Расчётный расход',
+  'tdee.onTrack': 'Норма соответствует данным ✓',
+  'tdee.reduce': 'Рекомендуем снизить до',
+  'tdee.increase': 'Рекомендуем повысить до',
+  'tdee.dataNeeded': 'Добавьте 2+ недели веса и дневника',
+  'tdee.kcalday': 'ккал/день',
+
+  // copy yesterday
+  'diary.copyYesterday': 'Скопировать вчера',
+  'diary.copyYesterdayEmpty': 'Вчера не было записей',
+
+  // weight trend
+  'weight.trend': 'Тренд веса',
+
   // weight tracking
   'weight.title': 'Вес',
   'weight.today': 'Мой вес сегодня',
@@ -229,6 +245,22 @@ const en: Dict = {
   'diary.foodCatalog': 'Food Catalog',
   'diary.addFoodAction': '+ To Day',
 
+  // adaptive TDEE
+  'tdee.title': 'Adaptive TDEE',
+  'tdee.estimated': 'Estimated expenditure',
+  'tdee.onTrack': 'Target matches your data ✓',
+  'tdee.reduce': 'Consider reducing to',
+  'tdee.increase': 'Consider increasing to',
+  'tdee.dataNeeded': 'Log 2+ weeks of weight & diary',
+  'tdee.kcalday': 'kcal/day',
+
+  // copy yesterday
+  'diary.copyYesterday': 'Copy yesterday',
+  'diary.copyYesterdayEmpty': 'No entries yesterday',
+
+  // weight trend
+  'weight.trend': 'Weight trend',
+
   // weight tracking
   'weight.title': 'Weight',
   'weight.today': 'My weight today',
@@ -356,6 +388,22 @@ const uk: Dict = {
   'diary.priorityLow': 'Низький',
   'diary.foodCatalog': 'База продуктов',
   'diary.addFoodAction': '+ У день',
+
+  // adaptive TDEE
+  'tdee.title': 'Адаптивний TDEE',
+  'tdee.estimated': 'Розрахунковий розхід',
+  'tdee.onTrack': 'Норма відповідає даним ✓',
+  'tdee.reduce': 'Рекомендуємо знизити до',
+  'tdee.increase': 'Рекомендуємо підвищити до',
+  'tdee.dataNeeded': 'Додайте 2+ тижні ваги та щоденника',
+  'tdee.kcalday': 'ккал/день',
+
+  // copy yesterday
+  'diary.copyYesterday': 'Скопіювати вчора',
+  'diary.copyYesterdayEmpty': 'Вчора не було записів',
+
+  // weight trend
+  'weight.trend': 'Тренд ваги',
 
   // weight tracking
   'weight.title': 'Вага',
