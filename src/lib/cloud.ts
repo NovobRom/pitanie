@@ -42,6 +42,59 @@ export async function listMyPlans(): Promise<SavedPlan[]> {
   return (data ?? []) as SavedPlan[];
 }
 
+// ── Recent Foods ───────────────────────────────────────────────────────────────
+
+export interface RecentFood {
+  name: string;
+  kcal: number;
+  protein: number;
+  fat: number;
+  carbs: number;
+  lastGrams: number;
+  count: number;
+}
+
+export async function getRecentFoods(limit = 10): Promise<RecentFood[]> {
+  const { data } = await supabase
+    .from('plans')
+    .select('data')
+    .order('title', { ascending: false })
+    .limit(14);
+
+  if (!data) return [];
+
+  const foodMap = new Map<string, RecentFood>();
+
+  for (const plan of data) {
+    const meals = plan.data?.meals || {};
+    for (const mealItems of Object.values(meals)) {
+      for (const item of mealItems as any[]) {
+        if (!item?.name) continue;
+        const key = item.name.toLowerCase().trim();
+        const existing = foodMap.get(key);
+        if (existing) {
+          existing.count++;
+          existing.lastGrams = item.grams;
+        } else {
+          foodMap.set(key, {
+            name: item.name,
+            kcal: item.kcal ?? 0,
+            protein: item.protein ?? 0,
+            fat: item.fat ?? 0,
+            carbs: item.carbs ?? 0,
+            lastGrams: item.grams ?? 100,
+            count: 1,
+          });
+        }
+      }
+    }
+  }
+
+  return Array.from(foodMap.values())
+    .sort((a, b) => b.count - a.count)
+    .slice(0, limit);
+}
+
 // ── Profile ────────────────────────────────────────────────────────────────────
 
 export interface UserProfile {

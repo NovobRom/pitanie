@@ -119,7 +119,19 @@ const ru: Dict = {
   'build.protShort': 'Б',
   'build.fatShort': 'Ж',
   'build.carbShort': 'У',
+  'build.find': 'Найти',
+  'build.per100': 'на 100г',
   'lang.label': 'Язык',
+
+  // recent foods
+  'recent.title': 'Недавние',
+  'recent.empty': 'Начните добавлять продукты',
+
+  // barcode
+  'barcode.scan': 'Штрихкод',
+  'barcode.scanning': 'Наведите камеру на штрихкод',
+  'barcode.notFound': 'Продукт не найден по штрихкоду',
+  'barcode.error': 'Камера недоступна',
 };
 
 const en: Dict = {
@@ -235,7 +247,19 @@ const en: Dict = {
   'build.protShort': 'P',
   'build.fatShort': 'F',
   'build.carbShort': 'C',
+  'build.find': 'Search',
+  'build.per100': 'per 100g',
   'lang.label': 'Language',
+
+  // recent foods
+  'recent.title': 'Recent',
+  'recent.empty': 'Start adding foods to see recent',
+
+  // barcode
+  'barcode.scan': 'Scan',
+  'barcode.scanning': 'Point camera at barcode',
+  'barcode.notFound': 'Product not found for this barcode',
+  'barcode.error': 'Camera not available',
 };
 
 const uk: Dict = {
@@ -351,7 +375,19 @@ const uk: Dict = {
   'build.protShort': 'Б',
   'build.fatShort': 'Ж',
   'build.carbShort': 'В',
+  'build.find': 'Знайти',
+  'build.per100': 'на 100г',
   'lang.label': 'Мова',
+
+  // recent foods
+  'recent.title': 'Нещодавні',
+  'recent.empty': 'Почніть додавати продукти',
+
+  // barcode
+  'barcode.scan': 'Штрихкод',
+  'barcode.scanning': 'Наведіть камеру на штрихкод',
+  'barcode.notFound': 'Продукт не знайдено за штрихкодом',
+  'barcode.error': 'Камера недоступна',
 };
 
 const dictionaries: Record<Lang, Dict> = { ru, en, uk };

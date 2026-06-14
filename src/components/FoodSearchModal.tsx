@@ -1,11 +1,13 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
-import { X, Search, Loader2 } from 'lucide-react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { X, Search, Loader2, ScanLine, Clock } from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
+import { getRecentFoods, RecentFood } from '@/lib/cloud';
+import { BarcodeScanner } from './BarcodeScanner';
 
 interface FoodSearchModalProps {
-  mealType: string; // 'breakfast' | 'lunch' | 'dinner' | 'snacks'
+  mealType: string;
   onClose: () => void;
   onAdd: (name: string, kcal: number, protein: number, fat: number, carbs: number, grams: number) => void;
 }
@@ -21,7 +23,7 @@ interface SearchResult {
   uid: string;
   name: string;
   brand?: string;
-  nutrition: Nutrition; // per 100g
+  nutrition: Nutrition;
 }
 
 export function FoodSearchModal({ mealType, onClose, onAdd }: FoodSearchModalProps) {
@@ -31,21 +33,26 @@ export function FoodSearchModal({ mealType, onClose, onAdd }: FoodSearchModalPro
   const [isLoading, setIsLoading] = useState(false);
   const [searched, setSearched] = useState(false);
   const [gramInputs, setGramInputs] = useState<Record<string, number>>({});
+  const [recentFoods, setRecentFoods] = useState<RecentFood[]>([]);
+  const [recentLoading, setRecentLoading] = useState(true);
+  const [showScanner, setShowScanner] = useState(false);
+  const [barcodeLoading, setBarcodeLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     inputRef.current?.focus();
+    getRecentFoods(8).then((foods) => {
+      setRecentFoods(foods);
+      setRecentLoading(false);
+    });
   }, []);
 
-  async function searchFoods() {
-    const q = query.trim();
-    if (!q) return;
+  const searchFoods = useCallback(async (q: string) => {
+    if (!q.trim()) return;
     setIsLoading(true);
     setSearched(true);
     try {
-      const url = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(
-        q
-      )}&search_simple=1&action=process&json=1&page_size=20&fields=product_name,nutriments,brands`;
+      const url = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(q)}&search_simple=1&action=process&json=1&page_size=20&fields=product_name,nutriments,brands`;
       const res = await fetch(url);
       const data = await res.json();
 
@@ -76,7 +83,31 @@ export function FoodSearchModal({ mealType, onClose, onAdd }: FoodSearchModalPro
     } finally {
       setIsLoading(false);
     }
-  }
+  }, []);
+
+  const handleBarcodeDetected = useCallback(async (barcode: string) => {
+    setShowScanner(false);
+    setBarcodeLoading(true);
+    setSearched(true);
+    try {
+      const res = await fetch(`/api/barcode-food?code=${encodeURIComponent(barcode)}`);
+      const data = await res.json();
+      if (data.product) {
+        setResults([{
+          uid: `barcode-${barcode}`,
+          name: data.product.name,
+          brand: data.product.brand,
+          nutrition: data.product.nutrition,
+        }]);
+      } else {
+        setResults([]);
+      }
+    } catch {
+      setResults([]);
+    } finally {
+      setBarcodeLoading(false);
+    }
+  }, []);
 
   function priority(kcalPer100g: number) {
     if (kcalPer100g < 100)
@@ -86,33 +117,32 @@ export function FoodSearchModal({ mealType, onClose, onAdd }: FoodSearchModalPro
     return { emoji: '🔴', labelKey: 'diary.priorityLow', bg: '#fff1f2', border: '#fca5a5', text: '#dc2626' };
   }
 
-  const handleAddProduct = (product: SearchResult) => {
+  const handleAddRecent = (food: RecentFood) => {
+    onAdd(food.name, food.kcal, food.protein, food.fat, food.carbs, food.lastGrams);
+    onClose();
+  };
+
+  const handleAddSearchResult = (product: SearchResult) => {
     const grams = gramInputs[product.uid] ?? 100;
-    onAdd(
-      product.name,
-      product.nutrition.kcal,
-      product.nutrition.protein,
-      product.nutrition.fat,
-      product.nutrition.carbs,
-      grams
-    );
+    onAdd(product.name, product.nutrition.kcal, product.nutrition.protein, product.nutrition.fat, product.nutrition.carbs, grams);
     onClose();
   };
 
   const getMealTitle = () => {
-    switch (mealType) {
-      case 'breakfast':
-        return t('diary.breakfast');
-      case 'lunch':
-        return t('diary.lunch');
-      case 'dinner':
-        return t('diary.dinner');
-      case 'snacks':
-        return t('diary.snacks');
-      default:
-        return '';
-    }
+    const keys: Record<string, string> = {
+      breakfast: 'diary.breakfast',
+      lunch: 'diary.lunch',
+      dinner: 'diary.dinner',
+      snacks: 'diary.snacks',
+    };
+    return t(keys[mealType] ?? 'diary.add');
   };
+
+  const showRecent = !searched && !isLoading;
+
+  if (showScanner) {
+    return <BarcodeScanner onDetected={handleBarcodeDetected} onClose={() => setShowScanner(false)} />;
+  }
 
   return (
     <div
@@ -145,13 +175,21 @@ export function FoodSearchModal({ mealType, onClose, onAdd }: FoodSearchModalPro
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && searchFoods()}
+              onKeyDown={(e) => e.key === 'Enter' && searchFoods(query)}
               placeholder={t('diary.searchPlaceholder')}
               className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:border-[var(--color-primary)] transition-all shadow-sm"
             />
           </div>
+          {/* Barcode button */}
           <button
-            onClick={searchFoods}
+            onClick={() => setShowScanner(true)}
+            title={t('barcode.scan')}
+            className="shrink-0 flex items-center justify-center w-11 h-11 rounded-2xl border border-gray-200 bg-white hover:bg-gray-50 transition-all shadow-sm text-[var(--color-primary)]"
+          >
+            <ScanLine size={20} />
+          </button>
+          <button
+            onClick={() => searchFoods(query)}
             disabled={isLoading || !query.trim()}
             className="bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] disabled:opacity-40 text-white text-sm font-semibold px-5 py-2.5 rounded-2xl transition-all shadow-[var(--shadow-sm)] shrink-0"
           >
@@ -159,104 +197,156 @@ export function FoodSearchModal({ mealType, onClose, onAdd }: FoodSearchModalPro
           </button>
         </div>
 
-        {/* Results Container */}
+        {/* Content */}
         <div className="flex-1 overflow-y-auto p-4 space-y-3">
-          {isLoading && (
+          {/* Barcode lookup loading */}
+          {barcodeLoading && (
+            <div className="text-center py-12 space-y-2">
+              <Loader2 size={24} className="animate-spin mx-auto text-[var(--color-primary)]" />
+              <p className="text-xs text-[var(--color-text-muted)]">{t('barcode.scanning')}…</p>
+            </div>
+          )}
+
+          {/* Search loading */}
+          {isLoading && !barcodeLoading && (
             <div className="text-center py-12 space-y-2">
               <Loader2 size={24} className="animate-spin mx-auto text-[var(--color-primary)]" />
               <p className="text-xs text-[var(--color-text-muted)]">{t('diary.searchState')}</p>
             </div>
           )}
 
-          {!isLoading && searched && results.length === 0 && (
+          {/* Recent foods (shown before first search) */}
+          {showRecent && !barcodeLoading && (
+            <div>
+              <div className="flex items-center gap-1.5 mb-2">
+                <Clock size={13} className="text-[var(--color-text-muted)]" />
+                <p className="text-[10px] font-bold text-[var(--color-text-muted)] uppercase tracking-wider">
+                  {t('recent.title')}
+                </p>
+              </div>
+              {recentLoading ? (
+                <div className="flex justify-center py-4">
+                  <Loader2 size={16} className="animate-spin text-[var(--color-primary)]" />
+                </div>
+              ) : recentFoods.length === 0 ? (
+                <p className="text-xs text-[var(--color-text-muted)] text-center py-4">{t('recent.empty')}</p>
+              ) : (
+                <div className="space-y-2">
+                  {recentFoods.map((food, i) => {
+                    const scaledKcal = Math.round((food.kcal * food.lastGrams) / 100);
+                    return (
+                      <div
+                        key={i}
+                        className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-gray-50 hover:bg-gray-100/70 transition-colors"
+                      >
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-semibold text-[var(--color-text)] truncate">{food.name}</p>
+                          <p className="text-[10px] text-[var(--color-text-muted)] font-mono mt-0.5">
+                            {food.lastGrams}г · {scaledKcal} {t('calc.kcal')} · {t('build.protShort')} {Math.round(food.protein * food.lastGrams / 100)}г
+                          </p>
+                        </div>
+                        <button
+                          onClick={() => handleAddRecent(food)}
+                          className="shrink-0 bg-[var(--color-primary)]/10 hover:bg-[var(--color-primary)]/20 text-[var(--color-primary-dark)] text-[11px] font-bold px-3 py-1.5 rounded-xl transition-all"
+                        >
+                          {t('diary.addFoodAction')}
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* No results */}
+          {!isLoading && !barcodeLoading && searched && results.length === 0 && (
             <p className="text-center py-12 text-sm text-[var(--color-text-muted)]">
               {t('diary.searchNoResults')}
             </p>
           )}
 
-          {!isLoading &&
-            results.map((product) => {
-              const p = priority(product.nutrition.kcal);
-              const grams = gramInputs[product.uid] ?? 100;
-              const scaledKcal = Math.round((product.nutrition.kcal * grams) / 100);
+          {/* Search results */}
+          {!isLoading && !barcodeLoading && results.map((product) => {
+            const p = priority(product.nutrition.kcal);
+            const grams = gramInputs[product.uid] ?? 100;
+            const scaledKcal = Math.round((product.nutrition.kcal * grams) / 100);
 
-              return (
-                <div
-                  key={product.uid}
-                  style={{ backgroundColor: p.bg, borderColor: p.border }}
-                  className="rounded-2xl border p-4 flex flex-col gap-3 transition-all"
-                >
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="min-w-0">
-                      <h4 className="font-bold text-sm text-[var(--color-text)] leading-snug truncate">
-                        {product.name}
-                      </h4>
-                      {product.brand && (
-                        <p className="text-[10px] text-[var(--color-text-muted)] mt-0.5 truncate">
-                          {product.brand}
-                        </p>
-                      )}
-                    </div>
-                    <span
-                      style={{ color: p.text, backgroundColor: '#ffffffcc' }}
-                      className="text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0"
-                    >
-                      {p.emoji} {t(p.labelKey)}
-                    </span>
+            return (
+              <div
+                key={product.uid}
+                style={{ backgroundColor: p.bg, borderColor: p.border }}
+                className="rounded-2xl border p-4 flex flex-col gap-3 transition-all"
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <div className="min-w-0">
+                    <h4 className="font-bold text-sm text-[var(--color-text)] leading-snug truncate">
+                      {product.name}
+                    </h4>
+                    {product.brand && (
+                      <p className="text-[10px] text-[var(--color-text-muted)] mt-0.5 truncate">
+                        {product.brand}
+                      </p>
+                    )}
                   </div>
-
-                  {/* Macros Badges per 100g */}
-                  <div className="flex flex-wrap gap-2 text-[10px] font-mono text-[var(--color-text-light)]">
-                    <span className="bg-gray-100/80 px-2 py-0.5 rounded-md">
-                      {t('build.per100')}:
-                    </span>
-                    <span className="bg-orange-50 text-orange-700 px-2 py-0.5 rounded-md">
-                      {Math.round(product.nutrition.kcal)} {t('calc.kcal')}
-                    </span>
-                    <span className="bg-blue-50 text-blue-700 px-2 py-0.5 rounded-md">
-                      {t('build.protShort')} {product.nutrition.protein}g
-                    </span>
-                    <span className="bg-pink-50 text-pink-700 px-2 py-0.5 rounded-md">
-                      {t('build.fatShort')} {product.nutrition.fat}g
-                    </span>
-                    <span className="bg-green-50 text-green-700 px-2 py-0.5 rounded-md">
-                      {t('build.carbShort')} {product.nutrition.carbs}g
-                    </span>
-                  </div>
-
-                  {/* Add action */}
-                  <div className="flex items-center gap-3 pt-2 border-t border-black/5">
-                    <span className="text-[11px] text-[var(--color-text-light)] font-medium">
-                      {t('diary.portion')}:
-                    </span>
-                    <div className="flex items-center gap-1 shrink-0">
-                      <input
-                        type="number"
-                        min={1}
-                        max={2000}
-                        value={grams}
-                        onChange={(e) =>
-                          setGramInputs((prev) => ({ ...prev, [product.uid]: Number(e.target.value) }))
-                        }
-                        className="w-16 text-center text-xs border border-gray-200 rounded-lg py-1 bg-white"
-                      />
-                      <span className="text-[11px] text-[var(--color-text-muted)]">g</span>
-                    </div>
-                    
-                    <span className="text-xs font-mono font-bold text-[var(--color-primary-dark)] ml-2">
-                      {scaledKcal} {t('calc.kcal')}
-                    </span>
-
-                    <button
-                      onClick={() => handleAddProduct(product)}
-                      className="ml-auto bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white text-[11px] font-bold px-3 py-1.5 rounded-xl transition-all shadow-[var(--shadow-sm)]"
-                    >
-                      {t('diary.addFoodAction')}
-                    </button>
-                  </div>
+                  <span
+                    style={{ color: p.text, backgroundColor: '#ffffffcc' }}
+                    className="text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0"
+                  >
+                    {p.emoji} {t(p.labelKey)}
+                  </span>
                 </div>
-              );
-            })}
+
+                {/* Macros per 100g */}
+                <div className="flex flex-wrap gap-2 text-[10px] font-mono text-[var(--color-text-light)]">
+                  <span className="bg-gray-100/80 px-2 py-0.5 rounded-md">{t('build.per100')}:</span>
+                  <span className="bg-orange-50 text-orange-700 px-2 py-0.5 rounded-md">
+                    {Math.round(product.nutrition.kcal)} {t('calc.kcal')}
+                  </span>
+                  <span className="bg-blue-50 text-blue-700 px-2 py-0.5 rounded-md">
+                    {t('build.protShort')} {product.nutrition.protein}g
+                  </span>
+                  <span className="bg-pink-50 text-pink-700 px-2 py-0.5 rounded-md">
+                    {t('build.fatShort')} {product.nutrition.fat}g
+                  </span>
+                  <span className="bg-green-50 text-green-700 px-2 py-0.5 rounded-md">
+                    {t('build.carbShort')} {product.nutrition.carbs}g
+                  </span>
+                </div>
+
+                {/* Add action */}
+                <div className="flex items-center gap-3 pt-2 border-t border-black/5">
+                  <span className="text-[11px] text-[var(--color-text-light)] font-medium">
+                    {t('diary.portion')}:
+                  </span>
+                  <div className="flex items-center gap-1 shrink-0">
+                    <input
+                      type="number"
+                      min={1}
+                      max={2000}
+                      value={grams}
+                      onChange={(e) =>
+                        setGramInputs((prev) => ({ ...prev, [product.uid]: Number(e.target.value) }))
+                      }
+                      className="w-16 text-center text-xs border border-gray-200 rounded-lg py-1 bg-white"
+                    />
+                    <span className="text-[11px] text-[var(--color-text-muted)]">g</span>
+                  </div>
+
+                  <span className="text-xs font-mono font-bold text-[var(--color-primary-dark)] ml-2">
+                    {scaledKcal} {t('calc.kcal')}
+                  </span>
+
+                  <button
+                    onClick={() => handleAddSearchResult(product)}
+                    className="ml-auto bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white text-[11px] font-bold px-3 py-1.5 rounded-xl transition-all shadow-[var(--shadow-sm)]"
+                  >
+                    {t('diary.addFoodAction')}
+                  </button>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>
