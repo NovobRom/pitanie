@@ -68,6 +68,20 @@ const ru: Dict = {
   'build.fatShort': 'Ж',
   'build.carbShort': 'У',
 
+  // generator
+  'gen.title': 'Авто-подбор меню',
+  'gen.subtitle': 'Подберём продукты под вашу цель по КБЖУ',
+  'gen.needGoal': 'Сначала рассчитайте норму в калькуляторе выше',
+  'gen.generate': 'Подобрать меню',
+  'gen.regenerate': 'Другой вариант',
+  'gen.vegetarian': 'Вегетарианское',
+  'gen.toBuilder': 'Перенести в конструктор',
+  'gen.meal.breakfast': 'Завтрак',
+  'gen.meal.lunch': 'Обед',
+  'gen.meal.dinner': 'Ужин',
+  'gen.match': 'Совпадение с целью',
+  'gen.hint': 'Можно перенести в конструктор и отредактировать граммы вручную',
+
   // common
   'lang.label': 'Язык',
 };
@@ -127,6 +141,19 @@ const en: Dict = {
   'build.protShort': 'P',
   'build.fatShort': 'F',
   'build.carbShort': 'C',
+
+  'gen.title': 'Auto Meal Plan',
+  'gen.subtitle': "We'll pick foods to match your macro target",
+  'gen.needGoal': 'First calculate your target in the calculator above',
+  'gen.generate': 'Generate plan',
+  'gen.regenerate': 'Another option',
+  'gen.vegetarian': 'Vegetarian',
+  'gen.toBuilder': 'Send to builder',
+  'gen.meal.breakfast': 'Breakfast',
+  'gen.meal.lunch': 'Lunch',
+  'gen.meal.dinner': 'Dinner',
+  'gen.match': 'Match to target',
+  'gen.hint': 'Send it to the builder to fine-tune grams by hand',
 
   'lang.label': 'Language',
 };

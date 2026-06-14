@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Search, Loader2, X, Plus, ChefHat } from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
 import { Macros, FoodProduct, macrosForGrams } from '@/lib/nutrition';
+import { MacroBar } from '@/components/MacroBar';
 
 interface SelectedItem {
   id: number;
@@ -11,47 +12,21 @@ interface SelectedItem {
   grams: number;
 }
 
+export interface BuilderSeedItem {
+  product: FoodProduct;
+  grams: number;
+}
+
 interface Props {
   goals: Macros | null;
+  initialItems?: BuilderSeedItem[];
 }
 
 const DEFAULT_GOALS: Macros = { calories: 2000, protein: 150, fat: 55, carbs: 200 };
 
-// ─── Progress bar ─────────────────────────────────────────────────────────────
-
-interface MacroBarProps {
-  label: string;
-  unit: string;
-  value: number;
-  goal: number;
-  barColor: string;
-  textColor: string;
-}
-
-const MacroBar = ({ label, unit, value, goal, barColor, textColor }: MacroBarProps) => {
-  const pct = goal > 0 ? Math.min((value / goal) * 100, 100) : 0;
-  const over = value > goal;
-  return (
-    <div>
-      <div className="flex justify-between text-xs mb-1.5">
-        <span className="text-[var(--color-text-muted)]">{label}</span>
-        <span className={`font-bold ${over ? 'text-red-500' : textColor}`}>
-          {value} / {goal} {unit}
-        </span>
-      </div>
-      <div className="h-2.5 bg-[var(--color-border)] rounded-full overflow-hidden">
-        <div
-          className={`h-full rounded-full transition-all duration-500 ${over ? 'bg-red-400' : barColor}`}
-          style={{ width: `${pct}%` }}
-        />
-      </div>
-    </div>
-  );
-};
-
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
-export const MenuBuilder = ({ goals }: Props) => {
+export const MenuBuilder = ({ goals, initialItems }: Props) => {
   const { t } = useI18n();
 
   const [query, setQuery] = useState('');
@@ -59,8 +34,10 @@ export const MenuBuilder = ({ goals }: Props) => {
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
 
-  const [items, setItems] = useState<SelectedItem[]>([]);
-  const [nextId, setNextId] = useState(0);
+  const [items, setItems] = useState<SelectedItem[]>(() =>
+    (initialItems ?? []).map((it, i) => ({ id: i, product: it.product, grams: it.grams })),
+  );
+  const [nextId, setNextId] = useState(initialItems?.length ?? 0);
 
   const search = async () => {
     if (!query.trim()) return;
