@@ -126,6 +126,12 @@ export function AiLogModal({ mealType, onClose, onAddItem, onAddItems }: AiLogMo
     );
   };
 
+  const changeGrams = (idx: number, raw: string) => {
+    const g = parseInt(raw, 10);
+    if (!Number.isFinite(g) || g <= 0) return;
+    setItems((prev) => prev.map((it, i) => (i === idx ? { ...it, grams: g } : it)));
+  };
+
   const addItem = (idx: number) => {
     const item = items[idx];
     onAddItem(composeName(item), item.kcal, item.protein, item.fat, item.carbs, item.grams, item.fiber, item.micros);
@@ -331,7 +337,18 @@ export function AiLogModal({ mealType, onClose, onAddItem, onAddItems }: AiLogMo
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-[var(--color-text)] truncate">{item.name}</p>
                       <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-                        <span className="text-[10px] text-[var(--color-text-muted)]">{item.grams}г</span>
+                        <label className="flex items-center gap-0.5">
+                          <input
+                            type="number"
+                            min={1}
+                            max={2000}
+                            value={item.grams}
+                            disabled={isAdded}
+                            onChange={(e) => changeGrams(idx, e.target.value)}
+                            className="w-12 text-[10px] font-semibold text-center bg-transparent border-b border-[var(--color-border)] text-[var(--color-text-muted)] outline-none focus:border-[var(--color-primary)] disabled:opacity-60 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                          />
+                          <span className="text-[10px] text-[var(--color-text-muted)]">г</span>
+                        </label>
                         <span className="text-[10px] font-semibold" style={{ color: 'var(--color-fat)' }}>{itemKcal} ккал</span>
                         <span className="text-[10px]" style={{ color: 'var(--color-protein)' }}>Б {r(item.protein * item.grams / 100)}г</span>
                         <span className="text-[10px]" style={{ color: 'var(--color-fat)' }}>Ж {r(item.fat * item.grams / 100)}г</span>
