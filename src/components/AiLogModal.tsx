@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { X, Sparkles, Loader2, Plus, Check, Camera, ImagePlus, Type } from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
 import { aiPost } from '@/lib/aiFetch';
@@ -46,6 +46,10 @@ function fileToDownscaledDataUrl(file: File, maxEdge = 1024, quality = 0.8): Pro
 
 export function AiLogModal({ mealType, onClose, onAddItem, onAddItems }: AiLogModalProps) {
   const { t, lang } = useI18n();
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = ''; };
+  }, []);
   const [mode, setMode] = useState<Mode>('text');
   const [description, setDescription] = useState('');
   const [photo, setPhoto] = useState<string | null>(null);

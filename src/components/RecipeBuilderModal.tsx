@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, Plus, Trash2, ChefHat, Loader2, Sparkles } from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
 import { aiPost } from '@/lib/aiFetch';
@@ -36,6 +36,10 @@ const newDraft = (): IngredientDraft => ({
 
 export function RecipeBuilderModal({ onClose, onSaved }: RecipeBuilderModalProps) {
   const { t, lang } = useI18n();
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = ''; };
+  }, []);
   const [name, setName] = useState('');
   const [servingG, setServingG] = useState(100);
   const [ingredients, setIngredients] = useState<IngredientDraft[]>([newDraft()]);

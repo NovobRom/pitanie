@@ -126,6 +126,7 @@ const ru: Dict = {
   'weight.kg': 'кг',
   'weight.noHistory': 'Нет записей',
   'weight.saved': 'Сохранено',
+  'weight.delete': 'Удалить запись',
 
   // common
   'app.name': 'Dose',
@@ -356,6 +357,7 @@ const en: Dict = {
   'weight.kg': 'kg',
   'weight.noHistory': 'No entries yet',
   'weight.saved': 'Saved',
+  'weight.delete': 'Delete entry',
 
   // common
   'app.name': 'Dose',
@@ -586,6 +588,7 @@ const uk: Dict = {
   'weight.kg': 'кг',
   'weight.noHistory': 'Немає записів',
   'weight.saved': 'Збережено',
+  'weight.delete': 'Видалити запис',
 
   // common
   'app.name': 'Dose',

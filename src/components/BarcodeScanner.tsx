@@ -19,6 +19,11 @@ export function BarcodeScanner({ onDetected, onClose }: BarcodeScannerProps) {
   const rafRef = useRef<number>(0);
 
   useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = ''; };
+  }, []);
+
+  useEffect(() => {
     startScanner();
     return () => stopScanner();
     // eslint-disable-next-line react-hooks/exhaustive-deps
