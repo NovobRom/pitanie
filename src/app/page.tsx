@@ -13,6 +13,7 @@ import { BottomNav, Tab } from '@/components/BottomNav';
 import { Macros } from '@/lib/nutrition';
 import { getProfile } from '@/lib/cloud';
 import type { Micros } from '@/lib/micronutrients';
+import type { AiLoggedItem } from '@/app/api/ai-log/route';
 
 const DEFAULT_GOALS: Macros = {
   calories: 2000,
@@ -134,6 +135,22 @@ export default function Home() {
     saveDiary(updatedMeals, goals);
   };
 
+  const handleAddFoodBatch = (mealType: string, newItems: AiLoggedItem[]) => {
+    if (!newItems.length) return;
+    const mapped = newItems.map((item) => {
+      const r: any = { name: item.name, grams: item.grams, kcal: item.kcal, protein: item.protein, fat: item.fat, carbs: item.carbs };
+      if (item.fiber != null) r.fiber = item.fiber;
+      if (item.micros) r.micros = item.micros;
+      return r;
+    });
+    const updatedMeals = {
+      ...meals,
+      [mealType]: [...(meals[mealType] || []), ...mapped],
+    };
+    setMeals(updatedMeals);
+    saveDiary(updatedMeals, goals);
+  };
+
   const handleRemoveFood = (mealType: string, index: number) => {
     const updatedMeals = {
       ...meals,
@@ -201,6 +218,7 @@ export default function Home() {
             currentDate={currentDate}
             onDateChange={setCurrentDate}
             onAddFood={handleAddFood}
+            onAddFoods={handleAddFoodBatch}
           />
         )}
 
@@ -210,6 +228,7 @@ export default function Home() {
             onDateChange={setCurrentDate}
             meals={meals}
             onAddFood={handleAddFood}
+            onAddFoods={handleAddFoodBatch}
             onRemoveFood={handleRemoveFood}
             onCopyYesterday={handleCopyYesterday}
           />

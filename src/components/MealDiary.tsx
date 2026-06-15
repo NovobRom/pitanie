@@ -6,6 +6,7 @@ import { useI18n } from '@/lib/i18n';
 import { FoodSearchModal } from '@/components/FoodSearchModal';
 import { AiLogModal } from '@/components/AiLogModal';
 import type { Micros } from '@/lib/micronutrients';
+import type { AiLoggedItem } from '@/app/api/ai-log/route';
 
 interface RationItem {
   name: string;
@@ -28,11 +29,12 @@ interface MealDiaryProps {
     snacks: RationItem[];
   };
   onAddFood: (mealType: string, name: string, kcal: number, protein: number, fat: number, carbs: number, grams: number, fiber?: number, micros?: Micros) => void;
+  onAddFoods?: (mealType: string, items: AiLoggedItem[]) => void;
   onRemoveFood: (mealType: string, index: number) => void;
   onCopyYesterday: () => Promise<boolean>;
 }
 
-export function MealDiary({ currentDate, onDateChange, meals, onAddFood, onRemoveFood, onCopyYesterday }: MealDiaryProps) {
+export function MealDiary({ currentDate, onDateChange, meals, onAddFood, onAddFoods, onRemoveFood, onCopyYesterday }: MealDiaryProps) {
   const { t, lang } = useI18n();
   const [activeSearchMeal, setActiveSearchMeal] = useState<string | null>(null);
   const [activeAiMeal, setActiveAiMeal] = useState<string | null>(null);
@@ -252,6 +254,7 @@ export function MealDiary({ currentDate, onDateChange, meals, onAddFood, onRemov
           onAddItem={(name, kcal, protein, fat, carbs, grams, fiber, micros) =>
             onAddFood(activeAiMeal, name, kcal, protein, fat, carbs, grams, fiber, micros)
           }
+          onAddItems={onAddFoods ? (its) => onAddFoods(activeAiMeal, its) : undefined}
         />
       )}
     </div>
