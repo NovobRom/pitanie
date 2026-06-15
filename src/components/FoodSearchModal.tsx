@@ -31,6 +31,10 @@ interface SearchResult {
 
 export function FoodSearchModal({ mealType, onClose, onAdd }: FoodSearchModalProps) {
   const { t, lang } = useI18n();
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = ''; };
+  }, []);
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);

@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Scale, TrendingDown, TrendingUp, Minus, Loader2 } from 'lucide-react';
+import { Scale, TrendingDown, TrendingUp, Minus, Loader2, Trash2 } from 'lucide-react';
 import type { User } from '@supabase/supabase-js';
 import { useI18n } from '@/lib/i18n';
-import { logWeight, getWeights, WeightEntry } from '@/lib/cloud';
+import { logWeight, getWeights, deleteWeight, WeightEntry } from '@/lib/cloud';
 
 interface WeightWidgetProps {
   user: User;
@@ -17,6 +17,7 @@ export function WeightWidget({ user }: WeightWidgetProps) {
   const [saving, setSaving] = useState(false);
   const [savedFlash, setSavedFlash] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [deletingDate, setDeletingDate] = useState<string | null>(null);
 
   const today = new Date().toISOString().slice(0, 10);
 
@@ -33,6 +34,14 @@ export function WeightWidget({ user }: WeightWidgetProps) {
   useEffect(() => {
     load();
   }, [load]);
+
+  const handleDelete = async (date: string) => {
+    setDeletingDate(date);
+    const ok = await deleteWeight(date);
+    if (ok) await load();
+    setDeletingDate(null);
+    if (date === today) setInputKg('');
+  };
 
   const handleSave = async () => {
     const kg = parseFloat(inputKg);
@@ -117,19 +126,30 @@ export function WeightWidget({ user }: WeightWidgetProps) {
           <div className="space-y-1">
             {recent.map((entry) => {
               const isToday = entry.date === today;
+              const isDeleting = deletingDate === entry.date;
               return (
                 <div
                   key={entry.date}
-                  className={`flex items-center justify-between px-3 py-1.5 rounded-xl text-xs ${
+                  className={`flex items-center justify-between px-3 py-1.5 rounded-xl text-xs group ${
                     isToday
                       ? 'bg-[var(--color-primary)]/10 font-semibold text-[var(--color-primary-dark)]'
                       : 'text-[var(--color-text-light)]'
                   }`}
                 >
                   <span>{isToday ? '• ' : ''}{formatDate(entry.date)}</span>
-                  <span className="font-mono font-semibold">
-                    {Number(entry.weight_kg).toFixed(1)} {t('weight.kg')}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono font-semibold">
+                      {Number(entry.weight_kg).toFixed(1)} {t('weight.kg')}
+                    </span>
+                    <button
+                      onClick={() => handleDelete(entry.date)}
+                      disabled={isDeleting}
+                      className="opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity text-[var(--color-text-muted)] hover:text-red-400 disabled:opacity-30 p-0.5"
+                      title={t('weight.delete')}
+                    >
+                      {isDeleting ? <Loader2 size={11} className="animate-spin" /> : <Trash2 size={11} />}
+                    </button>
+                  </div>
                 </div>
               );
             })}

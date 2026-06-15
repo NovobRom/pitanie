@@ -16,6 +16,11 @@ interface ProfileModalProps {
 
 export function ProfileModal({ user, onClose, onSave, inline = false }: ProfileModalProps) {
   const { t } = useI18n();
+  useEffect(() => {
+    if (inline) return;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = ''; };
+  }, [inline]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 

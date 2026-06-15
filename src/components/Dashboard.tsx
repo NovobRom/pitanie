@@ -255,14 +255,20 @@ function WeightSparkline({ entries }: { entries: WeightEntry[] }) {
   const { t } = useI18n();
   if (entries.length < 2) return null;
 
-  const values = entries.map((e) => Number(e.weight_kg));
+  // entries come newest-first from the DB; reverse so the chart goes left=old, right=new
+  const ordered = [...entries].reverse();
+  const values = ordered.map((e) => Number(e.weight_kg));
+  const latest = values[values.length - 1];
+  const oldest = values[0];
+  const diff = latest - oldest;
+
   const min = Math.min(...values) - 0.5;
   const max = Math.max(...values) + 0.5;
   const range = max - min || 1;
 
   const W = 280;
   const H = 60;
-  const pad = 8;
+  const pad = 14; // generous padding so the dot never clips the card edge
 
   const points = values.map((v, i) => {
     const x = pad + (i / (values.length - 1)) * (W - pad * 2);
@@ -270,9 +276,6 @@ function WeightSparkline({ entries }: { entries: WeightEntry[] }) {
     return `${x.toFixed(1)},${y.toFixed(1)}`;
   });
 
-  const latest = values[values.length - 1];
-  const oldest = values[0];
-  const diff = latest - oldest;
   const TrendIcon = diff < -0.1 ? TrendingDown : diff > 0.1 ? TrendingUp : Minus;
   const trendColor = diff < -0.1 ? 'text-[var(--color-carbs)]' : diff > 0.1 ? 'text-red-400' : 'text-[var(--color-text-muted)]';
 
@@ -286,20 +289,23 @@ function WeightSparkline({ entries }: { entries: WeightEntry[] }) {
         </span>
       </div>
       <div className="flex items-end gap-3">
-        <svg viewBox={`0 0 ${W} ${H}`} className="flex-1 overflow-visible">
-          <defs>
-            <linearGradient id="sparkGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="var(--color-primary)" stopOpacity="0.18" />
-              <stop offset="100%" stopColor="var(--color-primary)" stopOpacity="0" />
-            </linearGradient>
-          </defs>
-          <polyline points={[...points, `${(W - pad).toFixed(1)},${H}`, `${pad},${H}`].join(' ')} fill="url(#sparkGrad)" stroke="none" />
-          <polyline points={points.join(' ')} fill="none" stroke="var(--color-primary)" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
-          {(() => {
-            const [x, y] = points[points.length - 1].split(',').map(Number);
-            return <circle cx={x} cy={y} r="4" fill="var(--color-primary)" />;
-          })()}
-        </svg>
+        {/* overflow-hidden clips the dot inside the card border-radius */}
+        <div className="flex-1 overflow-hidden">
+          <svg viewBox={`0 0 ${W} ${H}`} className="w-full">
+            <defs>
+              <linearGradient id="sparkGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="var(--color-primary)" stopOpacity="0.18" />
+                <stop offset="100%" stopColor="var(--color-primary)" stopOpacity="0" />
+              </linearGradient>
+            </defs>
+            <polyline points={[...points, `${(W - pad).toFixed(1)},${H}`, `${pad},${H}`].join(' ')} fill="url(#sparkGrad)" stroke="none" />
+            <polyline points={points.join(' ')} fill="none" stroke="var(--color-primary)" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
+            {(() => {
+              const [x, y] = points[points.length - 1].split(',').map(Number);
+              return <circle cx={x} cy={y} r="4" fill="var(--color-primary)" />;
+            })()}
+          </svg>
+        </div>
         <div className="text-right shrink-0">
           <p className="text-lg font-extrabold text-[var(--color-text)] tabular-nums">{latest.toFixed(1)}</p>
           <p className="text-[10px] text-[var(--color-text-muted)]">{t('weight.kg')}</p>

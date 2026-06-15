@@ -190,6 +190,15 @@ export async function logWeight(date: string, kg: number): Promise<boolean> {
   return !error;
 }
 
+export async function deleteWeight(date: string): Promise<boolean> {
+  const { error } = await supabase
+    .from('weights')
+    .delete()
+    .eq('user_id', (await supabase.auth.getUser()).data.user?.id)
+    .eq('date', date);
+  return !error;
+}
+
 export async function getWeights(limit = 30): Promise<WeightEntry[]> {
   const { data, error } = await supabase
     .from('weights')
