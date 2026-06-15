@@ -35,7 +35,7 @@ const newDraft = (): IngredientDraft => ({
 });
 
 export function RecipeBuilderModal({ onClose, onSaved }: RecipeBuilderModalProps) {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const [name, setName] = useState('');
   const [servingG, setServingG] = useState(100);
   const [ingredients, setIngredients] = useState<IngredientDraft[]>([newDraft()]);
@@ -51,7 +51,7 @@ export function RecipeBuilderModal({ onClose, onSaved }: RecipeBuilderModalProps
     setAiLoading(true);
     setError('');
     try {
-      const res = await aiPost('/api/ai-recipe', { dish });
+      const res = await aiPost('/api/ai-recipe', { dish, lang });
       const data = await res.json();
       if (!res.ok) {
         setError(data.error === 'rate_limited' ? t('ai.rateLimited') : t('ai.error'));

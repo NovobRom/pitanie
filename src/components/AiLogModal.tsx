@@ -44,7 +44,7 @@ function fileToDownscaledDataUrl(file: File, maxEdge = 1024, quality = 0.8): Pro
 }
 
 export function AiLogModal({ mealType, onClose, onAddItem, onAddItems }: AiLogModalProps) {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const [mode, setMode] = useState<Mode>('text');
   const [description, setDescription] = useState('');
   const [photo, setPhoto] = useState<string | null>(null);
@@ -78,7 +78,7 @@ export function AiLogModal({ mealType, onClose, onAddItem, onAddItems }: AiLogMo
     setLoading(true);
     resetResults();
     try {
-      const res = await aiPost('/api/ai-log', payload);
+      const res = await aiPost('/api/ai-log', { ...payload, lang });
       const data = await res.json();
       if (!res.ok) {
         if (data.error === 'no_key') setError(t('ai.noKey'));
