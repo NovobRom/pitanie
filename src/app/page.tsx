@@ -104,14 +104,11 @@ export default function Home() {
   // ── Save diary ──
   const saveDiary = async (updatedMeals: any, targetGoals: Macros) => {
     if (!user || !currentDate) return;
-    try {
-      await supabase.from('plans').upsert(
-        { owner_id: user.id, title: currentDate, data: { meals: updatedMeals, goals: targetGoals } },
-        { onConflict: 'owner_id,title' }
-      );
-    } catch (err) {
-      console.error('Failed to save diary:', err);
-    }
+    const { error } = await supabase.from('plans').upsert(
+      { owner_id: user.id, title: currentDate, data: { meals: updatedMeals, goals: targetGoals } },
+      { onConflict: 'owner_id,title' }
+    );
+    if (error) console.error('Failed to save diary:', error.message, error.details);
   };
 
   const handleAddFood = (
