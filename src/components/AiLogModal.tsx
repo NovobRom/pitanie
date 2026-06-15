@@ -6,6 +6,7 @@ import { useI18n } from '@/lib/i18n';
 import { aiPost } from '@/lib/aiFetch';
 import type { Micros } from '@/lib/micronutrients';
 import type { AiLoggedItem } from '@/app/api/ai-log/route';
+import { COOK_METHODS, adjustForMethod, type CookMethod } from '@/lib/cooking';
 
 interface AiLogModalProps {
   mealType: string;
@@ -44,7 +45,7 @@ function fileToDownscaledDataUrl(file: File, maxEdge = 1024, quality = 0.8): Pro
 }
 
 export function AiLogModal({ mealType, onClose, onAddItem, onAddItems }: AiLogModalProps) {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const [mode, setMode] = useState<Mode>('text');
   const [description, setDescription] = useState('');
   const [photo, setPhoto] = useState<string | null>(null);
@@ -78,7 +79,7 @@ export function AiLogModal({ mealType, onClose, onAddItem, onAddItems }: AiLogMo
     setLoading(true);
     resetResults();
     try {
-      const res = await aiPost('/api/ai-log', payload);
+      const res = await aiPost('/api/ai-log', { ...payload, lang });
       const data = await res.json();
       if (!res.ok) {
         if (data.error === 'no_key') setError(t('ai.noKey'));
@@ -109,14 +110,32 @@ export function AiLogModal({ mealType, onClose, onAddItem, onAddItems }: AiLogMo
     runParse({ image: photo, description: description.trim() || undefined });
   };
 
+  // The chosen cooking method is baked into the name that goes to the diary,
+  // so the user's correction persists (the diary item has no method field).
+  const composeName = (item: AiLoggedItem) =>
+    item.method ? `${item.name}, ${t(`cook.${item.method}`).toLowerCase()}` : item.name;
+
+  // Switch a recognised item's preparation and re-estimate its macros locally.
+  const changeMethod = (idx: number, next: CookMethod) => {
+    setItems((prev) =>
+      prev.map((it, i) => {
+        if (i !== idx || !it.method || it.method === next) return it;
+        const { kcal, fat } = adjustForMethod({ kcal: it.kcal, fat: it.fat }, it.method, next);
+        return { ...it, method: next, kcal, fat };
+      })
+    );
+  };
+
   const addItem = (idx: number) => {
     const item = items[idx];
-    onAddItem(item.name, item.kcal, item.protein, item.fat, item.carbs, item.grams, item.fiber, item.micros);
+    onAddItem(composeName(item), item.kcal, item.protein, item.fat, item.carbs, item.grams, item.fiber, item.micros);
     setAdded((prev) => new Set(prev).add(idx));
   };
 
   const addAll = () => {
-    const toAdd = items.filter((_, idx) => !added.has(idx));
+    const toAdd = items
+      .filter((_, idx) => !added.has(idx))
+      .map((item) => ({ ...item, name: composeName(item) }));
     if (onAddItems) {
       onAddItems(toAdd);
     } else {
@@ -318,6 +337,21 @@ export function AiLogModal({ mealType, onClose, onAddItem, onAddItems }: AiLogMo
                         <span className="text-[10px]" style={{ color: 'var(--color-fat)' }}>Ж {r(item.fat * item.grams / 100)}г</span>
                         <span className="text-[10px]" style={{ color: 'var(--color-carbs)' }}>У {r(item.carbs * item.grams / 100)}г</span>
                       </div>
+                      {item.method && (
+                        <select
+                          value={item.method}
+                          onChange={(e) => changeMethod(idx, e.target.value as CookMethod)}
+                          disabled={isAdded}
+                          title={t('ai.method')}
+                          className="mt-1.5 text-[10px] font-semibold rounded-lg px-2 py-1 bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text-light)] outline-none focus:border-[var(--color-primary)] disabled:opacity-60 cursor-pointer"
+                        >
+                          {COOK_METHODS.map((m) => (
+                            <option key={m} value={m}>
+                              {t(`cook.${m}`)}
+                            </option>
+                          ))}
+                        </select>
+                      )}
                     </div>
                     <button
                       onClick={() => !isAdded && addItem(idx)}

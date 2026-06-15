@@ -23,23 +23,32 @@ export interface AiRecipe {
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-const SYSTEM = `You are a precise culinary nutritionist. The user names a dish.
+const LANG_NAMES: Record<string, string> = {
+  ru: 'Russian (Русский)',
+  uk: 'Ukrainian (Українська)',
+  en: 'English',
+};
+
+function buildSystem(lang: string): string {
+  const langName = LANG_NAMES[lang] || LANG_NAMES.ru;
+  return `You are a precise culinary nutritionist. The user names a dish.
 Decompose it into its main ingredients with realistic quantities for a typical home-cooked batch.
 For each ingredient give nutritional values PER 100G and the amount used in the dish (grams).
 
 Return ONLY a JSON object — no markdown, no explanation. Shape:
 {
-  "name": string,            // a clean dish name in the user's language
+  "name": string,            // a clean dish name
   "serving_g": number,       // a sensible single-portion weight in grams
   "items": [
     { "name": string, "grams": number, "kcal": number, "protein": number, "fat": number, "carbs": number, "fiber": number }
   ]
 }
-- name and ingredient names in the user's language (default Russian if unknown).
+- CRITICAL: the dish name and every ingredient name MUST be written in ${langName}. Do not use any other language, regardless of the input language.
 - kcal/protein/fat/carbs/fiber are PER 100G of that raw ingredient, from standard food databases.
 - fiber is optional; omit if unknown.
 - Keep ingredient count reasonable (3–10 main components).
 Respond with ONLY the JSON object, nothing else.`;
+}
 
 function num(v: unknown): number | null {
   return typeof v === 'number' && Number.isFinite(v) ? v : null;
@@ -77,6 +86,7 @@ export async function POST(req: NextRequest) {
 
   const body = await req.json().catch(() => null);
   const dish: string = typeof body?.dish === 'string' ? body.dish.trim() : '';
+  const lang: string = typeof body?.lang === 'string' ? body.lang : 'ru';
   if (!dish || dish.length > 200) {
     return NextResponse.json({ error: 'invalid_input' }, { status: 400 });
   }
@@ -85,7 +95,7 @@ export async function POST(req: NextRequest) {
     const message = await client.messages.create({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 1024,
-      system: SYSTEM,
+      system: buildSystem(lang),
       messages: [{ role: 'user', content: dish }],
     });
 
