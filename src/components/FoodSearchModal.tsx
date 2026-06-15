@@ -29,7 +29,7 @@ interface SearchResult {
 }
 
 export function FoodSearchModal({ mealType, onClose, onAdd }: FoodSearchModalProps) {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -62,31 +62,16 @@ export function FoodSearchModal({ mealType, onClose, onAdd }: FoodSearchModalPro
     setIsLoading(true);
     setSearched(true);
     try {
-      const url = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(q)}&search_simple=1&action=process&json=1&page_size=20&fields=product_name,nutriments,brands`;
-      const res = await fetch(url);
+      const params = new URLSearchParams({ q: q.trim(), lang });
+      const res = await fetch(`/api/search-food?${params}`);
       const data = await res.json();
 
-      const products: SearchResult[] = (data.products ?? [])
-        .filter((p: any) => {
-          const n = p.nutriments;
-          return p.product_name && n && n['energy-kcal_100g'] != null && n['proteins_100g'] != null;
-        })
-        .map((p: any, idx: number) => {
-          const n = p.nutriments;
-          return {
-            uid: `${idx}-${String(p.product_name).slice(0, 20)}`,
-            name: String(p.product_name),
-            brand: p.brands ? String(p.brands).split(',')[0].trim() : undefined,
-            nutrition: {
-              kcal: n['energy-kcal_100g'] ?? 0,
-              protein: n['proteins_100g'] ?? 0,
-              fat: n['fat_100g'] ?? 0,
-              carbs: n['carbohydrates_100g'] ?? 0,
-              fiber: n['fiber_100g'] ?? undefined,
-            },
-          };
-        })
-        .slice(0, 12);
+      const products: SearchResult[] = (data.products ?? []).map((p: any, idx: number) => ({
+        uid: `${idx}-${String(p.name).slice(0, 20)}`,
+        name: String(p.name),
+        brand: p.brand,
+        nutrition: p.nutrition,
+      }));
 
       setResults(products);
     } catch {
@@ -94,7 +79,7 @@ export function FoodSearchModal({ mealType, onClose, onAdd }: FoodSearchModalPro
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [lang]);
 
   const handleBarcodeDetected = useCallback(async (barcode: string) => {
     setShowScanner(false);
