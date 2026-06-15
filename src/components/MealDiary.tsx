@@ -99,9 +99,9 @@ export function MealDiary({ currentDate, onDateChange, meals, onAddFood, onRemov
     const totals = calculateMealTotals(items);
 
     return (
-      <div className="bg-white rounded-3xl p-5 shadow-[var(--shadow-sm)] border border-gray-100/50 space-y-4">
+      <div className="bg-[var(--color-surface)] rounded-3xl p-5 shadow-[var(--shadow-sm)] border border-[var(--color-border)] space-y-4">
         {/* Section Header */}
-        <div className="flex items-center justify-between pb-3 border-b border-gray-50">
+        <div className="flex items-center justify-between pb-3 border-b border-[var(--color-border)]">
           <div>
             <h4 className="font-bold text-[var(--color-text)] text-sm">{title}</h4>
             <p className="text-[10px] font-mono text-[var(--color-text-muted)]">
@@ -138,7 +138,7 @@ export function MealDiary({ currentDate, onDateChange, meals, onAddFood, onRemov
               return (
                 <li
                   key={`${item.name}-${idx}`}
-                  className="flex items-center justify-between text-xs bg-gray-50/50 hover:bg-gray-50 p-2.5 rounded-xl border border-gray-100/30 transition-all"
+                  className="flex items-center justify-between text-xs bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-2)] p-2.5 rounded-xl border border-[var(--color-border)] transition-all"
                 >
                   <div className="min-w-0 pr-4">
                     <p className="font-semibold text-[var(--color-text)] truncate">{item.name}</p>
@@ -165,10 +165,10 @@ export function MealDiary({ currentDate, onDateChange, meals, onAddFood, onRemov
     <div className="max-w-3xl mx-auto space-y-6">
       
       {/* ─── Weekly Calendar Strip ─── */}
-      <div className="bg-white rounded-3xl p-4 shadow-[var(--shadow-sm)] border border-gray-100/50 flex items-center justify-between">
+      <div className="bg-[var(--color-surface)] rounded-3xl p-4 shadow-[var(--shadow-sm)] border border-[var(--color-border)] flex items-center justify-between">
         <button
           onClick={() => shiftWeek('prev')}
-          className="text-[var(--color-text-muted)] hover:text-[var(--color-text)] p-1.5 rounded-full hover:bg-gray-50"
+          className="text-[var(--color-text-muted)] hover:text-[var(--color-text)] p-1.5 rounded-full hover:bg-[var(--color-surface-2)]"
         >
           <ChevronLeft size={18} />
         </button>
@@ -186,7 +186,7 @@ export function MealDiary({ currentDate, onDateChange, meals, onAddFood, onRemov
                 className={`flex flex-col items-center justify-center w-10 h-14 rounded-2xl cursor-pointer transition-all ${
                   isActive
                     ? 'bg-[var(--color-primary)] text-white shadow-md'
-                    : 'text-[var(--color-text)] hover:bg-gray-50'
+                    : 'text-[var(--color-text)] hover:bg-[var(--color-surface-2)]'
                 }`}
               >
                 <span className={`text-[10px] font-bold ${isActive ? 'text-white/80' : 'text-[var(--color-text-muted)]'}`}>
@@ -201,7 +201,7 @@ export function MealDiary({ currentDate, onDateChange, meals, onAddFood, onRemov
 
         <button
           onClick={() => shiftWeek('next')}
-          className="text-[var(--color-text-muted)] hover:text-[var(--color-text)] p-1.5 rounded-full hover:bg-gray-50"
+          className="text-[var(--color-text-muted)] hover:text-[var(--color-text)] p-1.5 rounded-full hover:bg-[var(--color-surface-2)]"
         >
           <ChevronRight size={18} />
         </button>
@@ -216,7 +216,7 @@ export function MealDiary({ currentDate, onDateChange, meals, onAddFood, onRemov
             setCopyMsg(msg);
             setTimeout(() => setCopyMsg(null), 2500);
           }}
-          className="flex items-center gap-1.5 text-[11px] font-semibold text-[var(--color-text-light)] hover:text-[var(--color-primary)] bg-white border border-gray-200 hover:border-[var(--color-primary)]/40 px-3 py-1.5 rounded-xl transition-all shadow-sm"
+          className="flex items-center gap-1.5 text-[11px] font-semibold text-[var(--color-text-light)] hover:text-[var(--color-primary)] bg-[var(--color-surface)] border border-[var(--color-border)] hover:border-[var(--color-primary)]/40 px-3 py-1.5 rounded-xl transition-all shadow-sm"
         >
           <Copy size={12} />
           {copyMsg ?? t('diary.copyYesterday')}

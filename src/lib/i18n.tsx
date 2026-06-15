@@ -188,6 +188,16 @@ const ru: Dict = {
   'ai.analyzePhoto': 'Распознать блюдо',
   'ai.retake': 'Другое фото',
   'ai.photoEmpty': 'На фото не найдено еды — попробуйте другой снимок',
+
+  // dashboard (Calorize-style)
+  'dash.eaten': 'Съедено',
+  'dash.left': 'Осталось',
+  'dash.of': 'из',
+  'dash.aiName': 'Dose AI',
+  'dash.aiRole': 'Личный AI-нутрициолог',
+  'dash.aiPrompt': 'Напишите или сфотографируйте блюдо…',
+  'dash.aiTagline': 'Одно предложение — день записан',
+  'dash.logMeal': 'Записать приём пищи',
 };
 
 const en: Dict = {
@@ -372,6 +382,16 @@ const en: Dict = {
   'ai.analyzePhoto': 'Analyse meal',
   'ai.retake': 'Different photo',
   'ai.photoEmpty': 'No food found in the photo — try another shot',
+
+  // dashboard (Calorize-style)
+  'dash.eaten': 'Eaten',
+  'dash.left': 'Left',
+  'dash.of': 'of',
+  'dash.aiName': 'Dose AI',
+  'dash.aiRole': 'Personal AI nutritionist',
+  'dash.aiPrompt': 'Write or snap a meal…',
+  'dash.aiTagline': 'One sentence. Day logged.',
+  'dash.logMeal': 'Log a meal',
 };
 
 const uk: Dict = {
@@ -556,6 +576,16 @@ const uk: Dict = {
   'ai.analyzePhoto': 'Розпізнати страву',
   'ai.retake': 'Інше фото',
   'ai.photoEmpty': 'На фото не знайдено їжі — спробуйте інший знімок',
+
+  // dashboard (Calorize-style)
+  'dash.eaten': 'З\'їдено',
+  'dash.left': 'Залишилось',
+  'dash.of': 'з',
+  'dash.aiName': 'Dose AI',
+  'dash.aiRole': 'Особистий AI-нутриціолог',
+  'dash.aiPrompt': 'Напишіть або сфотографуйте страву…',
+  'dash.aiTagline': 'Одне речення — день записано',
+  'dash.logMeal': 'Записати прийом їжі',
 };
 
 const dictionaries: Record<Lang, Dict> = { ru, en, uk };
