@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
-import { X, Sparkles, Loader2, Plus, Check } from 'lucide-react';
+import { X, Sparkles, Loader2, Plus, Check, Camera, ImagePlus, Type } from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
 import type { AiLoggedItem } from '@/app/api/ai-log/route';
 
@@ -11,28 +11,74 @@ interface AiLogModalProps {
   onAddItem: (name: string, kcal: number, protein: number, fat: number, carbs: number, grams: number, fiber?: number) => void;
 }
 
+type Mode = 'text' | 'photo';
+
+// Downscale an image file to a JPEG data URL (max edge 1024px) to keep the
+// API payload small and the vision call cheap.
+function fileToDownscaledDataUrl(file: File, maxEdge = 1024, quality = 0.8): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error('read failed'));
+    reader.onload = () => {
+      const img = new Image();
+      img.onerror = () => reject(new Error('decode failed'));
+      img.onload = () => {
+        const scale = Math.min(1, maxEdge / Math.max(img.width, img.height));
+        const w = Math.round(img.width * scale);
+        const h = Math.round(img.height * scale);
+        const canvas = document.createElement('canvas');
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return reject(new Error('no canvas'));
+        ctx.drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.src = reader.result as string;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
 export function AiLogModal({ mealType, onClose, onAddItem }: AiLogModalProps) {
   const { t } = useI18n();
+  const [mode, setMode] = useState<Mode>('text');
   const [description, setDescription] = useState('');
+  const [photo, setPhoto] = useState<string | null>(null);
   const [items, setItems] = useState<AiLoggedItem[]>([]);
   const [added, setAdded] = useState<Set<number>>(new Set());
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
+  const galleryInputRef = useRef<HTMLInputElement>(null);
 
-  const handleParse = async () => {
-    const desc = description.trim();
-    if (!desc) return;
-    setLoading(true);
-    setError('');
+  const resetResults = () => {
     setItems([]);
     setAdded(new Set());
+    setError('');
+  };
 
+  const handlePickFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = ''; // allow re-picking the same file
+    if (!file) return;
+    resetResults();
+    try {
+      const dataUrl = await fileToDownscaledDataUrl(file);
+      setPhoto(dataUrl);
+    } catch {
+      setError(t('ai.error'));
+    }
+  };
+
+  const runParse = async (payload: { description?: string; image?: string }) => {
+    setLoading(true);
+    resetResults();
     try {
       const res = await fetch('/api/ai-log', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ description: desc }),
+        body: JSON.stringify(payload),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -41,7 +87,7 @@ export function AiLogModal({ mealType, onClose, onAddItem }: AiLogModalProps) {
         return;
       }
       if (!data.items?.length) {
-        setError(t('ai.empty'));
+        setError(payload.image ? t('ai.photoEmpty') : t('ai.empty'));
         return;
       }
       setItems(data.items);
@@ -50,6 +96,17 @@ export function AiLogModal({ mealType, onClose, onAddItem }: AiLogModalProps) {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleParseText = () => {
+    const desc = description.trim();
+    if (!desc) return;
+    runParse({ description: desc });
+  };
+
+  const handleParsePhoto = () => {
+    if (!photo) return;
+    runParse({ image: photo, description: description.trim() || undefined });
   };
 
   const addItem = (idx: number) => {
@@ -69,6 +126,11 @@ export function AiLogModal({ mealType, onClose, onAddItem }: AiLogModalProps) {
 
   const r = (n: number) => Math.round(n * 10) / 10;
   const totalKcal = items.reduce((s, it) => s + (it.kcal * it.grams) / 100, 0);
+
+  const switchMode = (m: Mode) => {
+    setMode(m);
+    resetResults();
+  };
 
   return (
     <div
@@ -92,40 +154,124 @@ export function AiLogModal({ mealType, onClose, onAddItem }: AiLogModalProps) {
           </button>
         </div>
 
+        {/* Mode tabs */}
+        <div className="flex gap-1 p-1 mx-4 mt-3 rounded-2xl bg-[var(--color-surface-2)] shrink-0">
+          <button
+            onClick={() => switchMode('text')}
+            className={`flex-1 flex items-center justify-center gap-1.5 text-xs font-semibold py-2 rounded-xl transition-all ${
+              mode === 'text'
+                ? 'bg-[var(--color-surface)] text-[var(--color-primary)] shadow-sm'
+                : 'text-[var(--color-text-muted)]'
+            }`}
+          >
+            <Type size={13} />
+            {t('ai.tabText')}
+          </button>
+          <button
+            onClick={() => switchMode('photo')}
+            className={`flex-1 flex items-center justify-center gap-1.5 text-xs font-semibold py-2 rounded-xl transition-all ${
+              mode === 'photo'
+                ? 'bg-[var(--color-surface)] text-[var(--color-primary)] shadow-sm'
+                : 'text-[var(--color-text-muted)]'
+            }`}
+          >
+            <Camera size={13} />
+            {t('ai.tabPhoto')}
+          </button>
+        </div>
+
         {/* Body */}
         <div className="flex-1 overflow-y-auto p-4 space-y-3">
-          {/* Input area */}
-          <div className="space-y-2">
-            <p className="text-[10px] font-bold text-[var(--color-text-muted)] uppercase tracking-wider">{t('ai.hint')}</p>
-            <textarea
-              ref={textareaRef}
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) handleParse();
-              }}
-              placeholder={t('ai.placeholder')}
-              rows={3}
-              className="w-full text-sm px-3 py-2.5 border border-[var(--color-border)] rounded-2xl bg-[var(--color-surface-2)] text-[var(--color-text)] placeholder:text-[var(--color-text-muted)] outline-none focus:border-[var(--color-primary)] transition-colors resize-none"
-            />
-            <button
-              onClick={handleParse}
-              disabled={loading || !description.trim()}
-              className="w-full flex items-center justify-center gap-2 bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] disabled:opacity-40 text-white text-sm font-semibold py-2.5 rounded-xl transition-all"
-            >
-              {loading ? (
-                <>
-                  <Loader2 size={14} className="animate-spin" />
-                  {t('ai.parsing')}
-                </>
+          {/* ── Text mode ── */}
+          {mode === 'text' && (
+            <div className="space-y-2">
+              <p className="text-[10px] font-bold text-[var(--color-text-muted)] uppercase tracking-wider">{t('ai.hint')}</p>
+              <textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) handleParseText();
+                }}
+                placeholder={t('ai.placeholder')}
+                rows={3}
+                className="w-full text-sm px-3 py-2.5 border border-[var(--color-border)] rounded-2xl bg-[var(--color-surface-2)] text-[var(--color-text)] placeholder:text-[var(--color-text-muted)] outline-none focus:border-[var(--color-primary)] transition-colors resize-none"
+              />
+              <button
+                onClick={handleParseText}
+                disabled={loading || !description.trim()}
+                className="w-full flex items-center justify-center gap-2 bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] disabled:opacity-40 text-white text-sm font-semibold py-2.5 rounded-xl transition-all"
+              >
+                {loading ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
+                {loading ? t('ai.parsing') : t('ai.parse')}
+              </button>
+            </div>
+          )}
+
+          {/* ── Photo mode ── */}
+          {mode === 'photo' && (
+            <div className="space-y-3">
+              <input
+                ref={cameraInputRef}
+                type="file"
+                accept="image/*"
+                capture="environment"
+                onChange={handlePickFile}
+                className="hidden"
+              />
+              <input
+                ref={galleryInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handlePickFile}
+                className="hidden"
+              />
+
+              {!photo ? (
+                <div className="space-y-2">
+                  <p className="text-[10px] font-bold text-[var(--color-text-muted)] uppercase tracking-wider">{t('ai.photoHint')}</p>
+                  <button
+                    onClick={() => cameraInputRef.current?.click()}
+                    className="w-full flex items-center justify-center gap-2 bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white text-sm font-semibold py-3 rounded-2xl transition-all"
+                  >
+                    <Camera size={16} />
+                    {t('ai.takePhoto')}
+                  </button>
+                  <button
+                    onClick={() => galleryInputRef.current?.click()}
+                    className="w-full flex items-center justify-center gap-2 border border-[var(--color-border)] text-[var(--color-text-light)] hover:text-[var(--color-primary)] hover:border-[var(--color-primary)]/40 text-sm font-semibold py-3 rounded-2xl transition-all"
+                  >
+                    <ImagePlus size={16} />
+                    {t('ai.choosePhoto')}
+                  </button>
+                </div>
               ) : (
-                <>
-                  <Sparkles size={14} />
-                  {t('ai.parse')}
-                </>
+                <div className="space-y-2">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={photo}
+                    alt="meal"
+                    className="w-full max-h-56 object-cover rounded-2xl border border-[var(--color-border)]"
+                  />
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => { setPhoto(null); resetResults(); }}
+                      className="flex-1 border border-[var(--color-border)] text-[var(--color-text-light)] text-xs font-semibold py-2.5 rounded-xl hover:bg-[var(--color-surface-2)] transition-all"
+                    >
+                      {t('ai.retake')}
+                    </button>
+                    <button
+                      onClick={handleParsePhoto}
+                      disabled={loading}
+                      className="flex-[2] flex items-center justify-center gap-2 bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] disabled:opacity-40 text-white text-xs font-semibold py-2.5 rounded-xl transition-all"
+                    >
+                      {loading ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
+                      {loading ? t('ai.parsing') : t('ai.analyzePhoto')}
+                    </button>
+                  </div>
+                </div>
               )}
-            </button>
-          </div>
+            </div>
+          )}
 
           {/* Error */}
           {error && (
@@ -135,10 +281,9 @@ export function AiLogModal({ mealType, onClose, onAddItem }: AiLogModalProps) {
           {/* Results */}
           {items.length > 0 && (
             <div className="space-y-2">
-              {/* Summary bar */}
               <div className="flex items-center justify-between">
                 <p className="text-[10px] font-bold text-[var(--color-text-muted)] uppercase tracking-wider">
-                  {items.length} {items.length === 1 ? 'позиция' : items.length < 5 ? 'позиции' : 'позиций'} · {Math.round(totalKcal)} ккал
+                  {items.length} · {Math.round(totalKcal)} ккал
                 </p>
                 <button
                   onClick={addAll}

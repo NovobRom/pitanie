@@ -35,8 +35,8 @@ export function Header({ user, onOpenProfile }: HeaderProps) {
     <header className="flex items-center justify-between pb-5 mb-5 border-b border-[var(--color-border)] no-print">
       {/* Logo */}
       <div className="flex items-center gap-2">
-        <div className="w-8 h-8 rounded-xl bg-[var(--color-primary)] text-white flex items-center justify-center shadow-[var(--shadow-glow)]">
-          <Flame size={16} strokeWidth={2.5} />
+        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[var(--color-primary-light)] to-[var(--color-primary-dark)] text-white flex items-center justify-center shadow-[var(--shadow-glow)]">
+          <Flame size={17} strokeWidth={2.5} />
         </div>
         <span className="text-lg font-extrabold tracking-tight text-[var(--color-text)]">
           {t('app.name')}

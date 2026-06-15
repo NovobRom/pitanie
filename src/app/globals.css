@@ -1,52 +1,56 @@
 @import "tailwindcss";
 @source "../**/*.{html,js,ts,jsx,tsx}";
 
-/* ── Fresh Modern Design System ─────────────────────────────────────────────── */
+/* ── Warm Studio Design System (Calorize-inspired) ──────────────────────────── */
 @theme {
-  /* Primary — indigo */
-  --color-primary: #4f46e5;
-  --color-primary-light: #6366f1;
-  --color-primary-dark: #4338ca;
+  /* Primary — warm orange */
+  --color-primary: #f97316;
+  --color-primary-light: #fb923c;
+  --color-primary-dark: #ea580c;
 
-  /* Macro accents (vivid) */
-  --color-protein: #6366f1; /* indigo */
-  --color-protein-bg: #eef0fe;
+  /* Ink — warm near-black, used for selected pills & user chat bubbles */
+  --color-ink: #1c1917;
+  --color-ink-soft: #292524;
+
+  /* Macro accents */
+  --color-protein: #3b82f6; /* blue */
+  --color-protein-bg: #e8f0fe;
   --color-fat: #f59e0b; /* amber */
-  --color-fat-bg: #fef6e7;
-  --color-carbs: #10b981; /* emerald */
-  --color-carbs-bg: #e7f8f1;
+  --color-fat-bg: #fdf2e0;
+  --color-carbs: #22c55e; /* green */
+  --color-carbs-bg: #e6f7ec;
 
   /* Secondary / accent (kept for legacy usages) */
-  --color-secondary: #10b981;
-  --color-accent: #f59e0b;
-  --color-accent-light: #fbbf24;
-  --color-accent-dark: #d97706;
+  --color-secondary: #22c55e;
+  --color-accent: #f97316;
+  --color-accent-light: #fb923c;
+  --color-accent-dark: #ea580c;
 
   /* Per-person (legacy — mapped to macro hues) */
-  --color-roman: #6366f1;
-  --color-roman-light: #a5b4fc;
-  --color-roman-bg: #eef0fe;
+  --color-roman: #3b82f6;
+  --color-roman-light: #93c5fd;
+  --color-roman-bg: #e8f0fe;
   --color-liza: #f59e0b;
   --color-liza-light: #fcd34d;
-  --color-liza-bg: #fef6e7;
+  --color-liza-bg: #fdf2e0;
 
   /* Meal hues */
-  --color-breakfast: #fbbf24;
-  --color-breakfast-bg: #fef6e7;
-  --color-lunch: #10b981;
-  --color-lunch-bg: #e7f8f1;
+  --color-breakfast: #f59e0b;
+  --color-breakfast-bg: #fdf2e0;
+  --color-lunch: #22c55e;
+  --color-lunch-bg: #e6f7ec;
   --color-dinner: #8b5cf6;
   --color-dinner-bg: #f1ecfe;
   --color-cheat: #ec4899;
 
-  /* Neutrals — light */
-  --color-bg: #f6f7fb;
+  /* Neutrals — warm light */
+  --color-bg: #f7f1e9;
   --color-surface: #ffffff;
-  --color-surface-2: #f1f3f9;
-  --color-text: #1a1d29;
-  --color-text-light: #5b6172;
-  --color-text-muted: #9aa0b0;
-  --color-border: #e8eaf1;
+  --color-surface-2: #f4ede3;
+  --color-text: #1c1917;
+  --color-text-light: #6b6259;
+  --color-text-muted: #a8a097;
+  --color-border: #ece4d8;
 
   /*
    * NB: не определяем --spacing-* и --radius-* с именованными ключами
@@ -54,11 +58,11 @@
    * размеров. Кастомные перехватывали max-w-md/lg/2xl и схлопывали контейнеры.
    */
 
-  /* Shadows — crisp soft */
-  --shadow-sm: 0 1px 3px 0 rgb(26 29 41 / 0.06), 0 1px 2px -1px rgb(26 29 41 / 0.04);
-  --shadow-md: 0 4px 12px -2px rgb(26 29 41 / 0.08), 0 2px 6px -2px rgb(26 29 41 / 0.05);
-  --shadow-lg: 0 12px 28px -6px rgb(26 29 41 / 0.12), 0 6px 12px -6px rgb(26 29 41 / 0.06);
-  --shadow-glow: 0 6px 20px -4px rgb(79 70 229 / 0.35);
+  /* Shadows — warm soft */
+  --shadow-sm: 0 1px 3px 0 rgb(64 47 25 / 0.05), 0 1px 2px -1px rgb(64 47 25 / 0.04);
+  --shadow-md: 0 6px 16px -4px rgb(64 47 25 / 0.08), 0 2px 6px -2px rgb(64 47 25 / 0.05);
+  --shadow-lg: 0 16px 36px -8px rgb(64 47 25 / 0.14), 0 6px 12px -6px rgb(64 47 25 / 0.06);
+  --shadow-glow: 0 8px 24px -6px rgb(249 115 22 / 0.4);
 
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
   --font-display: 'Nunito', var(--font-sans);
@@ -67,41 +71,47 @@
 :root {
   --background: var(--color-bg);
   --foreground: var(--color-text);
+  /* Warm ambient gradient behind the app, à la Calorize */
+  --app-gradient: radial-gradient(120% 80% at 50% -10%, #fdeede 0%, #f9f1e6 45%, #f7f1e9 100%);
 }
 
 /* ── Dark theme (manual, via data-theme) ────────────────────────────────────── */
 [data-theme="dark"] {
-  --color-primary: #7c82f0;
-  --color-primary-light: #9499f4;
-  --color-primary-dark: #6366f1;
+  --color-primary: #fb923c;
+  --color-primary-light: #fdba74;
+  --color-primary-dark: #f97316;
 
-  --color-protein: #818cf8;
-  --color-protein-bg: #1e213a;
+  --color-ink: #f4ede3;
+  --color-ink-soft: #e7ddd0;
+
+  --color-protein: #60a5fa;
+  --color-protein-bg: #16233b;
   --color-fat: #fbbf24;
   --color-fat-bg: #2d260e;
-  --color-carbs: #34d399;
+  --color-carbs: #4ade80;
   --color-carbs-bg: #0e2d1f;
 
-  --color-roman: #818cf8;
-  --color-roman-bg: #1e213a;
+  --color-roman: #60a5fa;
+  --color-roman-bg: #16233b;
   --color-liza: #fbbf24;
   --color-liza-bg: #2d260e;
 
-  --color-bg: #0f1117;
-  --color-surface: #181b24;
-  --color-surface-2: #1f2430;
-  --color-text: #f2f3f7;
-  --color-text-light: #aeb3c2;
-  --color-text-muted: #6b7180;
-  --color-border: #2a2f3c;
+  --color-bg: #171310;
+  --color-surface: #211c18;
+  --color-surface-2: #2a2420;
+  --color-text: #f5efe8;
+  --color-text-light: #b8afa4;
+  --color-text-muted: #837a6e;
+  --color-border: #352e28;
 
   --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.4);
   --shadow-md: 0 4px 12px -2px rgb(0 0 0 / 0.45), 0 2px 6px -2px rgb(0 0 0 / 0.3);
   --shadow-lg: 0 12px 28px -6px rgb(0 0 0 / 0.5), 0 6px 12px -6px rgb(0 0 0 / 0.3);
-  --shadow-glow: 0 6px 20px -4px rgb(124 130 240 / 0.4);
+  --shadow-glow: 0 8px 24px -6px rgb(251 146 60 / 0.4);
 
   --background: var(--color-bg);
   --foreground: var(--color-text);
+  --app-gradient: radial-gradient(120% 80% at 50% -10%, #25201a 0%, #1c1813 45%, #171310 100%);
 }
 
 /* Dark utility safety-net — for components with hardcoded Tailwind colors */
@@ -139,7 +149,8 @@
 @layer base {
   body {
     color: var(--foreground);
-    background: var(--background);
+    background: var(--app-gradient);
+    background-attachment: fixed;
     font-family: var(--font-sans);
     font-feature-settings: "rlig" 1, "calt" 1;
     -webkit-font-smoothing: antialiased;
@@ -149,8 +160,8 @@
 
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-display);
-    font-weight: 700;
-    letter-spacing: -0.01em;
+    font-weight: 800;
+    letter-spacing: -0.02em;
   }
 }
 

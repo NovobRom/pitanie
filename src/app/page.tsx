@@ -190,7 +190,7 @@ export default function Home() {
   if (!user) return <AuthWall />;
 
   return (
-    <div className="min-h-screen bg-[var(--color-bg)]">
+    <div className="min-h-screen">
       <main className="p-4 md:p-6 text-[var(--color-text)] max-w-2xl mx-auto pb-28">
         <Header user={user} onOpenProfile={() => setActiveTab('profile')} />
 
@@ -198,7 +198,9 @@ export default function Home() {
           <Dashboard
             goals={goals}
             consumed={calculateConsumed()}
-            onOpenProfile={() => setActiveTab('profile')}
+            currentDate={currentDate}
+            onDateChange={setCurrentDate}
+            onAddFood={handleAddFood}
           />
         )}
 

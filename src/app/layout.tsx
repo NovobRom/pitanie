@@ -40,7 +40,7 @@ export const viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
-  themeColor: "#4f46e5",
+  themeColor: "#f97316",
 };
 
 // Applies the saved theme before first paint to avoid a flash of the wrong theme.

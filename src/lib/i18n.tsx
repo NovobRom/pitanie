@@ -180,6 +180,24 @@ const ru: Dict = {
   'ai.error': 'Не удалось разобрать. Попробуйте ещё раз.',
   'ai.noKey': 'AI-функция недоступна (нет ключа API)',
   'ai.hint': 'Опишите блюдо или приём пищи своими словами',
+  'ai.tabText': 'Текст',
+  'ai.tabPhoto': 'Фото',
+  'ai.photoHint': 'Сфотографируйте блюдо — ИИ оценит КБЖУ',
+  'ai.takePhoto': 'Сделать фото',
+  'ai.choosePhoto': 'Выбрать из галереи',
+  'ai.analyzePhoto': 'Распознать блюдо',
+  'ai.retake': 'Другое фото',
+  'ai.photoEmpty': 'На фото не найдено еды — попробуйте другой снимок',
+
+  // dashboard (Calorize-style)
+  'dash.eaten': 'Съедено',
+  'dash.left': 'Осталось',
+  'dash.of': 'из',
+  'dash.aiName': 'Dose AI',
+  'dash.aiRole': 'Личный AI-нутрициолог',
+  'dash.aiPrompt': 'Напишите или сфотографируйте блюдо…',
+  'dash.aiTagline': 'Одно предложение — день записан',
+  'dash.logMeal': 'Записать приём пищи',
 };
 
 const en: Dict = {
@@ -356,6 +374,24 @@ const en: Dict = {
   'ai.error': 'Could not parse. Please try again.',
   'ai.noKey': 'AI feature unavailable (no API key)',
   'ai.hint': 'Describe your meal or dish in your own words',
+  'ai.tabText': 'Text',
+  'ai.tabPhoto': 'Photo',
+  'ai.photoHint': 'Snap your meal — AI estimates the macros',
+  'ai.takePhoto': 'Take photo',
+  'ai.choosePhoto': 'Choose from gallery',
+  'ai.analyzePhoto': 'Analyse meal',
+  'ai.retake': 'Different photo',
+  'ai.photoEmpty': 'No food found in the photo — try another shot',
+
+  // dashboard (Calorize-style)
+  'dash.eaten': 'Eaten',
+  'dash.left': 'Left',
+  'dash.of': 'of',
+  'dash.aiName': 'Dose AI',
+  'dash.aiRole': 'Personal AI nutritionist',
+  'dash.aiPrompt': 'Write or snap a meal…',
+  'dash.aiTagline': 'One sentence. Day logged.',
+  'dash.logMeal': 'Log a meal',
 };
 
 const uk: Dict = {
@@ -532,6 +568,24 @@ const uk: Dict = {
   'ai.error': 'Не вдалося розібрати. Спробуйте ще раз.',
   'ai.noKey': 'ШІ-функція недоступна (немає ключа API)',
   'ai.hint': 'Опишіть страву або прийом їжі своїми словами',
+  'ai.tabText': 'Текст',
+  'ai.tabPhoto': 'Фото',
+  'ai.photoHint': 'Сфотографуйте страву — ШІ оцінить КБЖВ',
+  'ai.takePhoto': 'Зробити фото',
+  'ai.choosePhoto': 'Вибрати з галереї',
+  'ai.analyzePhoto': 'Розпізнати страву',
+  'ai.retake': 'Інше фото',
+  'ai.photoEmpty': 'На фото не знайдено їжі — спробуйте інший знімок',
+
+  // dashboard (Calorize-style)
+  'dash.eaten': 'З\'їдено',
+  'dash.left': 'Залишилось',
+  'dash.of': 'з',
+  'dash.aiName': 'Dose AI',
+  'dash.aiRole': 'Особистий AI-нутриціолог',
+  'dash.aiPrompt': 'Напишіть або сфотографуйте страву…',
+  'dash.aiTagline': 'Одне речення — день записано',
+  'dash.logMeal': 'Записати прийом їжі',
 };
 
 const dictionaries: Record<Lang, Dict> = { ru, en, uk };
