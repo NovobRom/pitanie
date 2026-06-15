@@ -5,6 +5,7 @@ import { Plus, Trash2, ChevronLeft, ChevronRight, Copy, Sparkles } from 'lucide-
 import { useI18n } from '@/lib/i18n';
 import { FoodSearchModal } from '@/components/FoodSearchModal';
 import { AiLogModal } from '@/components/AiLogModal';
+import type { Micros } from '@/lib/micronutrients';
 
 interface RationItem {
   name: string;
@@ -14,6 +15,7 @@ interface RationItem {
   fat: number;
   carbs: number;
   fiber?: number; // per 100g, optional
+  micros?: Micros; // per 100g, optional (AI-logged items only)
 }
 
 interface MealDiaryProps {
@@ -25,7 +27,7 @@ interface MealDiaryProps {
     dinner: RationItem[];
     snacks: RationItem[];
   };
-  onAddFood: (mealType: string, name: string, kcal: number, protein: number, fat: number, carbs: number, grams: number, fiber?: number) => void;
+  onAddFood: (mealType: string, name: string, kcal: number, protein: number, fat: number, carbs: number, grams: number, fiber?: number, micros?: Micros) => void;
   onRemoveFood: (mealType: string, index: number) => void;
   onCopyYesterday: () => Promise<boolean>;
 }
@@ -247,8 +249,8 @@ export function MealDiary({ currentDate, onDateChange, meals, onAddFood, onRemov
         <AiLogModal
           mealType={activeAiMeal}
           onClose={() => setActiveAiMeal(null)}
-          onAddItem={(name, kcal, protein, fat, carbs, grams, fiber) =>
-            onAddFood(activeAiMeal, name, kcal, protein, fat, carbs, grams, fiber)
+          onAddItem={(name, kcal, protein, fat, carbs, grams, fiber, micros) =>
+            onAddFood(activeAiMeal, name, kcal, protein, fat, carbs, grams, fiber, micros)
           }
         />
       )}

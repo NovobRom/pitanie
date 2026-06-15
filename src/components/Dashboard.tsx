@@ -1,11 +1,12 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { TrendingDown, TrendingUp, Minus, Brain, Camera, Sparkles } from 'lucide-react';
+import { TrendingDown, TrendingUp, Minus, Brain, Camera, Sparkles, Leaf } from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
 import { Macros } from '@/lib/nutrition';
 import { calculateAdaptiveTDEE, WeightSample, DiarySum } from '@/lib/nutrition';
-import { getWeights, getDiarySums, WeightEntry } from '@/lib/cloud';
+import { getWeights, getDiarySums, getWeekMicros, WeightEntry, WeekMicros } from '@/lib/cloud';
+import { MICRONUTRIENTS, microStatus, type Micros } from '@/lib/micronutrients';
 import { AiLogModal } from '@/components/AiLogModal';
 
 interface DashboardProps {
@@ -18,7 +19,7 @@ interface DashboardProps {
   };
   currentDate: string;
   onDateChange: (date: string) => void;
-  onAddFood: (mealType: string, name: string, kcal: number, protein: number, fat: number, carbs: number, grams: number, fiber?: number) => void;
+  onAddFood: (mealType: string, name: string, kcal: number, protein: number, fat: number, carbs: number, grams: number, fiber?: number, micros?: Micros) => void;
 }
 
 // Pick a sensible meal bucket from the current hour.
@@ -34,13 +35,15 @@ export function Dashboard({ goals, consumed, currentDate, onDateChange, onAddFoo
   const { t, lang } = useI18n();
   const [weights, setWeights] = useState<WeightEntry[]>([]);
   const [diarySums, setDiarySums] = useState<DiarySum[]>([]);
+  const [weekMicros, setWeekMicros] = useState<WeekMicros | null>(null);
   const [dataLoaded, setDataLoaded] = useState(false);
   const [aiOpen, setAiOpen] = useState(false);
 
   useEffect(() => {
-    Promise.all([getWeights(60), getDiarySums(60)]).then(([w, d]) => {
+    Promise.all([getWeights(60), getDiarySums(60), getWeekMicros()]).then(([w, d, m]) => {
       setWeights(w);
       setDiarySums(d);
+      setWeekMicros(m);
       setDataLoaded(true);
     });
   }, []);
@@ -149,13 +152,16 @@ export function Dashboard({ goals, consumed, currentDate, onDateChange, onAddFoo
       {/* ── Adaptive TDEE ─────────────────────────────────────────────────── */}
       {dataLoaded && <AdaptiveTDEECard result={adaptiveTDEE} />}
 
+      {/* ── Weekly micronutrients (approximate, AI-derived) ───────────────── */}
+      {dataLoaded && <MicronutrientCard data={weekMicros} />}
+
       {/* ── AI modal ──────────────────────────────────────────────────────── */}
       {aiOpen && (
         <AiLogModal
           mealType={mealForNow()}
           onClose={() => setAiOpen(false)}
-          onAddItem={(name, kcal, protein, fat, carbs, grams, fiber) =>
-            onAddFood(mealForNow(), name, kcal, protein, fat, carbs, grams, fiber)
+          onAddItem={(name, kcal, protein, fat, carbs, grams, fiber, micros) =>
+            onAddFood(mealForNow(), name, kcal, protein, fat, carbs, grams, fiber, micros)
           }
         />
       )}
@@ -296,6 +302,63 @@ function WeightSparkline({ entries }: { entries: WeightEntry[] }) {
           <p className="text-[10px] text-[var(--color-text-muted)]">{t('weight.kg')}</p>
         </div>
       </div>
+    </div>
+  );
+}
+
+// ── Weekly micronutrients card ─────────────────────────────────────────────────
+
+const STATUS_STYLE: Record<'low' | 'ok' | 'good', { color: string; bg: string; key: string }> = {
+  low: { color: '#ef4444', bg: 'rgba(239,68,68,0.12)', key: 'micro.low' },
+  ok: { color: 'var(--color-fat)', bg: 'var(--color-fat-bg)', key: 'micro.ok' },
+  good: { color: 'var(--color-carbs)', bg: 'var(--color-carbs-bg)', key: 'micro.good' },
+};
+
+function MicronutrientCard({ data }: { data: WeekMicros | null }) {
+  const { t } = useI18n();
+
+  // Need at least a couple of logged days for the weekly signal to mean anything.
+  const enough = data && data.days >= 2;
+
+  return (
+    <div className="bg-[var(--color-surface)] rounded-[28px] px-6 py-5 shadow-[var(--shadow-sm)] border border-[var(--color-border)]">
+      <div className="flex items-center gap-2 mb-1">
+        <Leaf size={16} className="text-[var(--color-carbs)] shrink-0" />
+        <p className="text-xs font-bold text-[var(--color-text)]">{t('micro.title')}</p>
+        <span className="ml-auto text-[9px] font-bold uppercase tracking-wider text-[var(--color-text-muted)] bg-[var(--color-surface-2)] px-2 py-0.5 rounded-full">
+          {t('micro.weekly')}
+        </span>
+      </div>
+
+      {!enough ? (
+        <p className="text-[11px] text-[var(--color-text-muted)] leading-relaxed mt-2">{t('micro.empty')}</p>
+      ) : (
+        <>
+          <div className="grid grid-cols-2 gap-2 mt-3">
+            {MICRONUTRIENTS.map((m) => {
+              const total = data!.totals[m.key] ?? 0;
+              const avgDaily = total / data!.days;
+              const status = microStatus(avgDaily, m.rda[data!.sex]);
+              const s = STATUS_STYLE[status];
+              return (
+                <div
+                  key={m.key}
+                  className="flex items-center justify-between gap-2 rounded-xl bg-[var(--color-surface-2)] px-3 py-2"
+                >
+                  <span className="text-[11px] font-semibold text-[var(--color-text)] truncate">{t(m.labelKey)}</span>
+                  <span
+                    className="text-[9px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full shrink-0"
+                    style={{ color: s.color, backgroundColor: s.bg }}
+                  >
+                    {t(s.key)}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+          <p className="text-[10px] text-[var(--color-text-muted)] mt-3 leading-relaxed">{t('micro.approx')}</p>
+        </>
+      )}
     </div>
   );
 }

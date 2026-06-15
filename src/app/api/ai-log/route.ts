@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
+import { guardAiRequest } from '@/lib/serverAuth';
+import { Micros, sanitizeMicros } from '@/lib/micronutrients';
 
 export interface AiLoggedItem {
   name: string;
@@ -9,6 +11,7 @@ export interface AiLoggedItem {
   fat: number;
   carbs: number;
   fiber?: number;
+  micros?: Micros;
 }
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
@@ -21,6 +24,9 @@ const OUTPUT_SPEC = `Return ONLY a JSON array — no markdown, no explanation, n
 - fat (number, grams per 100g)
 - carbs (number, grams per 100g)
 - fiber (number, grams per 100g, optional — omit if unknown)
+- micros (object, optional): APPROXIMATE micronutrients PER 100G. Include any you can estimate from standard food databases, omit the rest. Keys and units:
+    iron_mg, calcium_mg, magnesium_mg, potassium_mg, zinc_mg,
+    vitamin_a_mcg (RAE), vitamin_c_mg, vitamin_d_mcg, vitamin_b12_mcg, folate_mcg
 
 Use realistic nutritional values from standard food databases. Respond with ONLY the JSON array, nothing else.`;
 
@@ -48,9 +54,9 @@ function parseDataUrl(dataUrl: string): { media: MediaType; data: string } | nul
 }
 
 export async function POST(req: NextRequest) {
-  if (!process.env.ANTHROPIC_API_KEY) {
-    return NextResponse.json({ error: 'no_key' }, { status: 503 });
-  }
+  // Auth + per-user rate limit. Returns a NextResponse on failure.
+  const guard = await guardAiRequest(req);
+  if (guard instanceof NextResponse) return guard;
 
   const body = await req.json().catch(() => null);
   const description: string = body?.description?.trim() ?? '';
@@ -90,7 +96,7 @@ export async function POST(req: NextRequest) {
   try {
     const message = await client.messages.create({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 1024,
+      max_tokens: 2048,
       system,
       messages: [{ role: 'user', content }],
     });
@@ -101,15 +107,29 @@ export async function POST(req: NextRequest) {
     try {
       const parsed = JSON.parse(text);
       if (!Array.isArray(parsed)) throw new Error('not array');
-      items = parsed.filter(
-        (x): x is AiLoggedItem =>
-          typeof x.name === 'string' &&
-          typeof x.grams === 'number' &&
-          typeof x.kcal === 'number' &&
-          typeof x.protein === 'number' &&
-          typeof x.fat === 'number' &&
-          typeof x.carbs === 'number'
-      );
+      items = parsed
+        .filter(
+          (x: Record<string, unknown>) =>
+            typeof x.name === 'string' &&
+            typeof x.grams === 'number' &&
+            typeof x.kcal === 'number' &&
+            typeof x.protein === 'number' &&
+            typeof x.fat === 'number' &&
+            typeof x.carbs === 'number'
+        )
+        .map((x: Record<string, unknown>): AiLoggedItem => {
+          const micros = sanitizeMicros(x.micros);
+          return {
+            name: x.name as string,
+            grams: x.grams as number,
+            kcal: x.kcal as number,
+            protein: x.protein as number,
+            fat: x.fat as number,
+            carbs: x.carbs as number,
+            ...(typeof x.fiber === 'number' ? { fiber: x.fiber } : {}),
+            ...(micros ? { micros } : {}),
+          };
+        });
     } catch {
       return NextResponse.json({ error: 'parse_failed', raw: text }, { status: 422 });
     }

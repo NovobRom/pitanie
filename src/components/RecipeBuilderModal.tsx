@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
-import { X, Plus, Trash2, ChefHat, Loader2 } from 'lucide-react';
+import { X, Plus, Trash2, ChefHat, Loader2, Sparkles } from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
+import { aiPost } from '@/lib/aiFetch';
 import { saveRecipe, RecipeItem } from '@/lib/cloud';
 
 interface RecipeBuilderModalProps {
@@ -40,6 +41,47 @@ export function RecipeBuilderModal({ onClose, onSaved }: RecipeBuilderModalProps
   const [ingredients, setIngredients] = useState<IngredientDraft[]>([newDraft()]);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [aiDish, setAiDish] = useState('');
+  const [aiLoading, setAiLoading] = useState(false);
+
+  // Ask the AI to decompose a named dish into editable ingredient drafts.
+  const handleAiFill = async () => {
+    const dish = aiDish.trim();
+    if (!dish) return;
+    setAiLoading(true);
+    setError('');
+    try {
+      const res = await aiPost('/api/ai-recipe', { dish });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error === 'rate_limited' ? t('ai.rateLimited') : t('ai.error'));
+        return;
+      }
+      const recipe = data.recipe;
+      if (!recipe?.items?.length) {
+        setError(t('ai.empty'));
+        return;
+      }
+      if (!name.trim() && recipe.name) setName(recipe.name);
+      if (recipe.serving_g) setServingG(recipe.serving_g);
+      setIngredients(
+        recipe.items.map((it: RecipeItem): IngredientDraft => ({
+          id: nextId++,
+          name: it.name,
+          grams: it.grams,
+          kcal: it.kcal,
+          protein: it.protein,
+          fat: it.fat,
+          carbs: it.carbs,
+          fiber: it.fiber ?? 0,
+        }))
+      );
+    } catch {
+      setError(t('ai.error'));
+    } finally {
+      setAiLoading(false);
+    }
+  };
 
   const updateIngredient = (id: number, field: keyof IngredientDraft, value: string | number) => {
     setIngredients((prev) =>
@@ -126,6 +168,33 @@ export function RecipeBuilderModal({ onClose, onSaved }: RecipeBuilderModalProps
         {/* Scrollable body */}
         <div className="flex-1 overflow-y-auto p-5 space-y-4">
           {error && <p className="text-xs text-red-500 bg-red-50 px-3 py-2 rounded-xl">{error}</p>}
+
+          {/* AI assist — describe a dish, let the model fill the ingredients */}
+          <div className="rounded-2xl border border-[var(--color-primary)]/20 bg-[var(--color-primary)]/5 p-3 space-y-2">
+            <div className="flex items-center gap-1.5">
+              <Sparkles size={13} className="text-[var(--color-primary)]" />
+              <p className="text-[10px] font-bold text-[var(--color-primary-dark)] uppercase tracking-wider">{t('recipe.aiTitle')}</p>
+            </div>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={aiDish}
+                onChange={(e) => setAiDish(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter') handleAiFill(); }}
+                placeholder={t('recipe.aiPlaceholder')}
+                className="flex-1 text-sm px-3 py-2 border border-[var(--color-border)] rounded-xl bg-[var(--color-surface)] text-[var(--color-text)] outline-none focus:border-[var(--color-primary)] transition-all"
+              />
+              <button
+                type="button"
+                onClick={handleAiFill}
+                disabled={aiLoading || !aiDish.trim()}
+                className="shrink-0 flex items-center gap-1.5 bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] disabled:opacity-40 text-white text-xs font-semibold px-3 rounded-xl transition-all"
+              >
+                {aiLoading ? <Loader2 size={13} className="animate-spin" /> : <Sparkles size={13} />}
+                {t('recipe.aiFill')}
+              </button>
+            </div>
+          </div>
 
           {/* Name + serving */}
           <div className="grid grid-cols-2 gap-3">

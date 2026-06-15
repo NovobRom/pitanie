@@ -133,6 +133,11 @@
   .text-gray-400 { color: var(--color-text-muted) !important; }
   .text-gray-500 { color: var(--color-text-light) !important; }
 
+  /* hover/focus variants not covered by the base rules above */
+  .hover\:bg-gray-50:hover { background-color: var(--color-surface-2) !important; }
+  .hover\:bg-gray-100\/70:hover { background-color: var(--color-surface-2) !important; }
+  .focus\:bg-white:focus { background-color: var(--color-surface) !important; }
+
   .bg-orange-50 { background-color: #2d1a0e !important; }
   .bg-blue-50   { background-color: #1e213a !important; }
   .bg-pink-50   { background-color: #2d0e1a !important; }

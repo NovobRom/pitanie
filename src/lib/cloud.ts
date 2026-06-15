@@ -5,6 +5,7 @@
 import { supabase } from './supabaseClient';
 import { ShareState } from './shareState';
 import { Macros } from './nutrition';
+import { MicroKey, MICRO_KEYS } from './micronutrients';
 
 export const cloudEnabled = true;
 
@@ -200,6 +201,54 @@ export async function getWeights(limit = 30): Promise<WeightEntry[]> {
 }
 
 // ── Diary calorie sums ─────────────────────────────────────────────────────────
+
+// ── Weekly micronutrients ────────────────────────────────────────────────────
+
+export interface WeekMicros {
+  // Absolute amounts summed across the last 7 days (from AI-logged items only).
+  totals: Partial<Record<MicroKey, number>>;
+  // Number of distinct days that carried any micronutrient data — used to
+  // average intake and to decide whether there is enough to show anything.
+  days: number;
+  sex: 'male' | 'female';
+}
+
+export async function getWeekMicros(): Promise<WeekMicros> {
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - 6); // last 7 days, inclusive of today
+  const cutoffStr = cutoff.toISOString().slice(0, 10);
+
+  const [plansRes, profileRes] = await Promise.all([
+    supabase.from('plans').select('title, data').gte('title', cutoffStr),
+    supabase.from('profiles').select('sex').maybeSingle(),
+  ]);
+
+  const totals: Partial<Record<MicroKey, number>> = {};
+  const daysWithData = new Set<string>();
+
+  for (const plan of plansRes.data ?? []) {
+    const meals = (plan.data as any)?.meals || {};
+    let dayHasMicros = false;
+    for (const items of Object.values(meals)) {
+      for (const item of items as any[]) {
+        const micros = item?.micros;
+        if (!micros || !item?.grams) continue;
+        const f = item.grams / 100;
+        for (const key of MICRO_KEYS) {
+          const v = micros[key];
+          if (typeof v === 'number' && Number.isFinite(v)) {
+            totals[key] = (totals[key] ?? 0) + v * f;
+            dayHasMicros = true;
+          }
+        }
+      }
+    }
+    if (dayHasMicros) daysWithData.add(plan.title as string);
+  }
+
+  const sex = profileRes.data?.sex === 'female' ? 'female' : 'male';
+  return { totals, days: daysWithData.size, sex };
+}
 
 export interface DiaryCalSum { date: string; kcal: number }
 
