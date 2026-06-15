@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { X, Search, Loader2, ScanLine, Clock, ChefHat, Trash2 } from 'lucide-react';
+import { X, Search, Loader2, ScanLine, Clock, ChefHat, Trash2, BadgeCheck } from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
 import { getRecentFoods, RecentFood, getRecipes, Recipe, deleteRecipe } from '@/lib/cloud';
 import { BarcodeScanner } from './BarcodeScanner';
@@ -25,6 +25,7 @@ interface SearchResult {
   uid: string;
   name: string;
   brand?: string;
+  verified?: boolean;
   nutrition: Nutrition;
 }
 
@@ -70,6 +71,7 @@ export function FoodSearchModal({ mealType, onClose, onAdd }: FoodSearchModalPro
         uid: `${idx}-${String(p.name).slice(0, 20)}`,
         name: String(p.name),
         brand: p.brand,
+        verified: p.verified === true,
         nutrition: p.nutrition,
       }));
 
@@ -339,14 +341,21 @@ export function FoodSearchModal({ mealType, onClose, onAdd }: FoodSearchModalPro
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="min-w-0">
-                    <h4 className="font-bold text-sm text-[var(--color-text)] leading-snug truncate">
-                      {product.name}
+                    <h4 className="font-bold text-sm text-[var(--color-text)] leading-snug truncate flex items-center gap-1">
+                      {product.verified && (
+                        <BadgeCheck size={14} className="text-[var(--color-carbs)] shrink-0" />
+                      )}
+                      <span className="truncate">{product.name}</span>
                     </h4>
-                    {product.brand && (
+                    {product.brand ? (
                       <p className="text-[10px] text-[var(--color-text-muted)] mt-0.5 truncate">
                         {product.brand}
                       </p>
-                    )}
+                    ) : product.verified ? (
+                      <p className="text-[10px] text-[var(--color-carbs)] mt-0.5 truncate font-semibold">
+                        {t('search.verified')}
+                      </p>
+                    ) : null}
                   </div>
                   <span
                     style={{ color: p.text, backgroundColor: '#ffffffcc' }}
