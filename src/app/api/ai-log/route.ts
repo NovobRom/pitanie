@@ -3,6 +3,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import { guardAiRequest } from '@/lib/serverAuth';
 import { Micros, sanitizeMicros } from '@/lib/micronutrients';
 import { parseLooseArray } from '@/lib/aiJson';
+import { CookMethod, isCookMethod } from '@/lib/cooking';
 
 export interface AiLoggedItem {
   name: string;
@@ -13,6 +14,7 @@ export interface AiLoggedItem {
   carbs: number;
   fiber?: number;
   micros?: Micros;
+  method?: CookMethod;
 }
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
@@ -36,6 +38,11 @@ const OUTPUT_SPEC = `Return ONLY a JSON array — no markdown, no explanation, n
 - fat (number, grams per 100g)
 - carbs (number, grams per 100g)
 - fiber (number, grams per 100g, optional — omit if unknown)
+- method (string, optional): the cooking method, EXACTLY one of:
+    raw, boiled, steamed, baked, grilled, stewed, sauteed, fried, deep_fried
+  Put the cooking method HERE, not in the name. Keep "name" clean — do NOT add the cooking-method word to it.
+  The kcal/fat values MUST already reflect this method (e.g. include absorbed oil for fried/sautéed).
+  Omit "method" entirely for items where preparation doesn't apply: sauces, condiments, drinks, raw fruit, bread.
 - micros (object, optional): APPROXIMATE micronutrients PER 100G. Include any you can estimate from standard food databases, omit the rest. Keys and units:
     iron_mg, calcium_mg, magnesium_mg, potassium_mg, zinc_mg,
     vitamin_a_mcg (RAE), vitamin_c_mg, vitamin_d_mcg, vitamin_b12_mcg, folate_mcg
@@ -46,8 +53,8 @@ Use realistic nutritional values from standard food databases. Respond with ONLY
 // turns "ok" into a killer feature: nothing visible should be silently dropped.
 const THOROUGHNESS = `Be exhaustive — capture EVERY edible component, not just the obvious main ones:
 - Sauces, dressings, condiments and toppings (ketchup, mayonnaise, soy sauce, sour cream, oil/vinegar on a salad, butter) are SEPARATE items. Never skip them even if the amount is small.
-- Cooking fat counts: if something is clearly fried or sautéed, account for the added oil/butter in that item's fat value (and reflect the method in the name, e.g. "Mushrooms, sautéed").
-- Reflect the most likely cooking method in the name (fried / sautéed / baked / boiled / grilled / stewed / raw), inferring it from visual or textual cues. When genuinely ambiguous, pick the most common preparation and assume it.
+- Cooking fat counts: if something is clearly fried or sautéed, account for the added oil/butter in that item's fat value.
+- Infer the most likely cooking method from visual or textual cues and report it in the separate "method" field (see spec below) — NOT in the name. When genuinely ambiguous, pick the most common preparation and assume it.
 - Split composite dishes into their main components.`;
 
 const TEXT_SYSTEM = (lang: string) => `You are a precise nutritionist assistant. The user will describe a meal or food in natural language.
@@ -154,6 +161,7 @@ export async function POST(req: NextRequest) {
           carbs: x.carbs as number,
           ...(typeof x.fiber === 'number' ? { fiber: x.fiber } : {}),
           ...(micros ? { micros } : {}),
+          ...(isCookMethod(x.method) ? { method: x.method } : {}),
         };
       });
 
