@@ -198,6 +198,9 @@ const ru: Dict = {
   'dash.aiPrompt': 'Напишите или сфотографируйте блюдо…',
   'dash.aiTagline': 'Одно предложение — день записан',
   'dash.logMeal': 'Записать приём пищи',
+
+  // search
+  'search.verified': 'Проверенные данные',
 };
 
 const en: Dict = {
@@ -392,6 +395,9 @@ const en: Dict = {
   'dash.aiPrompt': 'Write or snap a meal…',
   'dash.aiTagline': 'One sentence. Day logged.',
   'dash.logMeal': 'Log a meal',
+
+  // search
+  'search.verified': 'Verified data',
 };
 
 const uk: Dict = {
@@ -586,6 +592,9 @@ const uk: Dict = {
   'dash.aiPrompt': 'Напишіть або сфотографуйте страву…',
   'dash.aiTagline': 'Одне речення — день записано',
   'dash.logMeal': 'Записати прийом їжі',
+
+  // search
+  'search.verified': 'Перевірені дані',
 };
 
 const dictionaries: Record<Lang, Dict> = { ru, en, uk };
