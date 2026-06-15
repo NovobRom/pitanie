@@ -44,10 +44,28 @@ function norm(s: string): string {
     .trim();
 }
 
-// Every query token (len >= 2) must appear in the candidate text.
-function matchesAllTokens(text: string, tokens: string[]): boolean {
-  const n = norm(text);
-  return tokens.every((tok) => n.includes(tok));
+// Split text into normalized words (works across Latin + Cyrillic scripts).
+function words(text: string): string[] {
+  return norm(text).split(/[^\p{L}\p{N}]+/u).filter(Boolean);
+}
+
+// Exact word match with light plural tolerance: "milk"/"milks", but NOT "milky".
+function wordEquals(word: string, token: string): boolean {
+  return word === token || word === `${token}s` || `${word}s` === token;
+}
+
+// OFF gate: every query token must match a whole word in the name (precision —
+// drops "milky food" for the query "milk").
+function offNameMatches(name: string, tokens: string[]): boolean {
+  const ws = words(name);
+  return tokens.every((tok) => ws.some((w) => wordEquals(w, tok)));
+}
+
+// Catalog gate: prefix match per word (lenient — "греч" finds "Гречка",
+// "milk" finds "Milk"). Catalog is curated, so false positives are unlikely.
+function catalogMatches(text: string, tokens: string[]): boolean {
+  const ws = words(text);
+  return tokens.every((tok) => ws.some((w) => w.startsWith(tok) || wordEquals(w, tok)));
 }
 
 // ── Catalog search (instant, accurate, language-correct) ─────────────────────
@@ -56,7 +74,7 @@ function searchCatalog(tokens: string[], lang: string): ResultItem[] {
     lang === 'en' ? f.nameEn : f.nameRu; // ru + uk fall back to RU label
 
   return foodCatalog
-    .filter((f) => matchesAllTokens(`${f.nameRu} ${f.nameEn}`, tokens))
+    .filter((f) => catalogMatches(`${f.nameRu} ${f.nameEn}`, tokens))
     .map((f) => ({
       name: pickName(f),
       verified: true,
@@ -119,9 +137,9 @@ export async function GET(request: NextRequest) {
           if (!name) return null;
           const n = p.nutriments;
           if (n['energy-kcal_100g'] == null || n.proteins_100g == null) return null;
-          // Relevance gate: the display name must actually contain the query
-          // tokens — this drops irrelevant foreign-named products.
-          if (!matchesAllTokens(name, tokens)) return null;
+          // Relevance gate: the display name must contain the query tokens as
+          // whole words — drops irrelevant foreign-named products.
+          if (!offNameMatches(name, tokens)) return null;
 
           return {
             name,
