@@ -11,6 +11,7 @@ interface AiLogModalProps {
   mealType: string;
   onClose: () => void;
   onAddItem: (name: string, kcal: number, protein: number, fat: number, carbs: number, grams: number, fiber?: number, micros?: Micros) => void;
+  onAddItems?: (items: AiLoggedItem[]) => void;
 }
 
 type Mode = 'text' | 'photo';
@@ -42,7 +43,7 @@ function fileToDownscaledDataUrl(file: File, maxEdge = 1024, quality = 0.8): Pro
   });
 }
 
-export function AiLogModal({ mealType, onClose, onAddItem }: AiLogModalProps) {
+export function AiLogModal({ mealType, onClose, onAddItem, onAddItems }: AiLogModalProps) {
   const { t } = useI18n();
   const [mode, setMode] = useState<Mode>('text');
   const [description, setDescription] = useState('');
@@ -115,11 +116,14 @@ export function AiLogModal({ mealType, onClose, onAddItem }: AiLogModalProps) {
   };
 
   const addAll = () => {
-    items.forEach((item, idx) => {
-      if (!added.has(idx)) {
+    const toAdd = items.filter((_, idx) => !added.has(idx));
+    if (onAddItems) {
+      onAddItems(toAdd);
+    } else {
+      toAdd.forEach((item) => {
         onAddItem(item.name, item.kcal, item.protein, item.fat, item.carbs, item.grams, item.fiber, item.micros);
-      }
-    });
+      });
+    }
     setAdded(new Set(items.map((_, i) => i)));
   };
 

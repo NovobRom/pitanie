@@ -7,6 +7,7 @@ import { Macros } from '@/lib/nutrition';
 import { calculateAdaptiveTDEE, WeightSample, DiarySum } from '@/lib/nutrition';
 import { getWeights, getDiarySums, getWeekMicros, WeightEntry, WeekMicros } from '@/lib/cloud';
 import { MICRONUTRIENTS, microStatus, type Micros } from '@/lib/micronutrients';
+import type { AiLoggedItem } from '@/app/api/ai-log/route';
 import { AiLogModal } from '@/components/AiLogModal';
 
 interface DashboardProps {
@@ -20,6 +21,7 @@ interface DashboardProps {
   currentDate: string;
   onDateChange: (date: string) => void;
   onAddFood: (mealType: string, name: string, kcal: number, protein: number, fat: number, carbs: number, grams: number, fiber?: number, micros?: Micros) => void;
+  onAddFoods?: (mealType: string, items: AiLoggedItem[]) => void;
 }
 
 // Pick a sensible meal bucket from the current hour.
@@ -31,7 +33,7 @@ function mealForNow(): string {
   return 'snacks';
 }
 
-export function Dashboard({ goals, consumed, currentDate, onDateChange, onAddFood }: DashboardProps) {
+export function Dashboard({ goals, consumed, currentDate, onDateChange, onAddFood, onAddFoods }: DashboardProps) {
   const { t, lang } = useI18n();
   const [weights, setWeights] = useState<WeightEntry[]>([]);
   const [diarySums, setDiarySums] = useState<DiarySum[]>([]);
@@ -163,6 +165,7 @@ export function Dashboard({ goals, consumed, currentDate, onDateChange, onAddFoo
           onAddItem={(name, kcal, protein, fat, carbs, grams, fiber, micros) =>
             onAddFood(mealForNow(), name, kcal, protein, fat, carbs, grams, fiber, micros)
           }
+          onAddItems={onAddFoods ? (its) => onAddFoods(mealForNow(), its) : undefined}
         />
       )}
     </div>
