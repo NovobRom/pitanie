@@ -168,6 +168,18 @@ const ru: Dict = {
   'barcode.scanning': 'Наведите камеру на штрихкод',
   'barcode.notFound': 'Продукт не найден по штрихкоду',
   'barcode.error': 'Камера недоступна',
+
+  // AI logging
+  'ai.button': 'Описать блюдо',
+  'ai.title': 'ИИ-разбор блюда',
+  'ai.placeholder': 'Например: тарелка гречки с куриной грудкой и салатом…',
+  'ai.parse': 'Разобрать',
+  'ai.parsing': 'Анализирую…',
+  'ai.addAll': 'Добавить всё в дневник',
+  'ai.empty': 'Ничего не найдено — уточните описание',
+  'ai.error': 'Не удалось разобрать. Попробуйте ещё раз.',
+  'ai.noKey': 'AI-функция недоступна (нет ключа API)',
+  'ai.hint': 'Опишите блюдо или приём пищи своими словами',
 };
 
 const en: Dict = {
@@ -332,6 +344,18 @@ const en: Dict = {
   'barcode.scanning': 'Point camera at barcode',
   'barcode.notFound': 'Product not found for this barcode',
   'barcode.error': 'Camera not available',
+
+  // AI logging
+  'ai.button': 'Describe a meal',
+  'ai.title': 'AI Meal Parser',
+  'ai.placeholder': 'E.g. a bowl of oatmeal with banana and honey…',
+  'ai.parse': 'Parse',
+  'ai.parsing': 'Analysing…',
+  'ai.addAll': 'Add all to diary',
+  'ai.empty': 'Nothing found — try a more specific description',
+  'ai.error': 'Could not parse. Please try again.',
+  'ai.noKey': 'AI feature unavailable (no API key)',
+  'ai.hint': 'Describe your meal or dish in your own words',
 };
 
 const uk: Dict = {
@@ -496,6 +520,18 @@ const uk: Dict = {
   'barcode.scanning': 'Наведіть камеру на штрихкод',
   'barcode.notFound': 'Продукт не знайдено за штрихкодом',
   'barcode.error': 'Камера недоступна',
+
+  // AI logging
+  'ai.button': 'Описати страву',
+  'ai.title': 'ІІ-розбір страви',
+  'ai.placeholder': 'Наприклад: тарілка гречки з куркою та салатом…',
+  'ai.parse': 'Розібрати',
+  'ai.parsing': 'Аналізую…',
+  'ai.addAll': 'Додати все до щоденника',
+  'ai.empty': 'Нічого не знайдено — уточніть опис',
+  'ai.error': 'Не вдалося розібрати. Спробуйте ще раз.',
+  'ai.noKey': 'ШІ-функція недоступна (немає ключа API)',
+  'ai.hint': 'Опишіть страву або прийом їжі своїми словами',
 };
 
 const dictionaries: Record<Lang, Dict> = { ru, en, uk };

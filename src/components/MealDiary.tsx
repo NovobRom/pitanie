@@ -1,9 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Plus, Trash2, ChevronLeft, ChevronRight, Copy } from 'lucide-react';
+import { Plus, Trash2, ChevronLeft, ChevronRight, Copy, Sparkles } from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
 import { FoodSearchModal } from '@/components/FoodSearchModal';
+import { AiLogModal } from '@/components/AiLogModal';
 
 interface RationItem {
   name: string;
@@ -32,6 +33,7 @@ interface MealDiaryProps {
 export function MealDiary({ currentDate, onDateChange, meals, onAddFood, onRemoveFood, onCopyYesterday }: MealDiaryProps) {
   const { t, lang } = useI18n();
   const [activeSearchMeal, setActiveSearchMeal] = useState<string | null>(null);
+  const [activeAiMeal, setActiveAiMeal] = useState<string | null>(null);
   const [copyMsg, setCopyMsg] = useState<string | null>(null);
 
   // Generate week days (Mon-Sun) containing the currentDate
@@ -106,13 +108,22 @@ export function MealDiary({ currentDate, onDateChange, meals, onAddFood, onRemov
               {Math.round(totals.kcal)} {t('calc.kcal')} · {t('build.protShort')}{Math.round(totals.protein)}г · {t('build.fatShort')}{Math.round(totals.fat)}г · {t('build.carbShort')}{Math.round(totals.carbs)}г{totals.fiber > 0.1 ? ` · ${t('micro.fiber.short')}${Math.round(totals.fiber * 10) / 10}г` : ''}
             </p>
           </div>
-          <button
-            onClick={() => setActiveSearchMeal(type)}
-            className="flex items-center gap-1 text-[11px] font-bold text-[var(--color-primary)] hover:text-[var(--color-primary-dark)] bg-[var(--color-primary)]/10 px-3 py-1.5 rounded-xl transition-all"
-          >
-            <Plus size={12} />
-            {t('diary.add')}
-          </button>
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={() => setActiveAiMeal(type)}
+              title={t('ai.button')}
+              className="flex items-center gap-1 text-[11px] font-bold text-[var(--color-primary)] hover:text-white bg-[var(--color-primary)]/10 hover:bg-[var(--color-primary)] px-2.5 py-1.5 rounded-xl transition-all"
+            >
+              <Sparkles size={12} />
+            </button>
+            <button
+              onClick={() => setActiveSearchMeal(type)}
+              className="flex items-center gap-1 text-[11px] font-bold text-[var(--color-primary)] hover:text-[var(--color-primary-dark)] bg-[var(--color-primary)]/10 px-3 py-1.5 rounded-xl transition-all"
+            >
+              <Plus size={12} />
+              {t('diary.add')}
+            </button>
+          </div>
         </div>
 
         {/* Added Foods List */}
@@ -227,6 +238,17 @@ export function MealDiary({ currentDate, onDateChange, meals, onAddFood, onRemov
           onClose={() => setActiveSearchMeal(null)}
           onAdd={(name, kcal, protein, fat, carbs, grams, fiber) =>
             onAddFood(activeSearchMeal, name, kcal, protein, fat, carbs, grams, fiber)
+          }
+        />
+      )}
+
+      {/* ─── AI Log Modal ─── */}
+      {activeAiMeal && (
+        <AiLogModal
+          mealType={activeAiMeal}
+          onClose={() => setActiveAiMeal(null)}
+          onAddItem={(name, kcal, protein, fat, carbs, grams, fiber) =>
+            onAddFood(activeAiMeal, name, kcal, protein, fat, carbs, grams, fiber)
           }
         />
       )}
