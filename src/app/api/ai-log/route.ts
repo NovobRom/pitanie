@@ -51,11 +51,15 @@ Use realistic nutritional values from standard food databases. Respond with ONLY
 
 // Shared guidance to maximise completeness of recognition — the part that
 // turns "ok" into a killer feature: nothing visible should be silently dropped.
-const THOROUGHNESS = `Be exhaustive — capture EVERY edible component, not just the obvious main ones:
-- Sauces, dressings, condiments and toppings (ketchup, mayonnaise, soy sauce, sour cream, oil/vinegar on a salad, butter) are SEPARATE items. Never skip them even if the amount is small.
-- Cooking fat counts: if something is clearly fried or sautéed, account for the added oil/butter in that item's fat value.
-- Infer the most likely cooking method from visual or textual cues and report it in the separate "method" field (see spec below) — NOT in the name. When genuinely ambiguous, pick the most common preparation and assume it.
-- Split composite dishes into their main components.`;
+const THOROUGHNESS = `You MUST list every visible component as a separate JSON item. Common mistakes to avoid:
+- RED OR ORANGE SAUCE on pasta or rice → list it as a separate item (e.g. ketchup, tomato sauce, bolognese). Do NOT fold it into the pasta.
+- DRESSING on a salad → separate item (olive oil, vinegar, mayonnaise, etc.)
+- BUTTER or OIL on vegetables or bread → separate item
+- SOUR CREAM or YOGURT as a topping → separate item
+- MUSHROOMS, ONIONS sautéed as a side → separate item
+If you can see a sauce, drizzle, dip, or condiment anywhere on the plate, you MUST include it as a separate array element with an estimated gram weight (even if it looks small — e.g. 30g ketchup).
+Cooking fat counts: if something is fried or sautéed, account for absorbed oil in that item's fat value.
+Split composite dishes into their main components. Do not silently drop any visible ingredient.`;
 
 const TEXT_SYSTEM = (lang: string) => `You are a precise nutritionist assistant. The user will describe a meal or food in natural language.
 ${langInstruction(lang)}
@@ -68,7 +72,7 @@ ${langInstruction(lang)}
 Identify each distinct food item visible in the photo. For each, estimate the portion size in grams from visual cues
 (plate size, typical servings) and provide nutritional values PER 100G.
 ${THOROUGHNESS}
-Look carefully at the whole plate, including drizzles, dips and garnishes at the edges — these are easy to miss.
+Before you build the JSON, mentally scan the plate top-to-bottom: main carb, protein, vegetables, then EVERY sauce/condiment/dressing/drizzle. Any red, orange, white, or yellow substance on top of food is likely a sauce — list it separately.
 If the image does not contain food, return an empty JSON array [].
 ${OUTPUT_SPEC}`;
 
