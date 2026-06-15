@@ -158,6 +158,9 @@ const ru: Dict = {
   'recipe.delete': 'Удалить',
   'recipe.per100': 'на 100г',
   'recipe.noIngredients': 'Добавьте ингредиенты',
+  'recipe.aiTitle': 'Собрать с помощью ИИ',
+  'recipe.aiPlaceholder': 'Например: борщ, паста карбонара…',
+  'recipe.aiFill': 'Заполнить',
 
   // recent foods
   'recent.title': 'Недавние',
@@ -188,6 +191,7 @@ const ru: Dict = {
   'ai.analyzePhoto': 'Распознать блюдо',
   'ai.retake': 'Другое фото',
   'ai.photoEmpty': 'На фото не найдено еды — попробуйте другой снимок',
+  'ai.rateLimited': 'Слишком много AI-запросов. Подождите немного.',
 
   // dashboard (Calorize-style)
   'dash.eaten': 'Съедено',
@@ -355,6 +359,9 @@ const en: Dict = {
   'recipe.delete': 'Delete',
   'recipe.per100': 'per 100g',
   'recipe.noIngredients': 'Add ingredients first',
+  'recipe.aiTitle': 'Build with AI',
+  'recipe.aiPlaceholder': 'e.g. borscht, pasta carbonara…',
+  'recipe.aiFill': 'Fill in',
 
   // recent foods
   'recent.title': 'Recent',
@@ -385,6 +392,7 @@ const en: Dict = {
   'ai.analyzePhoto': 'Analyse meal',
   'ai.retake': 'Different photo',
   'ai.photoEmpty': 'No food found in the photo — try another shot',
+  'ai.rateLimited': 'Too many AI requests. Please wait a moment.',
 
   // dashboard (Calorize-style)
   'dash.eaten': 'Eaten',
@@ -552,6 +560,9 @@ const uk: Dict = {
   'recipe.delete': 'Вилучити',
   'recipe.per100': 'на 100г',
   'recipe.noIngredients': 'Спочатку додайте інгредієнти',
+  'recipe.aiTitle': 'Зібрати за допомогою ШІ',
+  'recipe.aiPlaceholder': 'Наприклад: борщ, паста карбонара…',
+  'recipe.aiFill': 'Заповнити',
 
   // recent foods
   'recent.title': 'Нещодавні',
@@ -582,6 +593,7 @@ const uk: Dict = {
   'ai.analyzePhoto': 'Розпізнати страву',
   'ai.retake': 'Інше фото',
   'ai.photoEmpty': 'На фото не знайдено їжі — спробуйте інший знімок',
+  'ai.rateLimited': 'Забагато AI-запитів. Зачекайте трохи.',
 
   // dashboard (Calorize-style)
   'dash.eaten': 'З\'їдено',

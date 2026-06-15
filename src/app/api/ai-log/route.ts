@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
+import { guardAiRequest } from '@/lib/serverAuth';
 
 export interface AiLoggedItem {
   name: string;
@@ -48,9 +49,9 @@ function parseDataUrl(dataUrl: string): { media: MediaType; data: string } | nul
 }
 
 export async function POST(req: NextRequest) {
-  if (!process.env.ANTHROPIC_API_KEY) {
-    return NextResponse.json({ error: 'no_key' }, { status: 503 });
-  }
+  // Auth + per-user rate limit. Returns a NextResponse on failure.
+  const guard = await guardAiRequest(req);
+  if (guard instanceof NextResponse) return guard;
 
   const body = await req.json().catch(() => null);
   const description: string = body?.description?.trim() ?? '';
