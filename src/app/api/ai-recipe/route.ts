@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
 import { guardAiRequest } from '@/lib/serverAuth';
+import { parseLooseObject } from '@/lib/aiJson';
 
 // One ingredient line of an AI-generated recipe. Macros are PER 100G; grams is
 // the amount of that ingredient in the dish.
@@ -90,12 +91,7 @@ export async function POST(req: NextRequest) {
 
     const text = message.content[0].type === 'text' ? message.content[0].text.trim() : '';
 
-    let recipe: AiRecipe | null;
-    try {
-      recipe = validateRecipe(JSON.parse(text));
-    } catch {
-      recipe = null;
-    }
+    const recipe = validateRecipe(parseLooseObject(text));
     if (!recipe) {
       return NextResponse.json({ error: 'parse_failed', raw: text }, { status: 422 });
     }

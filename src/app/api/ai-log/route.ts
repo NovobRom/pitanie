@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
 import { guardAiRequest } from '@/lib/serverAuth';
 import { Micros, sanitizeMicros } from '@/lib/micronutrients';
+import { parseLooseArray } from '@/lib/aiJson';
 
 export interface AiLoggedItem {
   name: string;
@@ -103,36 +104,34 @@ export async function POST(req: NextRequest) {
 
     const text = message.content[0].type === 'text' ? message.content[0].text.trim() : '';
 
-    let items: AiLoggedItem[];
-    try {
-      const parsed = JSON.parse(text);
-      if (!Array.isArray(parsed)) throw new Error('not array');
-      items = parsed
-        .filter(
-          (x: Record<string, unknown>) =>
-            typeof x.name === 'string' &&
-            typeof x.grams === 'number' &&
-            typeof x.kcal === 'number' &&
-            typeof x.protein === 'number' &&
-            typeof x.fat === 'number' &&
-            typeof x.carbs === 'number'
-        )
-        .map((x: Record<string, unknown>): AiLoggedItem => {
-          const micros = sanitizeMicros(x.micros);
-          return {
-            name: x.name as string,
-            grams: x.grams as number,
-            kcal: x.kcal as number,
-            protein: x.protein as number,
-            fat: x.fat as number,
-            carbs: x.carbs as number,
-            ...(typeof x.fiber === 'number' ? { fiber: x.fiber } : {}),
-            ...(micros ? { micros } : {}),
-          };
-        });
-    } catch {
+    const parsed = parseLooseArray(text);
+    if (!parsed) {
       return NextResponse.json({ error: 'parse_failed', raw: text }, { status: 422 });
     }
+
+    const items: AiLoggedItem[] = (parsed as Record<string, unknown>[])
+      .filter(
+        (x) =>
+          typeof x.name === 'string' &&
+          typeof x.grams === 'number' &&
+          typeof x.kcal === 'number' &&
+          typeof x.protein === 'number' &&
+          typeof x.fat === 'number' &&
+          typeof x.carbs === 'number'
+      )
+      .map((x): AiLoggedItem => {
+        const micros = sanitizeMicros(x.micros);
+        return {
+          name: x.name as string,
+          grams: x.grams as number,
+          kcal: x.kcal as number,
+          protein: x.protein as number,
+          fat: x.fat as number,
+          carbs: x.carbs as number,
+          ...(typeof x.fiber === 'number' ? { fiber: x.fiber } : {}),
+          ...(micros ? { micros } : {}),
+        };
+      });
 
     return NextResponse.json({ items });
   } catch (err: unknown) {
