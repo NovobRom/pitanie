@@ -193,6 +193,25 @@ const ru: Dict = {
   'ai.photoEmpty': 'На фото не найдено еды — попробуйте другой снимок',
   'ai.rateLimited': 'Слишком много AI-запросов. Подождите немного.',
 
+  // micronutrients (weekly, approximate)
+  'micro.title': 'Витамины и минералы',
+  'micro.weekly': 'за неделю',
+  'micro.empty': 'Добавляйте блюда через ИИ — здесь появится приблизительная оценка витаминов за неделю.',
+  'micro.approx': '≈ Приблизительно, по блюдам, добавленным через ИИ. Не для медицинских решений.',
+  'micro.low': 'Мало',
+  'micro.ok': 'Норма',
+  'micro.good': 'Хорошо',
+  'micro.iron': 'Железо',
+  'micro.calcium': 'Кальций',
+  'micro.magnesium': 'Магний',
+  'micro.potassium': 'Калий',
+  'micro.zinc': 'Цинк',
+  'micro.vitaminA': 'Витамин A',
+  'micro.vitaminC': 'Витамин C',
+  'micro.vitaminD': 'Витамин D',
+  'micro.vitaminB12': 'Витамин B12',
+  'micro.folate': 'Фолат (B9)',
+
   // dashboard (Calorize-style)
   'dash.eaten': 'Съедено',
   'dash.left': 'Осталось',
@@ -394,6 +413,25 @@ const en: Dict = {
   'ai.photoEmpty': 'No food found in the photo — try another shot',
   'ai.rateLimited': 'Too many AI requests. Please wait a moment.',
 
+  // micronutrients (weekly, approximate)
+  'micro.title': 'Vitamins & minerals',
+  'micro.weekly': 'this week',
+  'micro.empty': 'Log meals with AI — an approximate weekly vitamin overview will appear here.',
+  'micro.approx': '≈ Approximate, based on AI-added meals. Not for medical decisions.',
+  'micro.low': 'Low',
+  'micro.ok': 'OK',
+  'micro.good': 'Good',
+  'micro.iron': 'Iron',
+  'micro.calcium': 'Calcium',
+  'micro.magnesium': 'Magnesium',
+  'micro.potassium': 'Potassium',
+  'micro.zinc': 'Zinc',
+  'micro.vitaminA': 'Vitamin A',
+  'micro.vitaminC': 'Vitamin C',
+  'micro.vitaminD': 'Vitamin D',
+  'micro.vitaminB12': 'Vitamin B12',
+  'micro.folate': 'Folate (B9)',
+
   // dashboard (Calorize-style)
   'dash.eaten': 'Eaten',
   'dash.left': 'Left',
@@ -594,6 +632,25 @@ const uk: Dict = {
   'ai.retake': 'Інше фото',
   'ai.photoEmpty': 'На фото не знайдено їжі — спробуйте інший знімок',
   'ai.rateLimited': 'Забагато AI-запитів. Зачекайте трохи.',
+
+  // micronutrients (weekly, approximate)
+  'micro.title': 'Вітаміни та мінерали',
+  'micro.weekly': 'за тиждень',
+  'micro.empty': 'Додавайте страви через ШІ — тут зʼявиться приблизна оцінка вітамінів за тиждень.',
+  'micro.approx': '≈ Приблизно, на основі страв, доданих через ШІ. Не використовуйте для медичних рішень.',
+  'micro.low': 'Мало',
+  'micro.ok': 'Норма',
+  'micro.good': 'Добре',
+  'micro.iron': 'Залізо',
+  'micro.calcium': 'Кальцій',
+  'micro.magnesium': 'Магній',
+  'micro.potassium': 'Калій',
+  'micro.zinc': 'Цинк',
+  'micro.vitaminA': 'Вітамін A',
+  'micro.vitaminC': 'Вітамін C',
+  'micro.vitaminD': 'Вітамін D',
+  'micro.vitaminB12': 'Вітамін B12',
+  'micro.folate': 'Фолат (B9)',
 
   // dashboard (Calorize-style)
   'dash.eaten': 'З\'їдено',

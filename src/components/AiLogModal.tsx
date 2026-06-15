@@ -4,12 +4,13 @@ import React, { useState, useRef } from 'react';
 import { X, Sparkles, Loader2, Plus, Check, Camera, ImagePlus, Type } from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
 import { aiPost } from '@/lib/aiFetch';
+import type { Micros } from '@/lib/micronutrients';
 import type { AiLoggedItem } from '@/app/api/ai-log/route';
 
 interface AiLogModalProps {
   mealType: string;
   onClose: () => void;
-  onAddItem: (name: string, kcal: number, protein: number, fat: number, carbs: number, grams: number, fiber?: number) => void;
+  onAddItem: (name: string, kcal: number, protein: number, fat: number, carbs: number, grams: number, fiber?: number, micros?: Micros) => void;
 }
 
 type Mode = 'text' | 'photo';
@@ -109,14 +110,14 @@ export function AiLogModal({ mealType, onClose, onAddItem }: AiLogModalProps) {
 
   const addItem = (idx: number) => {
     const item = items[idx];
-    onAddItem(item.name, item.kcal, item.protein, item.fat, item.carbs, item.grams, item.fiber);
+    onAddItem(item.name, item.kcal, item.protein, item.fat, item.carbs, item.grams, item.fiber, item.micros);
     setAdded((prev) => new Set(prev).add(idx));
   };
 
   const addAll = () => {
     items.forEach((item, idx) => {
       if (!added.has(idx)) {
-        onAddItem(item.name, item.kcal, item.protein, item.fat, item.carbs, item.grams, item.fiber);
+        onAddItem(item.name, item.kcal, item.protein, item.fat, item.carbs, item.grams, item.fiber, item.micros);
       }
     });
     setAdded(new Set(items.map((_, i) => i)));

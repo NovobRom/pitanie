@@ -12,6 +12,7 @@ import { WeightWidget } from '@/components/WeightWidget';
 import { BottomNav, Tab } from '@/components/BottomNav';
 import { Macros } from '@/lib/nutrition';
 import { getProfile } from '@/lib/cloud';
+import type { Micros } from '@/lib/micronutrients';
 
 const DEFAULT_GOALS: Macros = {
   calories: 2000,
@@ -119,10 +120,12 @@ export default function Home() {
     fat: number,
     carbs: number,
     grams: number,
-    fiber?: number
+    fiber?: number,
+    micros?: Micros
   ) => {
     const item: any = { name, grams, kcal, protein, fat, carbs };
     if (fiber != null) item.fiber = fiber;
+    if (micros) item.micros = micros;
     const updatedMeals = {
       ...meals,
       [mealType]: [...(meals[mealType] || []), item],
