@@ -180,6 +180,14 @@ const ru: Dict = {
   'ai.error': 'Не удалось разобрать. Попробуйте ещё раз.',
   'ai.noKey': 'AI-функция недоступна (нет ключа API)',
   'ai.hint': 'Опишите блюдо или приём пищи своими словами',
+  'ai.tabText': 'Текст',
+  'ai.tabPhoto': 'Фото',
+  'ai.photoHint': 'Сфотографируйте блюдо — ИИ оценит КБЖУ',
+  'ai.takePhoto': 'Сделать фото',
+  'ai.choosePhoto': 'Выбрать из галереи',
+  'ai.analyzePhoto': 'Распознать блюдо',
+  'ai.retake': 'Другое фото',
+  'ai.photoEmpty': 'На фото не найдено еды — попробуйте другой снимок',
 };
 
 const en: Dict = {
@@ -356,6 +364,14 @@ const en: Dict = {
   'ai.error': 'Could not parse. Please try again.',
   'ai.noKey': 'AI feature unavailable (no API key)',
   'ai.hint': 'Describe your meal or dish in your own words',
+  'ai.tabText': 'Text',
+  'ai.tabPhoto': 'Photo',
+  'ai.photoHint': 'Snap your meal — AI estimates the macros',
+  'ai.takePhoto': 'Take photo',
+  'ai.choosePhoto': 'Choose from gallery',
+  'ai.analyzePhoto': 'Analyse meal',
+  'ai.retake': 'Different photo',
+  'ai.photoEmpty': 'No food found in the photo — try another shot',
 };
 
 const uk: Dict = {
@@ -532,6 +548,14 @@ const uk: Dict = {
   'ai.error': 'Не вдалося розібрати. Спробуйте ще раз.',
   'ai.noKey': 'ШІ-функція недоступна (немає ключа API)',
   'ai.hint': 'Опишіть страву або прийом їжі своїми словами',
+  'ai.tabText': 'Текст',
+  'ai.tabPhoto': 'Фото',
+  'ai.photoHint': 'Сфотографуйте страву — ШІ оцінить КБЖВ',
+  'ai.takePhoto': 'Зробити фото',
+  'ai.choosePhoto': 'Вибрати з галереї',
+  'ai.analyzePhoto': 'Розпізнати страву',
+  'ai.retake': 'Інше фото',
+  'ai.photoEmpty': 'На фото не знайдено їжі — спробуйте інший знімок',
 };
 
 const dictionaries: Record<Lang, Dict> = { ru, en, uk };
