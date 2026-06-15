@@ -21,24 +21,30 @@ export function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
   ];
 
   return (
-    <nav className="fixed bottom-0 inset-x-0 z-30 bg-white/95 backdrop-blur-md border-t border-gray-100 no-print"
+    <nav className="fixed bottom-0 inset-x-0 z-30 bg-[var(--color-surface)]/90 backdrop-blur-xl border-t border-[var(--color-border)] no-print"
       style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
     >
-      <div className="max-w-lg mx-auto flex items-center justify-around py-1">
+      <div className="max-w-lg mx-auto flex items-center justify-around py-1.5 px-2">
         {tabs.map(({ id, icon: Icon, labelKey }) => {
           const isActive = activeTab === id;
           return (
             <button
               key={id}
               onClick={() => onTabChange(id)}
-              className="flex flex-col items-center gap-0.5 px-5 py-2.5 flex-1 cursor-pointer transition-all"
+              className="flex flex-col items-center gap-1 px-5 py-2 flex-1 cursor-pointer transition-all"
               aria-current={isActive ? 'page' : undefined}
             >
-              <Icon
-                size={22}
-                className={`transition-colors ${isActive ? 'text-[var(--color-primary)]' : 'text-[var(--color-text-muted)]'}`}
-                strokeWidth={isActive ? 2.5 : 1.8}
-              />
+              <span
+                className={`flex items-center justify-center w-14 h-8 rounded-full transition-all duration-200 ${
+                  isActive ? 'bg-[var(--color-primary)]/12' : 'bg-transparent'
+                }`}
+              >
+                <Icon
+                  size={20}
+                  className={`transition-colors ${isActive ? 'text-[var(--color-primary)]' : 'text-[var(--color-text-muted)]'}`}
+                  strokeWidth={isActive ? 2.5 : 1.8}
+                />
+              </span>
               <span
                 className={`text-[10px] font-semibold tracking-wide transition-colors ${
                   isActive ? 'text-[var(--color-primary)]' : 'text-[var(--color-text-muted)]'

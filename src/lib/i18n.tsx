@@ -138,6 +138,9 @@ const ru: Dict = {
   'build.find': 'Найти',
   'build.per100': 'на 100г',
   'lang.label': 'Язык',
+  'theme.label': 'Тема',
+  'theme.light': 'Светлая',
+  'theme.dark': 'Тёмная',
 
   // micronutrients
   'micro.fiber': 'Клетчатка',
@@ -299,6 +302,9 @@ const en: Dict = {
   'build.find': 'Search',
   'build.per100': 'per 100g',
   'lang.label': 'Language',
+  'theme.label': 'Theme',
+  'theme.light': 'Light',
+  'theme.dark': 'Dark',
 
   // micronutrients
   'micro.fiber': 'Fiber',
@@ -460,6 +466,9 @@ const uk: Dict = {
   'build.find': 'Знайти',
   'build.per100': 'на 100г',
   'lang.label': 'Мова',
+  'theme.label': 'Тема',
+  'theme.light': 'Світла',
+  'theme.dark': 'Темна',
 
   // micronutrients
   'micro.fiber': 'Клітковина',

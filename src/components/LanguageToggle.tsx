@@ -11,7 +11,7 @@ export const LanguageToggle = () => {
 
   return (
     <div
-      className="no-print inline-flex items-center gap-1 bg-white rounded-full p-1 shadow-[var(--shadow-sm)] border border-[var(--color-border)]"
+      className="no-print inline-flex items-center gap-1 bg-[var(--color-surface)] rounded-full p-1 shadow-[var(--shadow-sm)] border border-[var(--color-border)]"
       title={t('lang.label')}
     >
       <Languages size={15} className="text-[var(--color-text-muted)] ml-1.5" />

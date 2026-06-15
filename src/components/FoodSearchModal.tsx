@@ -374,16 +374,16 @@ export function FoodSearchModal({ mealType, onClose, onAdd }: FoodSearchModalPro
                 {/* Macros per 100g */}
                 <div className="flex flex-wrap gap-2 text-[10px] font-mono text-[var(--color-text-light)]">
                   <span className="bg-gray-100/80 px-2 py-0.5 rounded-md">{t('build.per100')}:</span>
-                  <span className="bg-orange-50 text-orange-700 px-2 py-0.5 rounded-md">
+                  <span className="px-2 py-0.5 rounded-md font-semibold" style={{ backgroundColor: 'var(--color-fat-bg)', color: 'var(--color-fat)' }}>
                     {Math.round(product.nutrition.kcal)} {t('calc.kcal')}
                   </span>
-                  <span className="bg-blue-50 text-blue-700 px-2 py-0.5 rounded-md">
+                  <span className="px-2 py-0.5 rounded-md font-semibold" style={{ backgroundColor: 'var(--color-protein-bg)', color: 'var(--color-protein)' }}>
                     {t('build.protShort')} {product.nutrition.protein}g
                   </span>
-                  <span className="bg-pink-50 text-pink-700 px-2 py-0.5 rounded-md">
+                  <span className="px-2 py-0.5 rounded-md font-semibold" style={{ backgroundColor: 'var(--color-fat-bg)', color: 'var(--color-fat)' }}>
                     {t('build.fatShort')} {product.nutrition.fat}g
                   </span>
-                  <span className="bg-green-50 text-green-700 px-2 py-0.5 rounded-md">
+                  <span className="px-2 py-0.5 rounded-md font-semibold" style={{ backgroundColor: 'var(--color-carbs-bg)', color: 'var(--color-carbs)' }}>
                     {t('build.carbShort')} {product.nutrition.carbs}g
                   </span>
                 </div>
