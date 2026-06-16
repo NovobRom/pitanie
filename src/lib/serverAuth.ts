@@ -9,12 +9,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
-
-const SUPABASE_URL =
-  process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://zigwrbvpeinczfwrvbiv.supabase.co';
-const SUPABASE_ANON_KEY =
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InppZ3dyYnZwZWluY3pmd3J2Yml2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE0Mjg2MDAsImV4cCI6MjA5NzAwNDYwMH0.Tg7iu682OuSV7kBEZIoXUGe4WUOAwWfknTvf7J40r7I';
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from '@/lib/supabaseEnv';
 
 // Per-user limits. Generous for normal diary use, tight enough to bound abuse.
 const MAX_PER_MINUTE = 8;

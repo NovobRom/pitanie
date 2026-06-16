@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import type { User } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabaseClient';
 import { Header } from '@/components/Header';
@@ -12,6 +12,7 @@ import { WeightWidget } from '@/components/WeightWidget';
 import { BottomNav, Tab } from '@/components/BottomNav';
 import { Macros } from '@/lib/nutrition';
 import { getProfile } from '@/lib/cloud';
+import { useDiary, type DiaryData } from '@/lib/useDiary';
 import type { Micros } from '@/lib/micronutrients';
 import type { AiLoggedItem } from '@/app/api/ai-log/route';
 
@@ -74,40 +75,32 @@ export default function Home() {
     return () => subscription.unsubscribe();
   }, []);
 
-  // ── Load diary ──
+  // ── Load diary (SWR: cached per date, race-safe) ──
+  const { diary, isLoading: loadingDiary, mutate: mutateDiary } = useDiary(
+    user?.id ?? null,
+    currentDate,
+  );
+
+  // Seed local edit state from whatever SWR resolved for the current day.
   useEffect(() => {
-    if (!user || !currentDate) return;
-
-    const loadDiary = async () => {
-      try {
-        const { data } = await supabase
-          .from('plans')
-          .select('data')
-          .eq('owner_id', user.id)
-          .eq('title', currentDate)
-          .maybeSingle();
-
-        if (data?.data) {
-          setMeals(data.data.meals || EMPTY_MEALS);
-          if (data.data.goals) setGoals(data.data.goals);
-        } else {
-          setMeals(EMPTY_MEALS);
-          const userGoals = user.user_metadata?.goals;
-          setGoals(userGoals || DEFAULT_GOALS);
-        }
-      } catch (err) {
-        console.error('Failed to load diary:', err);
-      }
-    };
-
-    loadDiary();
-  }, [user, currentDate]);
+    if (!user || !currentDate || loadingDiary) return;
+    if (diary?.meals) {
+      setMeals(diary.meals);
+      if (diary.goals) setGoals(diary.goals);
+    } else {
+      setMeals(EMPTY_MEALS);
+      setGoals(user.user_metadata?.goals || DEFAULT_GOALS);
+    }
+  }, [diary, loadingDiary, user, currentDate]);
 
   // ── Save diary ──
   const saveDiary = async (updatedMeals: any, targetGoals: Macros) => {
     if (!user || !currentDate) return;
+    const next: DiaryData = { meals: updatedMeals, goals: targetGoals };
+    // Keep the SWR cache in sync with the optimistic local edit (no refetch).
+    mutateDiary(next, { revalidate: false });
     const { error } = await supabase.from('plans').upsert(
-      { owner_id: user.id, title: currentDate, data: { meals: updatedMeals, goals: targetGoals } },
+      { owner_id: user.id, title: currentDate, data: next },
       { onConflict: 'owner_id,title' }
     );
     if (error) console.error('Failed to save diary:', error.message, error.details);
@@ -182,7 +175,9 @@ export default function Home() {
     }
   };
 
-  const calculateConsumed = () => {
+  // Recompute totals only when the meals change, not on every re-render
+  // (e.g. opening a modal or switching tabs).
+  const consumed = useMemo(() => {
     const total = { kcal: 0, protein: 0, fat: 0, carbs: 0 };
     Object.values(meals).forEach((list: any) => {
       list.forEach((item: any) => {
@@ -194,7 +189,7 @@ export default function Home() {
       });
     });
     return total;
-  };
+  }, [meals]);
 
   if (loadingSession) {
     return (
@@ -214,7 +209,7 @@ export default function Home() {
         {activeTab === 'today' && (
           <Dashboard
             goals={goals}
-            consumed={calculateConsumed()}
+            consumed={consumed}
             currentDate={currentDate}
             onDateChange={setCurrentDate}
             onAddFood={handleAddFood}
