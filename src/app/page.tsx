@@ -10,6 +10,7 @@ import { MealDiary } from '@/components/MealDiary';
 import { ProfileModal } from '@/components/ProfileModal';
 import { WeightWidget } from '@/components/WeightWidget';
 import { BottomNav, Tab } from '@/components/BottomNav';
+import { DashboardSkeleton, DiarySkeleton, Skeleton } from '@/components/Skeleton';
 import { Macros } from '@/lib/nutrition';
 import { getProfile } from '@/lib/cloud';
 import { useDiary, type DiaryData } from '@/lib/useDiary';
@@ -193,8 +194,15 @@ export default function Home() {
 
   if (loadingSession) {
     return (
-      <div className="min-h-screen bg-[var(--color-bg)] flex items-center justify-center">
-        <div className="w-8 h-8 rounded-full border-4 border-[var(--color-primary)] border-t-transparent animate-spin" />
+      <div className="min-h-screen">
+        <main className="p-4 md:p-6 text-[var(--color-text)] max-w-2xl mx-auto pb-28">
+          {/* Header placeholder */}
+          <div className="flex items-center justify-between mb-6">
+            <Skeleton className="h-7 w-28" />
+            <Skeleton className="h-9 w-9 rounded-full" />
+          </div>
+          <DashboardSkeleton />
+        </main>
       </div>
     );
   }
@@ -207,26 +215,34 @@ export default function Home() {
         <Header user={user} onOpenProfile={() => setActiveTab('profile')} />
 
         {activeTab === 'today' && (
-          <Dashboard
-            goals={goals}
-            consumed={consumed}
-            currentDate={currentDate}
-            onDateChange={setCurrentDate}
-            onAddFood={handleAddFood}
-            onAddFoods={handleAddFoodBatch}
-          />
+          loadingDiary ? (
+            <DashboardSkeleton />
+          ) : (
+            <Dashboard
+              goals={goals}
+              consumed={consumed}
+              currentDate={currentDate}
+              onDateChange={setCurrentDate}
+              onAddFood={handleAddFood}
+              onAddFoods={handleAddFoodBatch}
+            />
+          )
         )}
 
         {activeTab === 'diary' && (
-          <MealDiary
-            currentDate={currentDate}
-            onDateChange={setCurrentDate}
-            meals={meals}
-            onAddFood={handleAddFood}
-            onAddFoods={handleAddFoodBatch}
-            onRemoveFood={handleRemoveFood}
-            onCopyYesterday={handleCopyYesterday}
-          />
+          loadingDiary ? (
+            <DiarySkeleton />
+          ) : (
+            <MealDiary
+              currentDate={currentDate}
+              onDateChange={setCurrentDate}
+              meals={meals}
+              onAddFood={handleAddFood}
+              onAddFoods={handleAddFoodBatch}
+              onRemoveFood={handleRemoveFood}
+              onCopyYesterday={handleCopyYesterday}
+            />
+          )
         )}
 
         {activeTab === 'profile' && (
