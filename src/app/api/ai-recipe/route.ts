@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
 import Anthropic from '@anthropic-ai/sdk';
 import { guardAiRequest } from '@/lib/serverAuth';
 import { parseLooseObject } from '@/lib/aiJson';
@@ -50,34 +51,45 @@ Return ONLY a JSON object — no markdown, no explanation. Shape:
 Respond with ONLY the JSON object, nothing else.`;
 }
 
-function num(v: unknown): number | null {
-  return typeof v === 'number' && Number.isFinite(v) ? v : null;
-}
+const finite = z.number().finite();
+
+// A bad `fiber` value shouldn't reject the whole ingredient — coerce it away
+// (.catch) so the rest of the macros still count, matching the dish's optional
+// fiber contract.
+const ingredientSchema = z.object({
+  name: z.string(),
+  grams: finite,
+  kcal: finite,
+  protein: finite,
+  fat: finite,
+  carbs: finite,
+  fiber: finite.optional().catch(undefined),
+});
+
+// Top-level shape is lenient about `items` on purpose: we validate each
+// ingredient individually below so one malformed entry from the model doesn't
+// throw away an otherwise-good recipe.
+const recipeSchema = z.object({
+  name: z.string(),
+  serving_g: finite.optional(),
+  items: z.array(z.unknown()),
+});
 
 function validateRecipe(parsed: unknown): AiRecipe | null {
-  if (!parsed || typeof parsed !== 'object') return null;
-  const obj = parsed as Record<string, unknown>;
-  if (typeof obj.name !== 'string' || !Array.isArray(obj.items)) return null;
+  const top = recipeSchema.safeParse(parsed);
+  if (!top.success) return null;
 
   const items: AiRecipeIngredient[] = [];
-  for (const raw of obj.items) {
-    if (!raw || typeof raw !== 'object') continue;
-    const it = raw as Record<string, unknown>;
-    const grams = num(it.grams);
-    const kcal = num(it.kcal);
-    const protein = num(it.protein);
-    const fat = num(it.fat);
-    const carbs = num(it.carbs);
-    if (typeof it.name !== 'string' || grams == null || kcal == null || protein == null || fat == null || carbs == null) {
-      continue;
-    }
-    const fiber = num(it.fiber);
-    items.push({ name: it.name, grams, kcal, protein, fat, carbs, ...(fiber != null ? { fiber } : {}) });
+  for (const raw of top.data.items) {
+    const r = ingredientSchema.safeParse(raw);
+    if (!r.success) continue;
+    const { fiber, ...rest } = r.data;
+    items.push(fiber != null ? { ...rest, fiber } : rest);
   }
   if (items.length === 0) return null;
 
-  const serving = num(obj.serving_g);
-  return { name: obj.name, serving_g: serving && serving > 0 ? serving : 100, items };
+  const serving = top.data.serving_g;
+  return { name: top.data.name, serving_g: serving && serving > 0 ? serving : 100, items };
 }
 
 export async function POST(req: NextRequest) {
