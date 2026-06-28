@@ -4,7 +4,7 @@
 
 import { supabase } from './supabaseClient';
 import { ShareState } from './shareState';
-import { Macros } from './nutrition';
+import { Macros } from '@/types/nutrition';
 import { MicroKey, MICRO_KEYS } from './micronutrients';
 
 export const cloudEnabled = true;

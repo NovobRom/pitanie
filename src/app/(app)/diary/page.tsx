@@ -5,7 +5,7 @@ import { useDiary } from '@/context/DiaryContext';
 import { MealDiary } from '@/components/MealDiary';
 
 export default function DiaryPage() {
-  const { currentDate, setCurrentDate, meals, addFood, removeFood, isLoading } = useDiary();
+  const { currentDate, setCurrentDate, meals, addFood, removeFood, copyYesterday, isLoading } = useDiary();
 
   const handleAddFood = async (
     mealType: string,
@@ -42,6 +42,7 @@ export default function DiaryPage() {
       meals={meals}
       onAddFood={handleAddFood}
       onRemoveFood={handleRemoveFood}
+      onCopyYesterday={copyYesterday}
     />
   );
 }
