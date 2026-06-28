@@ -39,8 +39,8 @@ export function Header({ user, onOpenProfile }: HeaderProps) {
         <div className="w-9 h-9 rounded-xl bg-[var(--color-primary)] text-white flex items-center justify-center shadow-md">
           <Flame size={20} />
         </div>
-        <h1 className="text-xl font-bold tracking-tight text-[var(--color-text)]">
-          {t('auth.welcome').replace('v4', '')}
+        <h1 className="text-xl font-extrabold tracking-tight text-[var(--color-text)] font-display">
+          Dose
         </h1>
       </div>
 

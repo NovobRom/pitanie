@@ -24,13 +24,6 @@ export function Dashboard({ goals, consumed, onOpenProfile }: DashboardProps) {
   const remainingCalories = goalCalories - currentCalories;
   const isOver = remainingCalories < 0;
 
-  // SVG Circumference calculation
-  const radius = 60;
-  const strokeWidth = 10;
-  const circumference = 2 * Math.PI * radius; // ~377
-  const pct = goalCalories > 0 ? Math.min(100, (currentCalories / goalCalories) * 100) : 0;
-  const strokeDashoffset = circumference - (pct / 100) * circumference;
-
   const roundVal = (n: number) => Math.round(n);
 
   return (
@@ -38,7 +31,7 @@ export function Dashboard({ goals, consumed, onOpenProfile }: DashboardProps) {
       {/* Dashboard Card Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6 pb-4 border-b border-gray-100/60">
         <h2 className="text-xs font-bold text-[var(--color-text-light)] uppercase tracking-wider">
-          {t('calc.target')}
+          {t('calc.target') || 'Ваша цель на день'}
         </h2>
         <button
           type="button"
@@ -46,126 +39,95 @@ export function Dashboard({ goals, consumed, onOpenProfile }: DashboardProps) {
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-gray-200/60 bg-white/60 text-xs font-bold text-[var(--color-primary-dark)] btn-interactive cursor-pointer shadow-sm"
         >
           <Settings size={14} className="text-[var(--color-primary)]" />
-          {t('calc.title')}
+          {t('calc.title') || 'Калькулятор калорий'}
         </button>
       </div>
 
-      <div className="flex flex-col md:flex-row items-center justify-around gap-8">
-        
-        {/* Left: Circular Calorie SVG Chart */}
-        <div className="relative w-44 h-44 flex items-center justify-center">
-          <svg className="w-full h-full transform -rotate-90">
-            {/* Background Circle */}
-            <circle
-              cx="88"
-              cy="88"
-              r={radius}
-              stroke="#f3f4f6"
-              strokeWidth={strokeWidth}
-              fill="transparent"
+      {/* Calories Overview: Eaten / Remaining */}
+      <div className="flex justify-between items-end mb-6">
+        <div>
+          <span className="block text-4xl font-black text-[var(--color-text)]">
+            {roundVal(currentCalories)}
+          </span>
+          <span className="text-[10px] font-bold text-[var(--color-text-muted)] uppercase tracking-wider">
+            {t('diary.eaten') || 'съедено'}
+          </span>
+        </div>
+        <div className="text-right">
+          <span className="block text-4xl font-black text-[var(--color-primary)]">
+            {roundVal(Math.max(0, remainingCalories))}
+          </span>
+          <span className="text-[10px] font-bold text-[var(--color-text-muted)] uppercase tracking-wider">
+            {isOver ? (t('diary.over') || 'перебор') : (t('diary.remaining') || 'осталось')}
+          </span>
+        </div>
+      </div>
+
+      {/* Main progress bar for calories */}
+      <div className="h-3 bg-gray-100/80 rounded-full overflow-hidden mb-8 relative">
+        <div
+          className="h-full rounded-full transition-all duration-500 ease-out bg-[var(--color-primary)]"
+          style={{
+            width: `${Math.min(100, (currentCalories / goalCalories) * 100)}%`,
+          }}
+        />
+      </div>
+
+      {/* Macros Boxes Grid */}
+      <div className="grid grid-cols-3 gap-3">
+        {/* Protein */}
+        <div className="bg-[#eef6ff] rounded-2xl p-3 border border-blue-100 flex flex-col justify-between h-24">
+          <div>
+            <span className="text-[9px] font-extrabold text-[#6b9bd1] uppercase tracking-wider block mb-1">
+              {t('calc.protein') || 'белки'}
+            </span>
+            <span className="text-sm font-black text-blue-900">
+              {roundVal(consumed.protein)} <span className="text-xs font-semibold text-blue-700/80">/ {roundVal(goals.protein)}г</span>
+            </span>
+          </div>
+          <div className="h-1.5 bg-[#6b9bd1]/20 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-[#6b9bd1] rounded-full"
+              style={{ width: `${Math.min(100, (consumed.protein / (goals.protein || 1)) * 100)}%` }}
             />
-            {/* Active Circle with transition */}
-            <circle
-              cx="88"
-              cy="88"
-              r={radius}
-              stroke={isOver ? '#fca5a5' : 'var(--color-primary)'}
-              strokeWidth={strokeWidth}
-              fill="transparent"
-              strokeDasharray={circumference}
-              strokeDashoffset={strokeDashoffset}
-              strokeLinecap="round"
-              className="transition-all duration-500 ease-out"
-            />
-          </svg>
-          
-          {/* Inner details */}
-          <div className="absolute flex flex-col items-center text-center">
-            <span className="text-3xl font-extrabold text-[var(--color-text)]">
-              {roundVal(currentCalories)}
-            </span>
-            <span className="text-[10px] text-[var(--color-text-muted)] uppercase tracking-wider mb-1">
-              / {roundVal(goalCalories)} {t('calc.kcal')}
-            </span>
-            <span
-              className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
-                isOver ? 'bg-red-50 text-red-500' : 'bg-green-50 text-green-600'
-              }`}
-            >
-              {isOver ? t('diary.over') : t('diary.remaining')}: {roundVal(Math.abs(remainingCalories))}
-            </span>
           </div>
         </div>
 
-        {/* Right: Macro Progress Bars */}
-        <div className="flex-1 w-full space-y-4">
-          {/* Protein */}
-          <MacroBar
-            label={t('calc.protein')}
-            current={consumed.protein}
-            goal={goals.protein}
-            color="var(--color-roman)"
-            bgColor="var(--color-roman-bg)"
-            unit={t('calc.g')}
-          />
-
-          {/* Fat */}
-          <MacroBar
-            label={t('calc.fat')}
-            current={consumed.fat}
-            goal={goals.fat}
-            color="var(--color-liza)"
-            bgColor="var(--color-liza-bg)"
-            unit={t('calc.g')}
-          />
-
-          {/* Carbs */}
-          <MacroBar
-            label={t('calc.carbs')}
-            current={consumed.carbs}
-            goal={goals.carbs}
-            color="var(--color-primary-light)"
-            bgColor="#f0fdf4"
-            unit={t('calc.g')}
-          />
+        {/* Fat */}
+        <div className="bg-[#fff0f7] rounded-2xl p-3 border border-pink-100 flex flex-col justify-between h-24">
+          <div>
+            <span className="text-[9px] font-extrabold text-[#e89fc4] uppercase tracking-wider block mb-1">
+              {t('calc.fat') || 'жиры'}
+            </span>
+            <span className="text-sm font-black text-pink-900">
+              {roundVal(consumed.fat)} <span className="text-xs font-semibold text-pink-700/80">/ {roundVal(goals.fat)}г</span>
+            </span>
+          </div>
+          <div className="h-1.5 bg-[#e89fc4]/20 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-[#e89fc4] rounded-full"
+              style={{ width: `${Math.min(100, (consumed.fat / (goals.fat || 1)) * 100)}%` }}
+            />
+          </div>
         </div>
-      </div>
-    </div>
-  );
-}
 
-interface MacroBarProps {
-  label: string;
-  current: number;
-  goal: number;
-  color: string;
-  bgColor: string;
-  unit: string;
-}
-
-function MacroBar({ label, current, goal, color, bgColor, unit }: MacroBarProps) {
-  const roundedCurrent = Math.round(current * 10) / 10;
-  const roundedGoal = Math.round(goal * 10) / 10;
-  const pct = goal > 0 ? Math.min(100, (current / goal) * 100) : 0;
-  const isOver = current > goal;
-
-  return (
-    <div>
-      <div className="flex justify-between text-xs font-semibold mb-1">
-        <span className="text-[var(--color-text)]">{label}</span>
-        <span className="text-[var(--color-text-light)] font-mono">
-          {roundedCurrent}{unit} / {roundedGoal}{unit}
-          {isOver && <span className="text-red-500 ml-1">⚠️</span>}
-        </span>
-      </div>
-      <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
-        <div
-          className="h-full rounded-full transition-all duration-500 ease-out"
-          style={{
-            width: `${pct}%`,
-            backgroundColor: isOver ? '#fca5a5' : color,
-          }}
-        />
+        {/* Carbs */}
+        <div className="bg-[#f0f9ef] rounded-2xl p-3 border border-green-100 flex flex-col justify-between h-24">
+          <div>
+            <span className="text-[9px] font-extrabold text-[#7c9885] uppercase tracking-wider block mb-1">
+              {t('calc.carbs') || 'углеводы'}
+            </span>
+            <span className="text-sm font-black text-green-950">
+              {roundVal(consumed.carbs)} <span className="text-xs font-semibold text-green-800/80">/ {roundVal(goals.carbs)}г</span>
+            </span>
+          </div>
+          <div className="h-1.5 bg-[#7c9885]/20 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-[#7c9885] rounded-full"
+              style={{ width: `${Math.min(100, (consumed.carbs / (goals.carbs || 1)) * 100)}%` }}
+            />
+          </div>
+        </div>
       </div>
     </div>
   );

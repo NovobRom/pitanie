@@ -40,9 +40,9 @@ export function NavBar() {
             href={item.href}
             aria-current={isActive ? 'page' : undefined}
             aria-label={item.label}
-            className={`flex flex-col items-center gap-1 py-1 px-4 rounded-xl transition-all duration-200 ${
+            className={`flex flex-col items-center gap-1 py-1.5 px-4 rounded-2xl transition-all duration-200 ${
               isActive
-                ? 'text-[var(--color-primary)] font-bold scale-105'
+                ? 'text-[var(--color-primary)] font-bold bg-[var(--color-primary)]/10 scale-105'
                 : 'text-[var(--color-text-muted)] hover:text-[var(--color-text)]'
             }`}
           >

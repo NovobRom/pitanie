@@ -5,17 +5,17 @@
 /* Design System - Тёплая палитра для приложения питания */
 @theme {
   /* Основные цвета */
-  --color-primary: #7c9885; /* sage green */
-  --color-primary-light: #a8c4b0;
-  --color-primary-dark: #5a7a63;
+  --color-primary: #ff6b00; /* vibrant brand orange */
+  --color-primary-light: #ff9e66;
+  --color-primary-dark: #cc5200;
 
   --color-secondary: #e8d5b7; /* warm beige */
   --color-secondary-light: #f5ead8;
   --color-secondary-dark: #d4b896;
 
-  --color-accent: #f39c6b; /* мягкий оранжевый */
-  --color-accent-light: #ffb88c;
-  --color-accent-dark: #d67a4a;
+  --color-accent: #7c9885; /* soft green */
+  --color-accent-light: #a8c4b0;
+  --color-accent-dark: #5a7a63;
 
   /* Персональные цвета (мягче) */
   --color-roman: #6b9bd1; /* мягкий синий */
@@ -39,12 +39,12 @@
   --color-cheat: #d4a5d9; /* фиолетовый для читмила */
 
   /* Нейтральные */
-  --color-bg: #fafaf7; /* тёплый белый */
+  --color-bg: #fcf8f2; /* тёплый белый с оттенком крема */
   --color-surface: #ffffff;
-  --color-text: #3d3d3d;
-  --color-text-light: #6b6b6b;
-  --color-text-muted: #9a9a9a;
-  --color-border: #e8e8e5;
+  --color-text: #2b2b2b;
+  --color-text-light: #5c5c5c;
+  --color-text-muted: #8e8e8e;
+  --color-border: #f0e9df;
 
   /* Spacing (единая сетка 4px) */
   --space-xs: 0.25rem; /* 4px */
