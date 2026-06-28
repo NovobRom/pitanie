@@ -1,34 +1,43 @@
 @import "tailwindcss";
 @source "../**/*.{html,js,ts,jsx,tsx}";
 
-
-/* Design System - Тёплая палитра для приложения питания */
+/* ── Warm Studio Design System (Calorize-inspired) ──────────────────────────── */
 @theme {
   /* Основные цвета */
   --color-primary: #ff6b00; /* vibrant brand orange */
   --color-primary-light: #ff9e66;
   --color-primary-dark: #cc5200;
 
-  --color-secondary: #e8d5b7; /* warm beige */
-  --color-secondary-light: #f5ead8;
-  --color-secondary-dark: #d4b896;
+  /* Ink — warm near-black, used for selected pills & user chat bubbles */
+  --color-ink: #1c1917;
+  --color-ink-soft: #292524;
 
   --color-accent: #7c9885; /* soft green */
   --color-accent-light: #a8c4b0;
   --color-accent-dark: #5a7a63;
 
-  /* Персональные цвета (мягче) */
-  --color-roman: #6b9bd1; /* мягкий синий */
-  --color-roman-light: #a8c7e7;
-  --color-roman-bg: #eef6ff;
+  /* Secondary / accent (kept for legacy usages) */
+  --color-secondary: #22c55e;
+  --color-accent: #f97316;
+  --color-accent-light: #fb923c;
+  --color-accent-dark: #ea580c;
 
-  --color-liza: #e89fc4; /* мягкий розовый */
-  --color-liza-light: #f5c5dc;
-  --color-liza-bg: #fff0f7;
+  /* Per-person (legacy — mapped to macro hues) */
+  --color-roman: #3b82f6;
+  --color-roman-light: #93c5fd;
+  --color-roman-bg: #e8f0fe;
+  --color-liza: #f59e0b;
+  --color-liza-light: #fcd34d;
+  --color-liza-bg: #fdf2e0;
 
-  /* Приёмы пищи */
-  --color-breakfast: #ffd89b; /* тёплый жёлтый */
-  --color-breakfast-bg: #fff8e7;
+  /* Meal hues */
+  --color-breakfast: #f59e0b;
+  --color-breakfast-bg: #fdf2e0;
+  --color-lunch: #22c55e;
+  --color-lunch-bg: #e6f7ec;
+  --color-dinner: #8b5cf6;
+  --color-dinner-bg: #f1ecfe;
+  --color-cheat: #ec4899;
 
   --color-lunch: #a8d5a3; /* зелёный */
   --color-lunch-bg: #f0f9ef;
@@ -55,18 +64,12 @@
   --space-2xl: 3rem; /* 48px */
 
 
-  /* Border radius */
-  --radius-sm: 0.5rem; /* 8px */
-  --radius-md: 1rem; /* 16px */
-  --radius-lg: 1.25rem; /* 20px */
-  --radius-xl: 1.5rem; /* 24px */
+  /* Shadows — warm soft */
+  --shadow-sm: 0 1px 3px 0 rgb(64 47 25 / 0.05), 0 1px 2px -1px rgb(64 47 25 / 0.04);
+  --shadow-md: 0 6px 16px -4px rgb(64 47 25 / 0.08), 0 2px 6px -2px rgb(64 47 25 / 0.05);
+  --shadow-lg: 0 16px 36px -8px rgb(64 47 25 / 0.14), 0 6px 12px -6px rgb(64 47 25 / 0.06);
+  --shadow-glow: 0 8px 24px -6px rgb(249 115 22 / 0.4);
 
-  /* Shadows (мягкие) */
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.03);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.03);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.05), 0 4px 6px -4px rgb(0 0 0 / 0.03);
-
-  /* Typography */
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
   --font-display: 'Nunito', var(--font-sans);
   /* Easing Curves */
@@ -87,10 +90,87 @@
   --ease-out-curve: cubic-bezier(0.23, 1, 0.32, 1);
 }
 
+/* ── Dark theme (manual, via data-theme) ────────────────────────────────────── */
+[data-theme="dark"] {
+  --color-primary: #fb923c;
+  --color-primary-light: #fdba74;
+  --color-primary-dark: #f97316;
+
+  --color-ink: #f4ede3;
+  --color-ink-soft: #e7ddd0;
+
+  --color-protein: #60a5fa;
+  --color-protein-bg: #16233b;
+  --color-fat: #fbbf24;
+  --color-fat-bg: #2d260e;
+  --color-carbs: #4ade80;
+  --color-carbs-bg: #0e2d1f;
+
+  --color-roman: #60a5fa;
+  --color-roman-bg: #16233b;
+  --color-liza: #fbbf24;
+  --color-liza-bg: #2d260e;
+
+  --color-bg: #171310;
+  --color-surface: #211c18;
+  --color-surface-2: #2a2420;
+  --color-text: #f5efe8;
+  --color-text-light: #b8afa4;
+  --color-text-muted: #837a6e;
+  --color-border: #352e28;
+
+  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.4);
+  --shadow-md: 0 4px 12px -2px rgb(0 0 0 / 0.45), 0 2px 6px -2px rgb(0 0 0 / 0.3);
+  --shadow-lg: 0 12px 28px -6px rgb(0 0 0 / 0.5), 0 6px 12px -6px rgb(0 0 0 / 0.3);
+  --shadow-glow: 0 8px 24px -6px rgb(251 146 60 / 0.4);
+
+  --background: var(--color-bg);
+  --foreground: var(--color-text);
+  --app-gradient: radial-gradient(120% 80% at 50% -10%, #25201a 0%, #1c1813 45%, #171310 100%);
+}
+
+/* Dark utility safety-net — for components with hardcoded Tailwind colors */
+[data-theme="dark"] {
+  .bg-white { background-color: var(--color-surface) !important; }
+  .bg-gray-50, .bg-gray-50\/50, .bg-gray-50\/30 { background-color: var(--color-bg) !important; }
+  .bg-gray-100\/80, .bg-gray-100, .bg-gray-100\/60, .bg-gray-100\/30 { background-color: var(--color-surface-2) !important; }
+
+  .border-gray-100, .border-gray-100\/50, .border-gray-100\/60, .border-gray-100\/80,
+  .border-gray-200, .border-gray-50, .border-black\/5 { border-color: var(--color-border) !important; }
+
+  input:not([type='checkbox']), select, textarea {
+    background-color: var(--color-surface-2) !important;
+    color: var(--color-text) !important;
+    border-color: var(--color-border) !important;
+  }
+  input::placeholder { color: var(--color-text-muted) !important; }
+
+  .text-gray-400 { color: var(--color-text-muted) !important; }
+  .text-gray-500 { color: var(--color-text-light) !important; }
+
+  /* hover/focus variants not covered by the base rules above */
+  .hover\:bg-gray-50:hover { background-color: var(--color-surface-2) !important; }
+  .hover\:bg-gray-100\/70:hover { background-color: var(--color-surface-2) !important; }
+  .focus\:bg-white:focus { background-color: var(--color-surface) !important; }
+
+  .bg-orange-50 { background-color: #2d1a0e !important; }
+  .bg-blue-50   { background-color: #1e213a !important; }
+  .bg-pink-50   { background-color: #2d0e1a !important; }
+  .bg-green-50  { background-color: #0e2d1f !important; }
+  .bg-red-50, .bg-red-50\/50 { background-color: #2d0e0e !important; }
+  .bg-yellow-50, .bg-amber-50 { background-color: #2d260e !important; }
+  .bg-purple-50 { background-color: #1a0e2d !important; }
+  .bg-gray-800  { background-color: var(--color-surface) !important; }
+
+  .backdrop-blur-sm { backdrop-filter: blur(8px) brightness(0.7); }
+}
+
+/* ── Base ───────────────────────────────────────────────────────────────────── */
 @layer base {
   body {
     color: var(--foreground);
-    background: var(--background);
+    background: var(--app-gradient);
+    background-attachment: fixed;
     font-family: var(--font-sans);
     font-feature-settings: "rlig" 1, "calt" 1;
     -webkit-font-smoothing: antialiased;
@@ -102,7 +182,8 @@
 
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-display);
-    font-weight: 700;
+    font-weight: 800;
+    letter-spacing: -0.02em;
   }
 }
 
@@ -184,36 +265,10 @@
 }
 
 @media print {
-  .no-print {
-    display: none;
-  }
-
-  body {
-    background-color: white;
-  }
-
-  .shadow-lg,
-  .shadow-md {
-    box-shadow: none !important;
-  }
-
-  .bg-white {
-    border: 1px solid #ddd;
-  }
-
-  .text-white {
-    color: black !important;
-  }
-
-  .bg-gray-800 {
-    background-color: transparent !important;
-    color: black !important;
-    border: 1px solid #000;
-  }
-
-  /* Force background graphics for colored headers */
-  * {
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
+  .no-print { display: none; }
+  body { background-color: white; }
+  .shadow-lg, .shadow-md { box-shadow: none !important; }
+  .bg-white { border: 1px solid #ddd; }
+  .text-white { color: black !important; }
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
 }

@@ -10,7 +10,7 @@ import { EmptyState } from '@/components/ui/EmptyState';
 interface FoodSearchModalProps {
   mealType: string;
   onClose: () => void;
-  onAdd: (name: string, kcal: number, protein: number, fat: number, carbs: number, grams: number) => void;
+  onAdd: (name: string, kcal: number, protein: number, fat: number, carbs: number, grams: number, fiber?: number) => void;
 }
 
 interface Nutrition {
@@ -18,6 +18,7 @@ interface Nutrition {
   protein: number;
   fat: number;
   carbs: number;
+  fiber?: number;
 }
 
 interface SearchResult {
@@ -28,17 +29,37 @@ interface SearchResult {
 }
 
 export function FoodSearchModal({ mealType, onClose, onAdd }: FoodSearchModalProps) {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = ''; };
+  }, []);
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [searched, setSearched] = useState(false);
   const [gramInputs, setGramInputs] = useState<Record<string, number>>({});
+  const [recentFoods, setRecentFoods] = useState<RecentFood[]>([]);
+  const [recentLoading, setRecentLoading] = useState(true);
+  const [showScanner, setShowScanner] = useState(false);
+  const [barcodeLoading, setBarcodeLoading] = useState(false);
+  const [recipes, setRecipes] = useState<Recipe[]>([]);
+  const [showRecipeBuilder, setShowRecipeBuilder] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const loadRecipes = useCallback(async () => {
+    const r = await getRecipes();
+    setRecipes(r);
+  }, []);
 
   useEffect(() => {
     inputRef.current?.focus();
-  }, []);
+    getRecentFoods(8).then((foods) => {
+      setRecentFoods(foods);
+      setRecentLoading(false);
+    });
+    loadRecipes();
+  }, [loadRecipes]);
 
   // Debounce query typing to search automatically
   useEffect(() => {
@@ -62,32 +83,17 @@ export function FoodSearchModal({ mealType, onClose, onAdd }: FoodSearchModalPro
     setIsLoading(true);
     setSearched(true);
     try {
-      const url = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(
-        q
-      )}&search_simple=1&action=process&json=1&page_size=20&fields=product_name,nutriments,brands`;
-      const res = await fetch(url);
+      const params = new URLSearchParams({ q: q.trim(), lang });
+      const res = await fetch(`/api/search-food?${params}`);
       const data = await res.json();
 
-      const products: SearchResult[] = (data.products ?? [])
-        .filter((p: any) => {
-          const n = p.nutriments;
-          return p.product_name && n && n['energy-kcal_100g'] != null && n['proteins_100g'] != null;
-        })
-        .map((p: any, idx: number) => {
-          const n = p.nutriments;
-          return {
-            uid: `${idx}-${String(p.product_name).slice(0, 20)}`,
-            name: String(p.product_name),
-            brand: p.brands ? String(p.brands).split(',')[0].trim() : undefined,
-            nutrition: {
-              kcal: n['energy-kcal_100g'] ?? 0,
-              protein: n['proteins_100g'] ?? 0,
-              fat: n['fat_100g'] ?? 0,
-              carbs: n['carbohydrates_100g'] ?? 0,
-            },
-          };
-        })
-        .slice(0, 12);
+      const products: SearchResult[] = (data.products ?? []).map((p: any, idx: number) => ({
+        uid: `${idx}-${String(p.name).slice(0, 20)}`,
+        name: String(p.name),
+        brand: p.brand,
+        verified: p.verified === true,
+        nutrition: p.nutrition,
+      }));
 
       setResults(products);
     } catch {
@@ -95,35 +101,57 @@ export function FoodSearchModal({ mealType, onClose, onAdd }: FoodSearchModalPro
     } finally {
       setIsLoading(false);
     }
-  }
+  }, [lang]);
+
+  const handleBarcodeDetected = useCallback(async (barcode: string) => {
+    setShowScanner(false);
+    setBarcodeLoading(true);
+    setSearched(true);
+    try {
+      const res = await fetch(`/api/barcode-food?code=${encodeURIComponent(barcode)}`);
+      const data = await res.json();
+      if (data.product) {
+        setResults([{
+          uid: `barcode-${barcode}`,
+          name: data.product.name,
+          brand: data.product.brand,
+          nutrition: data.product.nutrition,
+        }]);
+      } else {
+        setResults([]);
+      }
+    } catch {
+      setResults([]);
+    } finally {
+      setBarcodeLoading(false);
+    }
+  }, []);
 
   const handleAddProduct = (product: SearchResult) => {
     const grams = gramInputs[product.uid] ?? 100;
-    onAdd(
-      product.name,
-      product.nutrition.kcal,
-      product.nutrition.protein,
-      product.nutrition.fat,
-      product.nutrition.carbs,
-      grams
-    );
+    onAdd(product.name, product.nutrition.kcal, product.nutrition.protein, product.nutrition.fat, product.nutrition.carbs, grams, product.nutrition.fiber);
     onClose();
   };
 
   const getMealTitle = () => {
-    switch (mealType) {
-      case 'breakfast':
-        return t('diary.breakfast');
-      case 'lunch':
-        return t('diary.lunch');
-      case 'dinner':
-        return t('diary.dinner');
-      case 'snacks':
-        return t('diary.snacks');
-      default:
-        return '';
-    }
+    const keys: Record<string, string> = {
+      breakfast: 'diary.breakfast',
+      lunch: 'diary.lunch',
+      dinner: 'diary.dinner',
+      snacks: 'diary.snacks',
+    };
+    return t(keys[mealType] ?? 'diary.add');
   };
+
+  const showRecent = !searched && !isLoading;
+
+  if (showScanner) {
+    return <BarcodeScanner onDetected={handleBarcodeDetected} onClose={() => setShowScanner(false)} />;
+  }
+
+  if (showRecipeBuilder) {
+    return <RecipeBuilderModal onClose={() => setShowRecipeBuilder(false)} onSaved={loadRecipes} />;
+  }
 
   return (
     <div
@@ -156,9 +184,18 @@ export function FoodSearchModal({ mealType, onClose, onAdd }: FoodSearchModalPro
           inputRef={inputRef}
         />
 
-        {/* Results Container */}
+        {/* Content */}
         <div className="flex-1 overflow-y-auto p-4 space-y-3">
-          {isLoading && (
+          {/* Barcode lookup loading */}
+          {barcodeLoading && (
+            <div className="text-center py-12 space-y-2">
+              <Loader2 size={24} className="animate-spin mx-auto text-[var(--color-primary)]" />
+              <p className="text-xs text-[var(--color-text-muted)]">{t('barcode.scanning')}…</p>
+            </div>
+          )}
+
+          {/* Search loading */}
+          {isLoading && !barcodeLoading && (
             <div className="text-center py-12 space-y-2">
               <Loader2 size={24} className="animate-spin mx-auto text-[var(--color-primary)]" />
               <p className="text-xs text-[var(--color-text-muted)]">{t('diary.searchState')}</p>

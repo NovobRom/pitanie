@@ -18,19 +18,18 @@ const nunito = Nunito({
 });
 
 export const metadata: Metadata = {
-  title: "План Питания — Роман и Лиза",
-  description: "Персональный план питания на неделю с расчётом калорий и КБЖУ",
-  authors: [{ name: "Roman" }],
-  keywords: ["питание", "калории", "КБЖУ", "меню"],
+  title: "Dose — Calorie & Macro Tracker",
+  description: "Track calories, protein, fat and carbs in seconds. Clean, fast, minimal.",
+  keywords: ["calorie tracker", "macro tracker", "food diary", "nutrition", "dose"],
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Питание",
+    title: "Dose",
   },
   openGraph: {
-    title: "План Питания",
-    description: "Персональный план питания на неделю",
+    title: "Dose — Calorie & Macro Tracker",
+    description: "Track calories, protein, fat and carbs in seconds. Clean, fast, minimal.",
     type: "website",
   },
 };
@@ -40,8 +39,20 @@ export const viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
-  themeColor: "#7c9885",
+  themeColor: "#f97316",
 };
+
+// Applies the saved theme before first paint to avoid a flash of the wrong theme.
+const noFlashThemeScript = `
+(function() {
+  try {
+    var t = localStorage.getItem('pitanie.theme');
+    document.documentElement.setAttribute('data-theme', t === 'dark' ? 'dark' : 'light');
+  } catch (e) {
+    document.documentElement.setAttribute('data-theme', 'light');
+  }
+})();
+`;
 
 export default function RootLayout({
   children,
@@ -49,7 +60,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ru">
+    <html lang="ru" data-theme="light">
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: noFlashThemeScript }} />
+      </head>
       <body
         className={`${inter.variable} ${nunito.variable} antialiased`}
       >

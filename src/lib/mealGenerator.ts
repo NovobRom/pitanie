@@ -103,7 +103,8 @@ function densfor(food: CatalogFood, role: MacroRole): number {
 }
 
 export function generatePlan(target: Macros, opts: GenerateOptions): GeneratedPlan {
-  const pool = opts.vegetarian ? foodCatalog.filter((f) => f.vegetarian) : foodCatalog;
+  const plannable = foodCatalog.filter((f) => !f.searchOnly);
+  const pool = opts.vegetarian ? plannable.filter((f) => f.vegetarian) : plannable;
   const byCat = (c: FoodCategory) => shuffle(pool.filter((f) => f.category === c));
 
   // Protein choice must respect the "fat budget": a protein's own fat per gram of

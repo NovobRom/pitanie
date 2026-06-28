@@ -13,6 +13,8 @@ interface RationItem {
   protein: number;
   fat: number;
   carbs: number;
+  fiber?: number; // per 100g, optional
+  micros?: Micros; // per 100g, optional (AI-logged items only)
 }
 
 interface MealDiaryProps {
@@ -24,13 +26,17 @@ interface MealDiaryProps {
     dinner: RationItem[];
     snacks: RationItem[];
   };
-  onAddFood: (mealType: string, name: string, kcal: number, protein: number, fat: number, carbs: number, grams: number) => void;
+  onAddFood: (mealType: string, name: string, kcal: number, protein: number, fat: number, carbs: number, grams: number, fiber?: number, micros?: Micros) => void;
+  onAddFoods?: (mealType: string, items: AiLoggedItem[]) => void;
   onRemoveFood: (mealType: string, index: number) => void;
+  onCopyYesterday: () => Promise<boolean>;
 }
 
-export function MealDiary({ currentDate, onDateChange, meals, onAddFood, onRemoveFood }: MealDiaryProps) {
+export function MealDiary({ currentDate, onDateChange, meals, onAddFood, onAddFoods, onRemoveFood, onCopyYesterday }: MealDiaryProps) {
   const { t, lang } = useI18n();
   const [activeSearchMeal, setActiveSearchMeal] = useState<string | null>(null);
+  const [activeAiMeal, setActiveAiMeal] = useState<string | null>(null);
+  const [copyMsg, setCopyMsg] = useState<string | null>(null);
 
   // Generate week days (Mon-Sun) containing the currentDate
   const getWeekDays = (dateStr: string) => {
@@ -77,15 +83,16 @@ export function MealDiary({ currentDate, onDateChange, meals, onAddFood, onRemov
   const calculateMealTotals = (items: RationItem[]) => {
     return items.reduce(
       (acc, item) => {
-        const factor = item.grams / 100;
+        const f = item.grams / 100;
         return {
-          kcal: acc.kcal + item.kcal * factor,
-          protein: acc.protein + item.protein * factor,
-          fat: acc.fat + item.fat * factor,
-          carbs: acc.carbs + item.carbs * factor,
+          kcal: acc.kcal + item.kcal * f,
+          protein: acc.protein + item.protein * f,
+          fat: acc.fat + item.fat * f,
+          carbs: acc.carbs + item.carbs * f,
+          fiber: acc.fiber + (item.fiber ?? 0) * f,
         };
       },
-      { kcal: 0, protein: 0, fat: 0, carbs: 0 }
+      { kcal: 0, protein: 0, fat: 0, carbs: 0, fiber: 0 }
     );
   };
 
@@ -98,11 +105,11 @@ export function MealDiary({ currentDate, onDateChange, meals, onAddFood, onRemov
     return (
       <div className="glass-card rounded-3xl p-5 space-y-4 animate-slide-up">
         {/* Section Header */}
-        <div className="flex items-center justify-between pb-3 border-b border-gray-50">
+        <div className="flex items-center justify-between pb-3 border-b border-[var(--color-border)]">
           <div>
             <h4 className="font-bold text-[var(--color-text)] text-sm">{title}</h4>
             <p className="text-[10px] font-mono text-[var(--color-text-muted)]">
-              {Math.round(totals.kcal)} {t('calc.kcal')} · {t('build.protShort')}{Math.round(totals.protein)}г · {t('build.fatShort')}{Math.round(totals.fat)}г · {t('build.carbShort')}{Math.round(totals.carbs)}г
+              {Math.round(totals.kcal)} {t('calc.kcal')} · {t('build.protShort')}{Math.round(totals.protein)}г · {t('build.fatShort')}{Math.round(totals.fat)}г · {t('build.carbShort')}{Math.round(totals.carbs)}г{totals.fiber > 0.1 ? ` · ${t('micro.fiber.short')}${Math.round(totals.fiber * 10) / 10}г` : ''}
             </p>
           </div>
           <button
@@ -130,7 +137,7 @@ export function MealDiary({ currentDate, onDateChange, meals, onAddFood, onRemov
               return (
                 <li
                   key={`${item.name}-${idx}`}
-                  className="flex items-center justify-between text-xs bg-gray-50/50 hover:bg-gray-50 p-2.5 rounded-xl border border-gray-100/30 transition-all"
+                  className="flex items-center justify-between text-xs bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-2)] p-2.5 rounded-xl border border-[var(--color-border)] transition-all"
                 >
                   <div className="min-w-0 pr-4">
                     <p className="font-semibold text-[var(--color-text)] truncate">{item.name}</p>
@@ -199,7 +206,7 @@ export function MealDiary({ currentDate, onDateChange, meals, onAddFood, onRemov
                 className={`flex flex-col items-center justify-center w-10 h-14 rounded-2xl cursor-pointer transition-all ${
                   isActive
                     ? 'bg-[var(--color-primary)] text-white shadow-md'
-                    : 'text-[var(--color-text)] hover:bg-gray-50'
+                    : 'text-[var(--color-text)] hover:bg-[var(--color-surface-2)]'
                 }`}
               >
                 <span className={`text-[10px] font-bold ${isActive ? 'text-white/80' : 'text-[var(--color-text-muted)]'}`}>
@@ -220,6 +227,22 @@ export function MealDiary({ currentDate, onDateChange, meals, onAddFood, onRemov
         </button>
       </div>
 
+      {/* ─── Copy Yesterday ─── */}
+      <div className="flex justify-end">
+        <button
+          onClick={async () => {
+            const ok = await onCopyYesterday();
+            const msg = ok ? t('diary.copyYesterday') : t('diary.copyYesterdayEmpty');
+            setCopyMsg(msg);
+            setTimeout(() => setCopyMsg(null), 2500);
+          }}
+          className="flex items-center gap-1.5 text-[11px] font-semibold text-[var(--color-text-light)] hover:text-[var(--color-primary)] bg-[var(--color-surface)] border border-[var(--color-border)] hover:border-[var(--color-primary)]/40 px-3 py-1.5 rounded-xl transition-all shadow-sm"
+        >
+          <Copy size={12} />
+          {copyMsg ?? t('diary.copyYesterday')}
+        </button>
+      </div>
+
       {/* ─── Diary Sections ─── */}
       <div className="grid gap-4 md:grid-cols-2">
         {renderMealSection('breakfast', t('diary.breakfast'))}
@@ -233,9 +256,21 @@ export function MealDiary({ currentDate, onDateChange, meals, onAddFood, onRemov
         <FoodSearchModal
           mealType={activeSearchMeal}
           onClose={() => setActiveSearchMeal(null)}
-          onAdd={(name, kcal, protein, fat, carbs, grams) =>
-            onAddFood(activeSearchMeal, name, kcal, protein, fat, carbs, grams)
+          onAdd={(name, kcal, protein, fat, carbs, grams, fiber) =>
+            onAddFood(activeSearchMeal, name, kcal, protein, fat, carbs, grams, fiber)
           }
+        />
+      )}
+
+      {/* ─── AI Log Modal ─── */}
+      {activeAiMeal && (
+        <AiLogModal
+          mealType={activeAiMeal}
+          onClose={() => setActiveAiMeal(null)}
+          onAddItem={(name, kcal, protein, fat, carbs, grams, fiber, micros) =>
+            onAddFood(activeAiMeal, name, kcal, protein, fat, carbs, grams, fiber, micros)
+          }
+          onAddItems={onAddFoods ? (its) => onAddFoods(activeAiMeal, its) : undefined}
         />
       )}
     </div>
