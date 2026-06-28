@@ -7,7 +7,7 @@
 //    target. Cross-effects between macros are small, so a few passes converge well.
 // 4. Snap to practical amounts (whole eggs/bananas, nearest 5 g otherwise).
 
-import { Macros } from './nutrition';
+import { Macros } from '@/types/nutrition';
 import { CatalogFood, FoodCategory, foodCatalog, snapGrams } from './foodCatalog';
 
 export type MealType = 'breakfast' | 'lunch' | 'dinner';

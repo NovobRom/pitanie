@@ -1,9 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Plus, Trash2, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Plus, Trash2, Calendar, ChevronLeft, ChevronRight, Utensils } from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
 import { FoodSearchModal } from '@/components/FoodSearchModal';
+import { EmptyState } from '@/components/ui/EmptyState';
 
 interface RationItem {
   name: string;
@@ -88,12 +89,14 @@ export function MealDiary({ currentDate, onDateChange, meals, onAddFood, onRemov
     );
   };
 
+  const [confirmDelete, setConfirmDelete] = useState<{ mealType: string; index: number } | null>(null);
+
   const renderMealSection = (type: 'breakfast' | 'lunch' | 'dinner' | 'snacks', title: string) => {
     const items = meals[type] || [];
     const totals = calculateMealTotals(items);
 
     return (
-      <div className="bg-white rounded-3xl p-5 shadow-[var(--shadow-sm)] border border-gray-100/50 space-y-4">
+      <div className="glass-card rounded-3xl p-5 space-y-4 animate-slide-up">
         {/* Section Header */}
         <div className="flex items-center justify-between pb-3 border-b border-gray-50">
           <div>
@@ -104,7 +107,7 @@ export function MealDiary({ currentDate, onDateChange, meals, onAddFood, onRemov
           </div>
           <button
             onClick={() => setActiveSearchMeal(type)}
-            className="flex items-center gap-1 text-[11px] font-bold text-[var(--color-primary)] hover:text-[var(--color-primary-dark)] bg-[var(--color-primary)]/10 px-3 py-1.5 rounded-xl transition-all"
+            className="flex items-center gap-1 text-[11px] font-bold text-[var(--color-primary)] bg-[var(--color-primary)]/10 px-3 py-1.5 rounded-xl btn-interactive cursor-pointer"
           >
             <Plus size={12} />
             {t('diary.add')}
@@ -113,13 +116,17 @@ export function MealDiary({ currentDate, onDateChange, meals, onAddFood, onRemov
 
         {/* Added Foods List */}
         {items.length === 0 ? (
-          <p className="text-xs text-[var(--color-text-muted)] italic text-center py-4">
-            {t('diary.empty')}
-          </p>
+          <EmptyState
+            icon={Utensils}
+            title={t('diary.empty') || 'Empty Meal'}
+            description={t('diary.emptyDesc') || 'No foods logged for this meal yet. Click the add button to log something!'}
+          />
         ) : (
           <ul className="space-y-2.5">
             {items.map((item, idx) => {
               const factor = item.grams / 100;
+              const isConfirming = confirmDelete?.mealType === type && confirmDelete?.index === idx;
+
               return (
                 <li
                   key={`${item.name}-${idx}`}
@@ -131,12 +138,33 @@ export function MealDiary({ currentDate, onDateChange, meals, onAddFood, onRemov
                       {item.grams}g · {Math.round(item.kcal * factor)} {t('calc.kcal')} · {t('build.protShort')}{Math.round(item.protein * factor)}g
                     </p>
                   </div>
-                  <button
-                    onClick={() => onRemoveFood(type, idx)}
-                    className="text-[var(--color-text-muted)] hover:text-red-500 transition-colors p-1"
-                  >
-                    <Trash2 size={13} />
-                  </button>
+                  
+                  {isConfirming ? (
+                    <div className="flex items-center gap-1.5 shrink-0 animate-scale-in">
+                      <button
+                        onClick={async () => {
+                          onRemoveFood(type, idx);
+                          setConfirmDelete(null);
+                        }}
+                        className="bg-red-500 text-white font-bold text-[9px] px-2.5 py-1.5 rounded-lg hover:bg-red-600 transition-all cursor-pointer btn-interactive"
+                      >
+                        {t('diary.confirmDelete') || 'Delete'}
+                      </button>
+                      <button
+                        onClick={() => setConfirmDelete(null)}
+                        className="bg-gray-100 text-[var(--color-text)] font-semibold text-[9px] px-2.5 py-1.5 rounded-lg hover:bg-gray-200 transition-all cursor-pointer"
+                      >
+                        {t('share.reset') || 'Cancel'}
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => setConfirmDelete({ mealType: type, index: idx })}
+                      className="text-[var(--color-text-muted)] hover:text-red-500 transition-colors p-1 btn-interactive cursor-pointer"
+                    >
+                      <Trash2 size={13} />
+                    </button>
+                  )}
                 </li>
               );
             })}
@@ -150,10 +178,10 @@ export function MealDiary({ currentDate, onDateChange, meals, onAddFood, onRemov
     <div className="max-w-3xl mx-auto space-y-6">
       
       {/* ─── Apple Health Weekly Calendar Strip ─── */}
-      <div className="bg-white rounded-3xl p-4 shadow-[var(--shadow-sm)] border border-gray-100/50 flex items-center justify-between">
+      <div className="glass-card rounded-3xl p-4 flex items-center justify-between animate-scale-in">
         <button
           onClick={() => shiftWeek('prev')}
-          className="text-[var(--color-text-muted)] hover:text-[var(--color-text)] p-1.5 rounded-full hover:bg-gray-50"
+          className="text-[var(--color-text-muted)] p-1.5 rounded-full btn-interactive cursor-pointer"
         >
           <ChevronLeft size={18} />
         </button>
@@ -186,7 +214,7 @@ export function MealDiary({ currentDate, onDateChange, meals, onAddFood, onRemov
 
         <button
           onClick={() => shiftWeek('next')}
-          className="text-[var(--color-text-muted)] hover:text-[var(--color-text)] p-1.5 rounded-full hover:bg-gray-50"
+          className="text-[var(--color-text-muted)] p-1.5 rounded-full btn-interactive cursor-pointer"
         >
           <ChevronRight size={18} />
         </button>

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { withAuth } from '@/lib/middleware/withAuth';
 
 interface OFFNutriments {
   'energy-kcal_100g'?: number;
@@ -17,7 +18,7 @@ interface OFFResponse {
   products: OFFProduct[];
 }
 
-export async function GET(request: NextRequest) {
+export const GET = withAuth(async function GET(request: NextRequest) {
   const query = request.nextUrl.searchParams.get('q');
   if (!query?.trim()) {
     return NextResponse.json({ products: [] });
@@ -54,4 +55,4 @@ export async function GET(request: NextRequest) {
   } catch {
     return NextResponse.json({ products: [] }, { status: 500 });
   }
-}
+});

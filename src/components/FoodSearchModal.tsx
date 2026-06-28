@@ -1,11 +1,14 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { X, Search, Loader2 } from 'lucide-react';
+import { X, Loader2, Search as SearchIcon } from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
+import { SearchInput } from './food-search/SearchInput';
+import { SearchResultCard } from './food-search/SearchResultCard';
+import { EmptyState } from '@/components/ui/EmptyState';
 
 interface FoodSearchModalProps {
-  mealType: string; // 'breakfast' | 'lunch' | 'dinner' | 'snacks'
+  mealType: string;
   onClose: () => void;
   onAdd: (name: string, kcal: number, protein: number, fat: number, carbs: number, grams: number) => void;
 }
@@ -21,7 +24,7 @@ interface SearchResult {
   uid: string;
   name: string;
   brand?: string;
-  nutrition: Nutrition; // per 100g
+  nutrition: Nutrition;
 }
 
 export function FoodSearchModal({ mealType, onClose, onAdd }: FoodSearchModalProps) {
@@ -36,6 +39,22 @@ export function FoodSearchModal({ mealType, onClose, onAdd }: FoodSearchModalPro
   useEffect(() => {
     inputRef.current?.focus();
   }, []);
+
+  // Debounce query typing to search automatically
+  useEffect(() => {
+    const trimmed = query.trim();
+    if (trimmed.length < 2) {
+      setResults([]);
+      setSearched(false);
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      searchFoods();
+    }, 450);
+
+    return () => clearTimeout(timer);
+  }, [query]);
 
   async function searchFoods() {
     const q = query.trim();
@@ -78,14 +97,6 @@ export function FoodSearchModal({ mealType, onClose, onAdd }: FoodSearchModalPro
     }
   }
 
-  function priority(kcalPer100g: number) {
-    if (kcalPer100g < 100)
-      return { emoji: '🟢', labelKey: 'diary.priorityHigh', bg: '#f0fdf4', border: '#86efac', text: '#16a34a' };
-    if (kcalPer100g <= 200)
-      return { emoji: '🟡', labelKey: 'diary.priorityMedium', bg: '#fffbeb', border: '#fcd34d', text: '#d97706' };
-    return { emoji: '🔴', labelKey: 'diary.priorityLow', bg: '#fff1f2', border: '#fca5a5', text: '#dc2626' };
-  }
-
   const handleAddProduct = (product: SearchResult) => {
     const grams = gramInputs[product.uid] ?? 100;
     onAdd(
@@ -119,7 +130,7 @@ export function FoodSearchModal({ mealType, onClose, onAdd }: FoodSearchModalPro
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="relative bg-white rounded-3xl shadow-[var(--shadow-lg)] w-full max-w-xl flex flex-col max-h-[85vh] border border-gray-100 overflow-hidden">
+      <div className="relative bg-white rounded-3xl shadow-[var(--shadow-lg)] w-full max-w-xl flex flex-col max-h-[85vh] border border-gray-100 overflow-hidden animate-[scaleIn_200ms_var(--ease-out)] transform-origin-center">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
           <div>
@@ -130,34 +141,20 @@ export function FoodSearchModal({ mealType, onClose, onAdd }: FoodSearchModalPro
           </div>
           <button
             onClick={onClose}
-            className="text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors p-1.5 rounded-full hover:bg-gray-50"
+            className="text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors p-1.5 rounded-full hover:bg-gray-50 cursor-pointer"
           >
             <X size={18} />
           </button>
         </div>
 
         {/* Input Bar */}
-        <div className="p-4 bg-gray-50/50 border-b border-gray-100 flex gap-2">
-          <div className="flex-1 relative">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)]" size={16} />
-            <input
-              ref={inputRef}
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && searchFoods()}
-              placeholder={t('diary.searchPlaceholder')}
-              className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:border-[var(--color-primary)] transition-all shadow-sm"
-            />
-          </div>
-          <button
-            onClick={searchFoods}
-            disabled={isLoading || !query.trim()}
-            className="bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] disabled:opacity-40 text-white text-sm font-semibold px-5 py-2.5 rounded-2xl transition-all shadow-[var(--shadow-sm)] shrink-0"
-          >
-            {isLoading ? <Loader2 size={16} className="animate-spin" /> : t('build.find')}
-          </button>
-        </div>
+        <SearchInput
+          query={query}
+          setQuery={setQuery}
+          onSearch={searchFoods}
+          isLoading={isLoading}
+          inputRef={inputRef}
+        />
 
         {/* Results Container */}
         <div className="flex-1 overflow-y-auto p-4 space-y-3">
@@ -169,94 +166,23 @@ export function FoodSearchModal({ mealType, onClose, onAdd }: FoodSearchModalPro
           )}
 
           {!isLoading && searched && results.length === 0 && (
-            <p className="text-center py-12 text-sm text-[var(--color-text-muted)]">
-              {t('diary.searchNoResults')}
-            </p>
+            <EmptyState
+              icon={SearchIcon}
+              title={t('diary.searchNoResults') || 'No Results'}
+              description={t('diary.searchNoResultsDesc') || 'We couldn\'t find any products matching your query. Try another search term!'}
+            />
           )}
 
           {!isLoading &&
-            results.map((product) => {
-              const p = priority(product.nutrition.kcal);
-              const grams = gramInputs[product.uid] ?? 100;
-              const scaledKcal = Math.round((product.nutrition.kcal * grams) / 100);
-
-              return (
-                <div
-                  key={product.uid}
-                  style={{ backgroundColor: p.bg, borderColor: p.border }}
-                  className="rounded-2xl border p-4 flex flex-col gap-3 transition-all"
-                >
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="min-w-0">
-                      <h4 className="font-bold text-sm text-[var(--color-text)] leading-snug truncate">
-                        {product.name}
-                      </h4>
-                      {product.brand && (
-                        <p className="text-[10px] text-[var(--color-text-muted)] mt-0.5 truncate">
-                          {product.brand}
-                        </p>
-                      )}
-                    </div>
-                    <span
-                      style={{ color: p.text, backgroundColor: '#ffffffcc' }}
-                      className="text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0"
-                    >
-                      {p.emoji} {t(p.labelKey)}
-                    </span>
-                  </div>
-
-                  {/* Macros Badges per 100g */}
-                  <div className="flex flex-wrap gap-2 text-[10px] font-mono text-[var(--color-text-light)]">
-                    <span className="bg-gray-100/80 px-2 py-0.5 rounded-md">
-                      {t('build.per100')}:
-                    </span>
-                    <span className="bg-orange-50 text-orange-700 px-2 py-0.5 rounded-md">
-                      {Math.round(product.nutrition.kcal)} {t('calc.kcal')}
-                    </span>
-                    <span className="bg-blue-50 text-blue-700 px-2 py-0.5 rounded-md">
-                      {t('build.protShort')} {product.nutrition.protein}g
-                    </span>
-                    <span className="bg-pink-50 text-pink-700 px-2 py-0.5 rounded-md">
-                      {t('build.fatShort')} {product.nutrition.fat}g
-                    </span>
-                    <span className="bg-green-50 text-green-700 px-2 py-0.5 rounded-md">
-                      {t('build.carbShort')} {product.nutrition.carbs}g
-                    </span>
-                  </div>
-
-                  {/* Add action */}
-                  <div className="flex items-center gap-3 pt-2 border-t border-black/5">
-                    <span className="text-[11px] text-[var(--color-text-light)] font-medium">
-                      {t('diary.portion')}:
-                    </span>
-                    <div className="flex items-center gap-1 shrink-0">
-                      <input
-                        type="number"
-                        min={1}
-                        max={2000}
-                        value={grams}
-                        onChange={(e) =>
-                          setGramInputs((prev) => ({ ...prev, [product.uid]: Number(e.target.value) }))
-                        }
-                        className="w-16 text-center text-xs border border-gray-200 rounded-lg py-1 bg-white"
-                      />
-                      <span className="text-[11px] text-[var(--color-text-muted)]">g</span>
-                    </div>
-                    
-                    <span className="text-xs font-mono font-bold text-[var(--color-primary-dark)] ml-2">
-                      {scaledKcal} {t('calc.kcal')}
-                    </span>
-
-                    <button
-                      onClick={() => handleAddProduct(product)}
-                      className="ml-auto bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white text-[11px] font-bold px-3 py-1.5 rounded-xl transition-all shadow-[var(--shadow-sm)]"
-                    >
-                      {t('diary.addFoodAction')}
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
+            results.map((product) => (
+              <SearchResultCard
+                key={product.uid}
+                product={product}
+                gramInput={gramInputs[product.uid] ?? 100}
+                onGramChange={(grams) => setGramInputs((prev) => ({ ...prev, [product.uid]: grams }))}
+                onAdd={handleAddProduct}
+              />
+            ))}
         </div>
       </div>
     </div>

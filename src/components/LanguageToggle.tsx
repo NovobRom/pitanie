@@ -19,7 +19,9 @@ export const LanguageToggle = () => {
         <button
           key={l}
           onClick={() => setLang(l)}
-          className={`px-2.5 py-1 rounded-full text-xs font-semibold uppercase transition-all ${
+          aria-pressed={lang === l}
+          aria-label={`Switch language to ${l.toUpperCase()}`}
+          className={`px-2.5 py-1 rounded-full text-xs font-semibold uppercase transition-all btn-interactive cursor-pointer ${
             lang === l
               ? 'bg-[var(--color-primary)] text-white'
               : 'text-[var(--color-text-muted)] hover:text-[var(--color-text)]'

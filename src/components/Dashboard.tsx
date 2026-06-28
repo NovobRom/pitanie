@@ -3,7 +3,7 @@
 import React from 'react';
 import { Settings } from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
-import { Macros } from '@/lib/nutrition';
+import { Macros } from '@/types/nutrition';
 
 interface DashboardProps {
   goals: Macros;
@@ -34,7 +34,7 @@ export function Dashboard({ goals, consumed, onOpenProfile }: DashboardProps) {
   const roundVal = (n: number) => Math.round(n);
 
   return (
-    <div className="bg-white rounded-3xl p-6 shadow-[var(--shadow-md)] border border-gray-100/50 max-w-3xl mx-auto mb-8">
+    <div className="glass-card rounded-3xl p-6 max-w-3xl mx-auto mb-8 animate-scale-in">
       {/* Dashboard Card Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6 pb-4 border-b border-gray-100/60">
         <h2 className="text-xs font-bold text-[var(--color-text-light)] uppercase tracking-wider">
@@ -43,7 +43,7 @@ export function Dashboard({ goals, consumed, onOpenProfile }: DashboardProps) {
         <button
           type="button"
           onClick={onOpenProfile}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 text-xs font-bold text-[var(--color-primary-dark)] transition-all cursor-pointer shadow-sm hover:shadow"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-gray-200/60 bg-white/60 text-xs font-bold text-[var(--color-primary-dark)] btn-interactive cursor-pointer shadow-sm"
         >
           <Settings size={14} className="text-[var(--color-primary)]" />
           {t('calc.title')}
