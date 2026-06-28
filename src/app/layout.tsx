@@ -3,6 +3,7 @@ import { Inter, Nunito } from "next/font/google";
 import "./globals.css";
 import { I18nProvider } from "@/lib/i18n";
 import { AuthProvider } from "@/context/AuthContext";
+import { ThemeProvider } from "@/lib/theme";
 
 const inter = Inter({
   variable: "--font-sans",
@@ -68,7 +69,9 @@ export default function RootLayout({
         className={`${inter.variable} ${nunito.variable} antialiased`}
       >
         <AuthProvider>
-          <I18nProvider>{children}</I18nProvider>
+          <ThemeProvider>
+            <I18nProvider>{children}</I18nProvider>
+          </ThemeProvider>
         </AuthProvider>
       </body>
     </html>
