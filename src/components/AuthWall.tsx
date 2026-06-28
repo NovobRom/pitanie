@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { LanguageToggle } from '@/components/LanguageToggle';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import { MarketingPanel } from './auth/MarketingPanel';
 import { AuthForm } from './auth/AuthForm';
 

@@ -1,10 +1,13 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Plus, Trash2, Calendar, ChevronLeft, ChevronRight, Utensils } from 'lucide-react';
+import { Plus, Trash2, Calendar, ChevronLeft, ChevronRight, Utensils, Copy } from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
 import { FoodSearchModal } from '@/components/FoodSearchModal';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { Micros } from '@/lib/micronutrients';
+import type { AiLoggedItem } from '@/app/api/ai-log/route';
+import { AiLogModal } from '@/components/AiLogModal';
 
 interface RationItem {
   name: string;

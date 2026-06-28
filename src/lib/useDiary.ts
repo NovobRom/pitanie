@@ -10,7 +10,7 @@
 
 import useSWR from 'swr';
 import { supabase } from '@/lib/supabaseClient';
-import { Macros } from '@/lib/nutrition';
+import { Macros } from '@/types/nutrition';
 
 export interface DiaryData {
   meals: Record<string, unknown[]>;

@@ -1,11 +1,14 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { X, Loader2, Search as SearchIcon } from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
 import { SearchInput } from './food-search/SearchInput';
 import { SearchResultCard } from './food-search/SearchResultCard';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { RecentFood, Recipe, getRecentFoods, getRecipes } from '@/lib/cloud';
+import { BarcodeScanner } from '@/components/BarcodeScanner';
+import { RecipeBuilderModal } from '@/components/RecipeBuilderModal';
 
 interface FoodSearchModalProps {
   mealType: string;
@@ -77,7 +80,7 @@ export function FoodSearchModal({ mealType, onClose, onAdd }: FoodSearchModalPro
     return () => clearTimeout(timer);
   }, [query]);
 
-  async function searchFoods() {
+  const searchFoods = useCallback(async () => {
     const q = query.trim();
     if (!q) return;
     setIsLoading(true);
@@ -101,7 +104,7 @@ export function FoodSearchModal({ mealType, onClose, onAdd }: FoodSearchModalPro
     } finally {
       setIsLoading(false);
     }
-  }, [lang]);
+  }, [query, lang]);
 
   const handleBarcodeDetected = useCallback(async (barcode: string) => {
     setShowScanner(false);
