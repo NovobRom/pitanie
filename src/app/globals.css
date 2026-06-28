@@ -3,22 +3,18 @@
 
 /* ── Warm Studio Design System (Calorize-inspired) ──────────────────────────── */
 @theme {
-  /* Primary — warm orange */
-  --color-primary: #f97316;
-  --color-primary-light: #fb923c;
-  --color-primary-dark: #ea580c;
+  /* Основные цвета */
+  --color-primary: #ff6b00; /* vibrant brand orange */
+  --color-primary-light: #ff9e66;
+  --color-primary-dark: #cc5200;
 
   /* Ink — warm near-black, used for selected pills & user chat bubbles */
   --color-ink: #1c1917;
   --color-ink-soft: #292524;
 
-  /* Macro accents */
-  --color-protein: #3b82f6; /* blue */
-  --color-protein-bg: #e8f0fe;
-  --color-fat: #f59e0b; /* amber */
-  --color-fat-bg: #fdf2e0;
-  --color-carbs: #22c55e; /* green */
-  --color-carbs-bg: #e6f7ec;
+  --color-accent: #7c9885; /* soft green */
+  --color-accent-light: #a8c4b0;
+  --color-accent-dark: #5a7a63;
 
   /* Secondary / accent (kept for legacy usages) */
   --color-secondary: #22c55e;
@@ -43,20 +39,30 @@
   --color-dinner-bg: #f1ecfe;
   --color-cheat: #ec4899;
 
-  /* Neutrals — warm light */
-  --color-bg: #f7f1e9;
-  --color-surface: #ffffff;
-  --color-surface-2: #f4ede3;
-  --color-text: #1c1917;
-  --color-text-light: #6b6259;
-  --color-text-muted: #a8a097;
-  --color-border: #ece4d8;
+  --color-lunch: #a8d5a3; /* зелёный */
+  --color-lunch-bg: #f0f9ef;
 
-  /*
-   * NB: не определяем --spacing-* и --radius-* с именованными ключами
-   * (md/lg/xl/2xl) — в Tailwind v4 эти namespace зарезервированы под шкалу
-   * размеров. Кастомные перехватывали max-w-md/lg/2xl и схлопывали контейнеры.
-   */
+  --color-dinner: #c7b9de; /* лавандовый */
+  --color-dinner-bg: #f6f3fc;
+
+  --color-cheat: #d4a5d9; /* фиолетовый для читмила */
+
+  /* Нейтральные */
+  --color-bg: #fcf8f2; /* тёплый белый с оттенком крема */
+  --color-surface: #ffffff;
+  --color-text: #2b2b2b;
+  --color-text-light: #5c5c5c;
+  --color-text-muted: #8e8e8e;
+  --color-border: #f0e9df;
+
+  /* Spacing (единая сетка 4px) */
+  --space-xs: 0.25rem; /* 4px */
+  --space-sm: 0.5rem; /* 8px */
+  --space-md: 1rem; /* 16px */
+  --space-lg: 1.5rem; /* 24px */
+  --space-xl: 2rem; /* 32px */
+  --space-2xl: 3rem; /* 48px */
+
 
   /* Shadows — warm soft */
   --shadow-sm: 0 1px 3px 0 rgb(64 47 25 / 0.05), 0 1px 2px -1px rgb(64 47 25 / 0.04);
@@ -66,13 +72,22 @@
 
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
   --font-display: 'Nunito', var(--font-sans);
+  /* Easing Curves */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+
+  /* Gradients */
+  --gradient-primary: linear-gradient(135deg, #7c9885, #f39c6b);
+  --gradient-secondary: linear-gradient(135deg, #e8d5b7, #e89fc4);
 }
 
 :root {
   --background: var(--color-bg);
   --foreground: var(--color-text);
-  /* Warm ambient gradient behind the app, à la Calorize */
-  --app-gradient: radial-gradient(120% 80% at 50% -10%, #fdeede 0%, #f9f1e6 45%, #f7f1e9 100%);
+  
+  /* Custom Ease Curve values for native transitions */
+  --ease-out-curve: cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 /* ── Dark theme (manual, via data-theme) ────────────────────────────────────── */
@@ -160,7 +175,9 @@
     font-feature-settings: "rlig" 1, "calt" 1;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    transition: background-color 0.25s ease, color 0.25s ease;
+    background-image: radial-gradient(at 0% 0%, rgba(124, 152, 133, 0.08) 0px, transparent 50%),
+                      radial-gradient(at 100% 100%, rgba(243, 156, 107, 0.08) 0px, transparent 50%);
+    background-attachment: fixed;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -170,12 +187,80 @@
   }
 }
 
+@layer utilities {
+  /* Glassmorphism */
+  .glass-card {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.03);
+  }
+
+  .glass-modal {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 20px 40px 0 rgba(0, 0, 0, 0.06);
+  }
+
+  /* Micro-animations (Emil Kowalski style) */
+  .btn-interactive {
+    transition: transform 160ms var(--ease-out-curve), opacity 160ms var(--ease-out-curve), background-color 160ms var(--ease-out-curve), border-color 160ms var(--ease-out-curve);
+  }
+
+  .btn-interactive:active {
+    transform: scale(0.97);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .btn-interactive:hover {
+      opacity: 0.95;
+    }
+  }
+
+  /* Keyframe Animations */
+  @keyframes scaleIn {
+    from {
+      transform: scale(0.96);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideUp {
+    from {
+      transform: translateY(12px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 220ms cubic-bezier(0.23, 1, 0.32, 1) forwards;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 250ms cubic-bezier(0.23, 1, 0.32, 1) forwards;
+  }
+}
+
 @layer components {
   .card {
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: transform 160ms var(--ease-out-curve), box-shadow 160ms var(--ease-out-curve);
   }
-  .card:hover {
-    transform: translateY(-2px);
+
+  @media (hover: hover) and (pointer: fine) {
+    .card:hover {
+      transform: translateY(-2px);
+    }
   }
 }
 

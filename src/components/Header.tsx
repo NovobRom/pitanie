@@ -38,9 +38,9 @@ export function Header({ user, onOpenProfile }: HeaderProps) {
         <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[var(--color-primary-light)] to-[var(--color-primary-dark)] text-white flex items-center justify-center shadow-[var(--shadow-glow)]">
           <Flame size={17} strokeWidth={2.5} />
         </div>
-        <span className="text-lg font-extrabold tracking-tight text-[var(--color-text)]">
-          {t('app.name')}
-        </span>
+        <h1 className="text-xl font-extrabold tracking-tight text-[var(--color-text)] font-display">
+          Dose
+        </h1>
       </div>
 
       {/* Right Controls */}

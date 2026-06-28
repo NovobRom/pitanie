@@ -29,12 +29,9 @@ export interface Day {
   note?: string;
 }
 
-export interface DailyGoals {
-  calories: number;
-  protein: number;
-  fat: number;
-  carbs: number;
-}
+import { NutritionValues } from '@/types/nutrition';
+
+export type DailyGoals = NutritionValues;
 
 export interface Product {
   emoji: string;

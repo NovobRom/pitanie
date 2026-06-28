@@ -3,12 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { TrendingDown, TrendingUp, Minus, Brain, Camera, Sparkles, Leaf } from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
-import { Macros } from '@/lib/nutrition';
-import { calculateAdaptiveTDEE, WeightSample, DiarySum } from '@/lib/nutrition';
-import { getWeights, getDiarySums, getWeekMicros, WeightEntry, WeekMicros } from '@/lib/cloud';
-import { MICRONUTRIENTS, microStatus, type Micros } from '@/lib/micronutrients';
-import type { AiLoggedItem } from '@/app/api/ai-log/route';
-import { AiLogModal } from '@/components/AiLogModal';
+import { Macros } from '@/types/nutrition';
 
 interface DashboardProps {
   goals: Macros;
@@ -54,196 +49,111 @@ export function Dashboard({ goals, consumed, currentDate, onDateChange, onAddFoo
   const currentCalories = consumed.kcal || 0;
   const remainingCalories = goalCalories - currentCalories;
   const isOver = remainingCalories < 0;
-  const pct = goalCalories > 0 ? Math.min(100, (currentCalories / goalCalories) * 100) : 0;
+
   const roundVal = (n: number) => Math.round(n);
 
-  const adaptiveTDEE = dataLoaded
-    ? calculateAdaptiveTDEE(
-        weights.map((w) => ({ date: w.date, weight_kg: Number(w.weight_kg) })) as WeightSample[],
-        diarySums as DiarySum[],
-        goalCalories,
-      )
-    : null;
-
-  const sparkWeights = [...weights].reverse().slice(-14);
-
   return (
-    <div className="space-y-4 max-w-2xl mx-auto mb-8">
-      {/* ── Week strip ──────────────────────────────────────────────────────── */}
-      <WeekStrip currentDate={currentDate} onDateChange={onDateChange} lang={lang} />
+    <div className="glass-card rounded-3xl p-6 max-w-3xl mx-auto mb-8 animate-scale-in">
+      {/* Dashboard Card Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6 pb-4 border-b border-gray-100/60">
+        <h2 className="text-xs font-bold text-[var(--color-text-light)] uppercase tracking-wider">
+          {t('calc.target') || 'Ваша цель на день'}
+        </h2>
+        <button
+          type="button"
+          onClick={onOpenProfile}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-gray-200/60 bg-white/60 text-xs font-bold text-[var(--color-primary-dark)] btn-interactive cursor-pointer shadow-sm"
+        >
+          <Settings size={14} className="text-[var(--color-primary)]" />
+          {t('calc.title') || 'Калькулятор калорий'}
+        </button>
+      </div>
 
-      {/* ── Calorie + Macro hero card ───────────────────────────────────────── */}
-      <div className="bg-[var(--color-surface)] rounded-[28px] p-6 shadow-[var(--shadow-md)] border border-[var(--color-border)]">
-        {/* Big EATEN / LEFT */}
-        <div className="flex items-end justify-between gap-4">
-          <div>
-            <p className="text-4xl font-extrabold tracking-tight text-[var(--color-text)] tabular-nums leading-none">
-              {roundVal(currentCalories)}
-            </p>
-            <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--color-text-muted)] mt-1.5">
-              {t('dash.eaten')}
-            </p>
-          </div>
-          <div className="text-right">
-            <p className={`text-4xl font-extrabold tracking-tight tabular-nums leading-none ${isOver ? 'text-red-500' : 'text-[var(--color-primary)]'}`}>
-              {roundVal(Math.abs(remainingCalories))}
-            </p>
-            <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--color-text-muted)] mt-1.5">
-              {isOver ? t('diary.over') : t('dash.left')}
-            </p>
-          </div>
+      {/* Calories Overview: Eaten / Remaining */}
+      <div className="flex justify-between items-end mb-6">
+        <div>
+          <span className="block text-4xl font-black text-[var(--color-text)]">
+            {roundVal(currentCalories)}
+          </span>
+          <span className="text-[10px] font-bold text-[var(--color-text-muted)] uppercase tracking-wider">
+            {t('diary.eaten') || 'съедено'}
+          </span>
         </div>
-
-        {/* Thin calorie bar */}
-        <div className="mt-4">
-          <div className="h-2.5 rounded-full bg-[var(--color-surface-2)] overflow-hidden">
-            <div
-              className="h-full rounded-full transition-all duration-500 ease-out"
-              style={{
-                width: `${pct}%`,
-                background: isOver
-                  ? '#f87171'
-                  : 'linear-gradient(90deg, var(--color-primary-light), var(--color-primary))',
-              }}
-            />
-          </div>
-          <p className="text-[11px] text-[var(--color-text-muted)] mt-1.5 text-right tabular-nums">
-            {roundVal(goalCalories)} {t('calc.kcal')}
-          </p>
-        </div>
-
-        {/* Macro mini-cards */}
-        <div className="grid grid-cols-3 gap-2.5 mt-5">
-          <MacroCard label={t('calc.protein')} current={consumed.protein} goal={goals.protein} color="var(--color-protein)" bg="var(--color-protein-bg)" />
-          <MacroCard label={t('calc.fat')} current={consumed.fat} goal={goals.fat} color="var(--color-fat)" bg="var(--color-fat-bg)" />
-          <MacroCard label={t('calc.carbs')} current={consumed.carbs} goal={goals.carbs} color="var(--color-carbs)" bg="var(--color-carbs-bg)" />
+        <div className="text-right">
+          <span className="block text-4xl font-black text-[var(--color-primary)]">
+            {roundVal(Math.max(0, remainingCalories))}
+          </span>
+          <span className="text-[10px] font-bold text-[var(--color-text-muted)] uppercase tracking-wider">
+            {isOver ? (t('diary.over') || 'перебор') : (t('diary.remaining') || 'осталось')}
+          </span>
         </div>
       </div>
 
-      {/* ── Dose AI assistant card ──────────────────────────────────────────── */}
-      <button
-        type="button"
-        onClick={() => setAiOpen(true)}
-        className="w-full text-left bg-[var(--color-surface)] rounded-[28px] p-5 shadow-[var(--shadow-md)] border border-[var(--color-border)] hover:shadow-[var(--shadow-lg)] transition-all cursor-pointer group"
-      >
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[var(--color-primary-light)] to-[var(--color-primary-dark)] text-white flex items-center justify-center shadow-[var(--shadow-glow)] shrink-0">
-            <Sparkles size={18} />
-          </div>
-          <div className="min-w-0">
-            <p className="text-sm font-extrabold text-[var(--color-text)] leading-tight">{t('dash.aiName')}</p>
-            <p className="text-[11px] text-[var(--color-text-light)] truncate">{t('dash.aiRole')}</p>
-          </div>
-          <span className="ml-auto text-[9px] font-bold uppercase tracking-wider text-[var(--color-primary)] bg-[var(--color-primary)]/10 px-2 py-1 rounded-full shrink-0">
-            AI
-          </span>
-        </div>
-
-        {/* Fake input row that opens the modal */}
-        <div className="mt-4 flex items-center gap-2 rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-2)] px-4 py-3">
-          <span className="flex-1 text-sm text-[var(--color-text-muted)] truncate">{t('dash.aiPrompt')}</span>
-          <span className="w-8 h-8 rounded-xl bg-[var(--color-ink)] text-[var(--color-surface)] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-            <Camera size={15} />
-          </span>
-        </div>
-      </button>
-
-      {/* ── Weight Trend Sparkline ─────────────────────────────────────────── */}
-      {sparkWeights.length >= 2 && <WeightSparkline entries={sparkWeights} />}
-
-      {/* ── Adaptive TDEE ─────────────────────────────────────────────────── */}
-      {dataLoaded && <AdaptiveTDEECard result={adaptiveTDEE} />}
-
-      {/* ── Weekly micronutrients (approximate, AI-derived) ───────────────── */}
-      {dataLoaded && <MicronutrientCard data={weekMicros} />}
-
-      {/* ── AI modal ──────────────────────────────────────────────────────── */}
-      {aiOpen && (
-        <AiLogModal
-          mealType={mealForNow()}
-          onClose={() => setAiOpen(false)}
-          onAddItem={(name, kcal, protein, fat, carbs, grams, fiber, micros) =>
-            onAddFood(mealForNow(), name, kcal, protein, fat, carbs, grams, fiber, micros)
-          }
-          onAddItems={onAddFoods ? (its) => onAddFoods(mealForNow(), its) : undefined}
-        />
-      )}
-    </div>
-  );
-}
-
-// ── Week strip ────────────────────────────────────────────────────────────────
-
-function WeekStrip({ currentDate, onDateChange, lang }: { currentDate: string; onDateChange: (d: string) => void; lang: string }) {
-  if (!currentDate) return null;
-
-  const toStr = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-
-  const current = new Date(currentDate);
-  const day = current.getDay();
-  const diff = current.getDate() - day + (day === 0 ? -6 : 1);
-  const monday = new Date(new Date(currentDate).setDate(diff));
-  const days = Array.from({ length: 7 }, (_, i) => {
-    const d = new Date(monday);
-    d.setDate(monday.getDate() + i);
-    return d;
-  });
-
-  const names: Record<string, string[]> = {
-    ru: ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'],
-    en: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
-    uk: ['Нд', 'Пн', 'Вв', 'Ср', 'Чт', 'Пт', 'Сб'],
-  };
-  const dn = names[lang === 'uk' || lang === 'en' ? lang : 'ru'];
-  const todayStr = toStr(new Date());
-
-  return (
-    <div className="flex items-center gap-1.5 bg-[var(--color-surface)] rounded-[22px] p-2 shadow-[var(--shadow-sm)] border border-[var(--color-border)]">
-      {days.map((d) => {
-        const ds = toStr(d);
-        const isActive = ds === currentDate;
-        const isToday = ds === todayStr;
-        return (
-          <button
-            key={ds}
-            onClick={() => onDateChange(ds)}
-            className={`flex-1 flex flex-col items-center justify-center py-2 rounded-2xl transition-all ${
-              isActive ? 'bg-[var(--color-ink)] text-[var(--color-surface)]' : 'hover:bg-[var(--color-surface-2)]'
-            }`}
-          >
-            <span className={`text-[9px] font-bold uppercase ${isActive ? 'text-[var(--color-surface)]/70' : 'text-[var(--color-text-muted)]'}`}>
-              {dn[d.getDay()]}
-            </span>
-            <span className={`text-sm font-extrabold mt-0.5 tabular-nums ${isActive ? 'text-[var(--color-surface)]' : 'text-[var(--color-text)]'}`}>
-              {d.getDate()}
-            </span>
-            {isToday && !isActive && <span className="w-1 h-1 bg-[var(--color-primary)] rounded-full mt-0.5" />}
-          </button>
-        );
-      })}
-    </div>
-  );
-}
-
-// ── Macro mini-card ─────────────────────────────────────────────────────────--
-
-function MacroCard({ label, current, goal, color, bg }: { label: string; current: number; goal: number; color: string; bg: string }) {
-  const cur = Math.round(current);
-  const g = Math.round(goal);
-  const pct = goal > 0 ? Math.min(100, (current / goal) * 100) : 0;
-  const isOver = current > goal;
-
-  return (
-    <div className="rounded-2xl p-3" style={{ backgroundColor: bg }}>
-      <p className="text-[9px] font-bold uppercase tracking-wider truncate" style={{ color }}>{label}</p>
-      <p className="text-sm font-extrabold text-[var(--color-text)] tabular-nums mt-1">
-        {cur}<span className="text-[var(--color-text-muted)] font-bold">/{g}</span>
-      </p>
-      <div className="h-1.5 rounded-full bg-black/5 overflow-hidden mt-1.5">
+      {/* Main progress bar for calories */}
+      <div className="h-3 bg-gray-100/80 rounded-full overflow-hidden mb-8 relative">
         <div
-          className="h-full rounded-full transition-all duration-500 ease-out"
-          style={{ width: `${pct}%`, backgroundColor: isOver ? '#f87171' : color }}
+          className="h-full rounded-full transition-all duration-500 ease-out bg-[var(--color-primary)]"
+          style={{
+            width: `${Math.min(100, (currentCalories / goalCalories) * 100)}%`,
+          }}
         />
+      </div>
+
+      {/* Macros Boxes Grid */}
+      <div className="grid grid-cols-3 gap-3">
+        {/* Protein */}
+        <div className="bg-[#eef6ff] rounded-2xl p-3 border border-blue-100 flex flex-col justify-between h-24">
+          <div>
+            <span className="text-[9px] font-extrabold text-[#6b9bd1] uppercase tracking-wider block mb-1">
+              {t('calc.protein') || 'белки'}
+            </span>
+            <span className="text-sm font-black text-blue-900">
+              {roundVal(consumed.protein)} <span className="text-xs font-semibold text-blue-700/80">/ {roundVal(goals.protein)}г</span>
+            </span>
+          </div>
+          <div className="h-1.5 bg-[#6b9bd1]/20 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-[#6b9bd1] rounded-full"
+              style={{ width: `${Math.min(100, (consumed.protein / (goals.protein || 1)) * 100)}%` }}
+            />
+          </div>
+        </div>
+
+        {/* Fat */}
+        <div className="bg-[#fff0f7] rounded-2xl p-3 border border-pink-100 flex flex-col justify-between h-24">
+          <div>
+            <span className="text-[9px] font-extrabold text-[#e89fc4] uppercase tracking-wider block mb-1">
+              {t('calc.fat') || 'жиры'}
+            </span>
+            <span className="text-sm font-black text-pink-900">
+              {roundVal(consumed.fat)} <span className="text-xs font-semibold text-pink-700/80">/ {roundVal(goals.fat)}г</span>
+            </span>
+          </div>
+          <div className="h-1.5 bg-[#e89fc4]/20 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-[#e89fc4] rounded-full"
+              style={{ width: `${Math.min(100, (consumed.fat / (goals.fat || 1)) * 100)}%` }}
+            />
+          </div>
+        </div>
+
+        {/* Carbs */}
+        <div className="bg-[#f0f9ef] rounded-2xl p-3 border border-green-100 flex flex-col justify-between h-24">
+          <div>
+            <span className="text-[9px] font-extrabold text-[#7c9885] uppercase tracking-wider block mb-1">
+              {t('calc.carbs') || 'углеводы'}
+            </span>
+            <span className="text-sm font-black text-green-950">
+              {roundVal(consumed.carbs)} <span className="text-xs font-semibold text-green-800/80">/ {roundVal(goals.carbs)}г</span>
+            </span>
+          </div>
+          <div className="h-1.5 bg-[#7c9885]/20 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-[#7c9885] rounded-full"
+              style={{ width: `${Math.min(100, (consumed.carbs / (goals.carbs || 1)) * 100)}%` }}
+            />
+          </div>
+        </div>
       </div>
     </div>
   );

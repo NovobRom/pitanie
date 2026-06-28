@@ -1,7 +1,7 @@
 // Serialize the app state (calculator inputs + builder ration) into a compact,
 // URL-safe string so it can be persisted locally and shared via a link.
 
-import { CalcParams, FoodProduct } from './nutrition';
+import { CalcParams, FoodProduct } from '@/types/nutrition';
 
 export interface RationItem {
   product: FoodProduct;

@@ -1,38 +1,6 @@
 // Shared nutrition types and calculations.
 
-export interface Macros {
-  calories: number;
-  protein: number;
-  fat: number;
-  carbs: number;
-}
-
-export interface FoodProduct {
-  product_name: string;
-  nutriments: {
-    'energy-kcal_100g'?: number;
-    proteins_100g?: number;
-    fat_100g?: number;
-    carbohydrates_100g?: number;
-  };
-  image_front_small_url?: string;
-}
-
-export type Sex = 'male' | 'female';
-export type Activity = 'sedentary' | 'light' | 'moderate' | 'active' | 'very_active';
-export type Goal = 'lose' | 'maintain' | 'gain';
-
-export interface CalcParams {
-  weight: string;
-  height: string;
-  age: string;
-  sex: Sex;
-  bodyFat: string;
-  activity: Activity;
-  goal: Goal;
-  proteinPerKg: number; // g per kg bodyweight
-  fatPct: number; // % of total calories from fat
-}
+import { Macros, FoodProduct, Sex, Activity, Goal, CalcParams } from '@/types/nutrition';
 
 export const ACTIVITY_MULT: Record<Activity, number> = {
   sedentary: 1.2,
@@ -56,17 +24,46 @@ export interface CalcResult {
   formula: 'Mifflin-St Jeor' | 'Katch-McArdle';
 }
 
-export function calcGoals(p: CalcParams): CalcResult | null {
-  const w = parseFloat(p.weight);
-  const h = parseFloat(p.height);
-  const a = parseFloat(p.age);
-  if (!w || !h || !a) return null;
+export interface ValidationError {
+  field: keyof CalcParams;
+  message: string;
+}
 
-  const bf = parseFloat(p.bodyFat);
+export type CalcResultUnion = 
+  | { ok: true; data: CalcResult }
+  | { ok: false; errors: ValidationError[] };
+
+export function calcGoals(p: CalcParams): CalcResultUnion {
+  const errors: ValidationError[] = [];
+
+  const w = parseFloat(p.weight);
+  if (isNaN(w) || w < 20 || w > 500) {
+    errors.push({ field: 'weight', message: 'Weight must be between 20 and 500 kg' });
+  }
+
+  const h = parseFloat(p.height);
+  if (isNaN(h) || h < 50 || h > 300) {
+    errors.push({ field: 'height', message: 'Height must be between 50 and 300 cm' });
+  }
+
+  const a = parseFloat(p.age);
+  if (isNaN(a) || a < 1 || a > 150) {
+    errors.push({ field: 'age', message: 'Age must be between 1 and 150 years' });
+  }
+
+  const bf = p.bodyFat ? parseFloat(p.bodyFat) : NaN;
+  if (p.bodyFat && (isNaN(bf) || bf < 1 || bf > 70)) {
+    errors.push({ field: 'bodyFat', message: 'Body fat must be between 1% and 70%' });
+  }
+
+  if (errors.length > 0) {
+    return { ok: false, errors };
+  }
+
   let bmr: number;
   let formula: CalcResult['formula'];
 
-  if (bf && bf > 0 && bf < 70) {
+  if (!isNaN(bf) && bf > 0 && bf < 70) {
     // Katch-McArdle: based on lean body mass
     const lbm = w * (1 - bf / 100);
     bmr = 370 + 21.6 * lbm;
@@ -86,10 +83,13 @@ export function calcGoals(p: CalcParams): CalcResult | null {
   const carbs = Math.max(0, Math.round((calories - protein * 4 - fat * 9) / 4));
 
   return {
-    bmr: Math.round(bmr),
-    tdee: Math.round(tdee),
-    formula,
-    goals: { calories, protein, fat, carbs },
+    ok: true,
+    data: {
+      bmr: Math.round(bmr),
+      tdee: Math.round(tdee),
+      formula,
+      goals: { calories, protein, fat, carbs },
+    },
   };
 }
 
